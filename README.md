@@ -2,6 +2,8 @@
 
 Know Your Price, Save Your Money. Kampala's price intelligence and discovery platform.
 
+**Live site:** https://lynn-sketch.github.io/wikiprice/
+
 ## Quick Start
 
 No build step required. Open `index.html` in a browser, or serve locally:
@@ -10,7 +12,20 @@ No build step required. Open `index.html` in a browser, or serve locally:
 npx serve .
 ```
 
-## Deploy to Vercel
+## Auto-deploy from GitHub
+
+Every push to `main` automatically updates the live site via GitHub Pages.
+
+1. Edit files locally (deals in `js/data.js`, styles in `css/styles.css`, etc.)
+2. Commit and push:
+   ```bash
+   git add .
+   git commit -m "Update deals"
+   git push
+   ```
+3. GitHub Actions deploys in ~1 minute — check the [Actions tab](https://github.com/lynn-sketch/wikiprice/actions)
+
+## Deploy to Vercel (optional)
 
 ```bash
 vercel
