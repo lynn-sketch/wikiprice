@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe Shopping Guidelines — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="hero" style="padding:40px 16px;background:linear-gradient(135deg,#dc2626,#991b1b);">
+    <div class="container">
+      <h1>Safe Shopping Guidelines</h1>
+      <p class="tagline">Protect yourself from scams when shopping in Kampala markets and on TikTok</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="warning-box warning-risk icon-row" id="safe-alert"></div>
+
+      <h2 class="section-title">How to Spot a Scam</h2>
+      <div class="detail-card">
+        <ul>
+          <li><strong>Prices 50%+ below market average</strong> — An iPhone at UGX 150,000 when real price is UGX 450,000+ is a red flag.</li>
+          <li><strong>Phone number only, no shop location</strong> — Legitimate Kikuubo sellers have arcade name, building, floor, and stall number.</li>
+          <li><strong>Full payment upfront via mobile money</strong> — Scammers pressure you to pay before seeing the product.</li>
+          <li><strong>No physical address</strong> — "Meet at taxi park" or "nationwide delivery only" with no fixed shop.</li>
+          <li><strong>New accounts with no shop videos</strong> — Accounts created days ago with low followers and no video history showing a physical shop.</li>
+          <li><strong>Pressure tactics</strong> — "Limited stock!" or "Offer ends today!" to rush your decision.</li>
+        </ul>
+      </div>
+
+      <h2 class="section-title">How to Shop Safely</h2>
+      <div class="detail-card">
+        <ul>
+          <li><strong>Visit the physical shop</strong> before paying large amounts. WikiPrice provides specific locations — use them.</li>
+          <li><strong>Pay on delivery, not upfront.</strong> Especially for online-only sellers.</li>
+          <li><strong>Ask for a video call</strong> to see the product before paying.</li>
+          <li><strong>Check TikTok history</strong> — Do their videos show their actual shop?</li>
+          <li><strong>Start with a small purchase</strong> to test reliability before larger transactions.</li>
+          <li><strong>Look for the green check</strong> on WikiPrice — verified means we sent someone to the shop.</li>
+          <li><strong>Check wholesale vs retail</strong> — UGX 30,000 might be wholesale price for 12 pieces, not single piece.</li>
+        </ul>
+      </div>
+
+      <h2 class="section-title">What WikiPrice Does to Protect You</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon" id="safe-icon-1"></div><h3>Verified Badge</h3><p>Only after physical shop confirmation by our team</p></div>
+        <div class="stat-card"><div class="stat-icon" id="safe-icon-2"></div><h3>Price Comparison</h3><p>Every deal compared against market average baselines</p></div>
+        <div class="stat-card"><div class="stat-icon" id="safe-icon-3"></div><h3>Report System</h3><p>Community reports trigger automatic high-risk flags</p></div>
+        <div class="stat-card"><div class="stat-icon" id="safe-icon-4"></div><h3>Blacklist</h3><p>Confirmed scammers removed from search results</p></div>
+      </div>
+
+      <h2 class="section-title">Risk Score Guide</h2>
+      <div class="detail-card">
+        <p><span class="badge badge-verified">80–100 Trusted Seller</span> WikiPrice verified. Physical shop confirmed.</p>
+        <p><span class="badge badge-caution">50–79 Caution Advised</span> Price seems low. We recommend visiting in person.</p>
+        <p><span class="badge badge-danger">0–49 High Risk</span> Suspected scam. No verified location. Avoid paying upfront.</p>
+      </div>
+
+      <h2 class="section-title">What to Do If You Are Scammed</h2>
+      <div class="detail-card">
+        <ol>
+          <li><strong>Report on WikiPrice</strong> — Use the Report button on the deal or seller page.</li>
+          <li><strong>Report to police</strong> — File a report with Uganda Police.</li>
+          <li><strong>Report to TikTok</strong> — Report the account on TikTok.</li>
+          <li><strong>Warn other buyers</strong> — Leave a review warning others about the seller.</li>
+        </ol>
+        <a href="contact.html" class="btn btn-primary mt-16">Report a Scam</a>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('safe');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+    document.getElementById('safe-alert').innerHTML = WPIcon('warning', 22) + '<span><strong>Remember:</strong> If the price seems too good to be true, it probably is. WikiPrice flags suspicious deals, but always verify before paying large amounts.</span>';
+    document.getElementById('safe-icon-1').innerHTML = WPIcon('verify', 36);
+    document.getElementById('safe-icon-2').innerHTML = WPIcon('money', 36);
+    document.getElementById('safe-icon-3').innerHTML = WPIcon('flag', 36);
+    document.getElementById('safe-icon-4').innerHTML = WPIcon('ban', 36);
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>

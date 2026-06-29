@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Profile — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+  <div id="seller-content"></div>
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+
+    const sellerId = new URLSearchParams(location.search).get('id');
+    const seller = WPDATA.sellers[sellerId];
+
+    if (!seller) {
+      document.getElementById('seller-content').innerHTML = '<section class="section"><div class="container"><h1>Seller not found</h1></div></section>';
+    } else {
+      const trust = WikiPrice.calculateTrustScore(seller);
+      const deals = WPDATA.deals.filter(d => d.sellerId === sellerId);
+      const sampleDeal = deals[0];
+      const risk = sampleDeal ? WikiPrice.calculateRiskScore(sampleDeal, seller) : { label: 'Unknown', badgeClass: 'badge-caution', message: '' };
+
+      document.title = seller.name + ' — WikiPrice Uganda';
+
+      let tiktokHtml = '';
+      if (seller.tiktokHandle) {
+        tiktokHtml = '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@' + seller.tiktokHandle + '" target="_blank" rel="noopener">@' + seller.tiktokHandle + '</a> · ' + WikiPrice.formatFollowers(seller.tiktokFollowers) + ' followers on TikTok</span></p>';
+      }
+
+      let bioExtracts = seller.bioExtracts.map(b =>
+        '<div class="tiktok-extract"><span class="source-label">' + b.source + '</span><br>' + b.text + '</div>'
+      ).join('');
+
+      let locations = seller.locations.map(l =>
+        '<div class="tiktok-extract"><span class="source-label">' + l.source + '</span><br>' + l.text + '</div>'
+      ).join('');
+
+      const html = '<div class="seller-header"><div class="container flex-between">' +
+        '<div><h1 style="margin:0;">' + seller.name + '</h1>' + tiktokHtml +
+        '<span class="badge ' + risk.badgeClass + '">' + risk.label + '</span> ' +
+        (seller.bioVerified ? '<span class="badge badge-bio-verified">' + WPIcon('verify', 14) + ' Bio Verified</span>' : '') +
+        (trust.score >= 80 ? '<span class="badge badge-verified">' + WPIcon('trophy', 14) + ' Trusted Seller</span>' : '') +
+        '</div><div class="trust-score-ring">' + trust.score + '%</div></div></div>' +
+
+        '<section class="section"><div class="container">' +
+        '<div class="deal-detail-grid">' +
+        '<div>' +
+        '<div class="detail-card">' + WPUI.sectionHeading('phone', 'Contact Information') +
+        '<p class="icon-row">' + WPIcon('phone', 18) + '<span>Phone: ' + seller.phone + '</span></p>' +
+        '<p class="icon-row">' + WPIcon('whatsapp', 18) + '<span>WhatsApp: ' + seller.whatsapp + '</span></p>' +
+        (seller.email ? '<p class="icon-row">' + WPIcon('mail', 18) + '<span>' + seller.email + '</span></p>' : '') +
+        '<p class="icon-row">' + WPIcon('clock', 18) + '<span>' + seller.bestTimeToContact + '</span></p>' +
+        '<a href="' + WikiPrice.whatsappLink(seller.whatsapp, { name: seller.name, retailPrice: 0 }) + '" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener">' + WPIcon('whatsapp', 18) + ' Contact on WhatsApp</a></div>' +
+
+        '<div class="detail-card">' + WPUI.sectionHeading('tiktok', 'Four-Source TikTok Extraction') +
+        '<p class="text-muted">Information aggregated from bio, video captions, comment replies, and video OCR.</p>' +
+        (seller.about ? '<p><strong>About:</strong> ' + seller.about + '</p>' : '') +
+        bioExtracts + locations + '</div>' +
+
+        '<div class="detail-card"><h2>Deals from ' + seller.name + ' (' + deals.length + ')</h2>' +
+        '<div class="deals-grid">' + deals.map(d => WPUI.dealCard(d)).join('') + '</div></div>' +
+        '</div>' +
+
+        '<div>' +
+        '<div class="detail-card">' + WPUI.sectionHeading('verify', 'Trust Score') +
+        '<p style="font-size:2rem;font-weight:800;color:var(--primary);">' + trust.score + '%</p>' +
+        '<p><strong>' + trust.adj + '</strong></p>' +
+        '<p class="text-muted">Based on verification (50%), reviews (30%), response time (10%), platform tenure (10%)</p></div>' +
+
+        '<div class="detail-card"><h2>Details</h2>' +
+        '<p>Seller type: ' + seller.sellerType + '</p>' +
+        '<p>Member since: ' + seller.memberSince + '</p>' +
+        '<p>Physical shop: ' + (seller.physicalShop ? 'Yes ' + WPIcon('check', 16) : 'No — online only') + '</p>' +
+        '<p>Response time: ~' + seller.responseTimeHours + ' hours</p>' +
+        '<p>Average rating: ' + seller.avgRating + '/5</p>' +
+        '<p>Scam reports: ' + seller.scamReports + '</p></div>' +
+
+        '<div class="detail-card"><h2>Report</h2>' +
+        '<button class="btn btn-outline btn-block" onclick="WPUI.reportModal(\'' + sellerId + '\')">' + WPIcon('flag', 18) + ' Report Suspicious Seller</button></div>' +
+        '</div></div></div></section>';
+
+      document.getElementById('seller-content').innerHTML = html;
+    }
+
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>

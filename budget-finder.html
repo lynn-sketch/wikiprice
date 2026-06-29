@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Finder — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Budget Finder</h1>
+      <p class="text-muted">Shopping on a budget? Tell us how much you have, and we'll show you what you can buy in Kampala.</p>
+
+      <div class="detail-card">
+        <label for="budget-input"><strong>Your budget (UGX)</strong></label>
+        <input type="number" id="budget-input" min="1000" step="1000" value="50000" style="width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:18px;margin-top:8px;">
+        <div class="budget-presets" id="budget-presets"></div>
+        <label style="display:flex;align-items:center;margin-top:16px;cursor:pointer;">
+          <input type="checkbox" id="retail-only" checked> Show retail only (exclude wholesale-only results)
+        </label>
+        <button type="button" class="btn btn-primary mt-16" id="find-budget">Find Deals</button>
+      </div>
+
+      <div id="budget-share" class="detail-card hidden mt-16">
+        <h2>Share Your Results</h2>
+        <div class="share-text" id="share-text"></div>
+        <div class="action-buttons">
+          <a id="share-whatsapp" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener">Share on WhatsApp</a>
+          <button type="button" class="btn btn-outline btn-sm" id="share-sms">Share via SMS</button>
+        </div>
+      </div>
+
+      <div id="budget-warnings"></div>
+      <p id="budget-count" class="text-muted mt-16"></p>
+      <div class="deals-grid" id="budget-results"></div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('budget');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+
+    const presets = [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 80000, 100000, 150000, 200000, 500000];
+    const presetsEl = document.getElementById('budget-presets');
+    const budgetInput = document.getElementById('budget-input');
+
+    presets.forEach(p => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'budget-preset';
+      btn.textContent = 'UGX ' + p.toLocaleString();
+      btn.onclick = () => { budgetInput.value = p; runBudget(); };
+      presetsEl.appendChild(btn);
+    });
+
+    function runBudget() {
+      const amount = parseInt(budgetInput.value) || 0;
+      const retailOnly = document.getElementById('retail-only').checked;
+      let results = WikiPrice.budgetFinder(amount, retailOnly);
+
+      if (retailOnly) {
+        results = results.filter(d => d.retailPrice <= amount);
+      } else {
+        results = results.filter(d => {
+          if (d.priceType === 'wholesale') return d.wholesalePrice <= amount;
+          return d.retailPrice <= amount;
+        });
+      }
+
+      results = results.filter(d => d.stockStatus !== 'out-of-stock');
+      results = WikiPrice.sortDeals(results, 'price-low');
+
+      document.getElementById('budget-count').textContent = 'With UGX ' + amount.toLocaleString() + ', you can buy ' + results.length + ' product' + (results.length !== 1 ? 's' : '') + ':';
+
+      let warnings = '';
+      results.forEach(d => {
+        if (d.priceType !== 'retail' && d.wholesalePrice <= amount && d.retailPrice > amount) {
+          warnings += WPUI.wholesaleWarning(d);
+        }
+      });
+      document.getElementById('budget-warnings').innerHTML = warnings;
+
+      document.getElementById('budget-results').innerHTML = results.map(d => WPUI.dealCard(d, { showWholesaleWarning: true })).join('');
+
+      if (results.length) {
+        const list = results.slice(0, 8).map(d => d.name + ' (' + WikiPrice.formatUGX(d.retailPrice <= amount ? d.retailPrice : d.wholesalePrice) + ')').join(', ');
+        const shareText = 'With UGX ' + amount.toLocaleString() + ' you can buy: ' + list + '. Found on WikiPrice Uganda!';
+        document.getElementById('share-text').textContent = shareText;
+        document.getElementById('budget-share').classList.remove('hidden');
+        document.getElementById('share-whatsapp').href = 'https://wa.me/?text=' + encodeURIComponent(shareText);
+        document.getElementById('share-sms').onclick = () => {
+          location.href = 'sms:?body=' + encodeURIComponent(shareText);
+        };
+      } else {
+        document.getElementById('budget-share').classList.add('hidden');
+      }
+    }
+
+    document.getElementById('find-budget').onclick = runBudget;
+    document.getElementById('retail-only').onchange = runBudget;
+
+    const params = new URLSearchParams(location.search);
+    if (params.get('amount')) budgetInput.value = params.get('amount');
+    runBudget();
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>

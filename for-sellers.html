@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Sellers — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="hero" style="padding:40px 16px;">
+    <div class="container">
+      <h1>Get Discovered by Price-Conscious Buyers</h1>
+      <p class="tagline">Build trust with verification. Grow your customer base. Free basic listing.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Why List on WikiPrice?</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon" id="seller-icon-1"></div><div class="stat-label">Get discovered by shoppers comparing prices</div></div>
+        <div class="stat-card"><div class="stat-icon" id="seller-icon-2"></div><div class="stat-label">Build trust with verification badge</div></div>
+        <div class="stat-card"><div class="stat-icon" id="seller-icon-3"></div><div class="stat-label">Grow your customer base across Uganda</div></div>
+        <div class="stat-card"><div class="stat-icon" id="seller-icon-4"></div><div class="stat-label">Free basic listing to start</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--card);">
+    <div class="container">
+      <h2 class="section-title">Pricing Plans</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Basic</h3>
+          <div class="pricing-price">Free</div>
+          <p>Profile, product listing, basic support</p>
+          <ul style="text-align:left;padding-left:20px;">
+            <li>Business profile page</li>
+            <li>Product listings</li>
+            <li>Basic support</li>
+          </ul>
+        </div>
+        <div class="pricing-card featured">
+          <h3>Verified</h3>
+          <div class="pricing-price">UGX 30,000/mo</div>
+          <p>Verification badge, priority search, WhatsApp button</p>
+          <ul style="text-align:left;padding-left:20px;">
+            <li>Verified badge</li>
+            <li>Priority in search results</li>
+            <li>WhatsApp contact button</li>
+            <li>Physical shop verification</li>
+          </ul>
+        </div>
+        <div class="pricing-card">
+          <h3>Premium</h3>
+          <div class="pricing-price">UGX 50,000/mo</div>
+          <p>Everything in Verified plus top placement</p>
+          <ul style="text-align:left;padding-left:20px;">
+            <li>Top placement in search</li>
+            <li>Video promotions</li>
+            <li>Featured deal of the day</li>
+            <li>All Verified features</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">How Verification Works</h2>
+      <div class="detail-card">
+        <ol>
+          <li><strong>Submit your business</strong> — Provide shop location, TikTok handle, and product prices.</li>
+          <li><strong>WikiPrice visits your shop</strong> — Our team physically verifies your location, prices, and stock.</li>
+          <li><strong>Get your badge</strong> — Verified sellers get a green check and priority in search results.</li>
+          <li><strong>Stay fresh</strong> — Prices are re-verified regularly. Update us when prices change.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--card);">
+    <div class="container">
+      <h2 class="section-title">Success Stories</h2>
+      <div class="deals-grid">
+        <div class="detail-card">
+          <h3>Salongo House of Shoes</h3>
+          <p>"WikiPrice helped customers find our Mukwano Arcade shop. Our TikTok followers grew because shoppers could verify our prices before visiting."</p>
+          <p><a href="seller.html?id=salongo-shoes">View Profile →</a></p>
+        </div>
+        <div class="detail-card">
+          <h3>Nsambya Furniture Workshop</h3>
+          <p>"Customers from upcountry now visit our workshop because they saw verified prices on WikiPrice and trusted our TikTok videos."</p>
+          <p><a href="seller.html?id=nsambya-furniture">View Profile →</a></p>
+        </div>
+        <div class="detail-card">
+          <h3>Mummy Gadgets</h3>
+          <p>"Parents compare kids' smartwatch prices before coming to Pioneer Mall. WikiPrice saves us time explaining prices on WhatsApp."</p>
+          <p><a href="seller.html?id=mummy-gadgets">View Profile →</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Seller Signup</h2>
+      <div class="detail-card">
+        <form id="seller-form">
+          <div class="form-group">
+            <label for="biz-name">Business Name *</label>
+            <input type="text" id="biz-name" required>
+            <div class="form-error hidden" id="err-name"></div>
+          </div>
+          <div class="form-group">
+            <label for="biz-phone">Phone / WhatsApp *</label>
+            <input type="tel" id="biz-phone" required placeholder="0701234567">
+            <div class="form-error hidden" id="err-phone"></div>
+          </div>
+          <div class="form-group">
+            <label for="biz-location">Shop Location *</label>
+            <input type="text" id="biz-location" required placeholder="Arcade, building, floor, stall">
+          </div>
+          <div class="form-group">
+            <label for="biz-tiktok">TikTok Handle</label>
+            <input type="text" id="biz-tiktok" placeholder="@yourhandle">
+          </div>
+          <div class="form-group">
+            <label for="biz-plan">Plan</label>
+            <select id="biz-plan">
+              <option value="basic">Basic (Free)</option>
+              <option value="verified">Verified (UGX 30,000/mo)</option>
+              <option value="premium">Premium (UGX 50,000/mo)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Application</button>
+        </form>
+      </div>
+
+      <h2 class="section-title mt-16">FAQ</h2>
+      <div class="detail-card">
+        <p><strong>How long does verification take?</strong><br>Usually 3–5 business days after we visit your shop.</p>
+        <p><strong>Can I list wholesale prices?</strong><br>Yes! Specify retail, wholesale, and minimum quantity for each product.</p>
+        <p><strong>What if my price changes?</strong><br>Update us via WhatsApp or the seller dashboard. Stale prices hurt trust.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('sellers');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+    document.getElementById('seller-icon-1').innerHTML = WPIcon('trending', 36);
+    document.getElementById('seller-icon-2').innerHTML = WPIcon('verify', 36);
+    document.getElementById('seller-icon-3').innerHTML = WPIcon('users', 36);
+    document.getElementById('seller-icon-4').innerHTML = WPIcon('free', 36);
+
+    document.getElementById('seller-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('biz-name').value.trim();
+      const phone = document.getElementById('biz-phone').value.trim();
+      let valid = true;
+      document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
+      if (!name) { document.getElementById('err-name').textContent = 'Required'; document.getElementById('err-name').classList.remove('hidden'); valid = false; }
+      if (!phone || phone.length < 9) { document.getElementById('err-phone').textContent = 'Valid phone required'; document.getElementById('err-phone').classList.remove('hidden'); valid = false; }
+      if (valid) {
+        const apps = JSON.parse(localStorage.getItem('wikiprice-seller-apps') || '[]');
+        apps.push({ name, phone, date: new Date().toISOString() });
+        localStorage.setItem('wikiprice-seller-apps', JSON.stringify(apps));
+        WPUI.showToast('Application submitted! We will contact you within 2 business days.');
+        this.reset();
+      }
+    });
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>

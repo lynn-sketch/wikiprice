@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Contact WikiPrice</h1>
+      <div class="deal-detail-grid">
+        <div>
+          <div class="detail-card">
+            <h2>Send a Message</h2>
+            <form id="contact-form">
+              <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" required>
+                <div class="form-error hidden" id="err-name"></div>
+              </div>
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" required>
+                <div class="form-error hidden" id="err-email"></div>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone">
+              </div>
+              <div class="form-group">
+                <label for="subject">Subject *</label>
+                <select id="subject" required>
+                  <option value="">Select...</option>
+                  <option value="inquiry">Inquiry</option>
+                  <option value="partnership">Partnership</option>
+                  <option value="training">Training Registration</option>
+                  <option value="book">Book Inquiry</option>
+                  <option value="report-deal">Report a Deal</option>
+                  <option value="report-problem">Report a Problem</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="message">Message *</label>
+                <textarea id="message" required></textarea>
+                <div class="form-error hidden" id="err-message"></div>
+              </div>
+              <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+          </div>
+        </div>
+        <div>
+          <div class="detail-card">
+            <h2>Get in Touch</h2>
+            <p class="icon-row" id="contact-wa"></p>
+            <p class="icon-row" id="contact-mail"></p>
+            <p class="icon-row" id="contact-tiktok"></p>
+            <p class="icon-row" id="contact-loc"></p>
+          </div>
+          <div class="detail-card">
+            <h2>Submit a Deal</h2>
+            <p>Tag <strong>@WikiPriceUG</strong> on TikTok or use hashtag <strong>#WikiPriceUG</strong></p>
+            <p>Or WhatsApp us with: product name, price, location, seller, and photo/video link.</p>
+          </div>
+          <div class="detail-card">
+            <h2>FAQ</h2>
+            <p><strong>How do I know if a deal is verified?</strong><br>Look for the green Verified badge. That means our team physically visited the shop.</p>
+            <p><strong>What does "Check Required" mean?</strong><br>Yellow badge — price needs re-verification. Visit in person before large purchases.</p>
+            <p><strong>What if a price is wrong?</strong><br>Click "Report Price Changed" on any deal page or contact us.</p>
+            <p><strong>How do I become a verified seller?</strong><br><a href="for-sellers.html">Apply here</a> — we visit your shop to verify.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('contact');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+    document.getElementById('contact-wa').innerHTML = WPIcon('whatsapp', 18) + '<span><a href="https://wa.me/256700000000" target="_blank" rel="noopener">WhatsApp: 0700 000 000</a></span>';
+    document.getElementById('contact-mail').innerHTML = WPIcon('mail', 18) + '<span>info@wikiprice.ug</span>';
+    document.getElementById('contact-tiktok').innerHTML = WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@WikiPriceUG" target="_blank" rel="noopener">TikTok @WikiPriceUG</a></span>';
+    document.getElementById('contact-loc').innerHTML = WPIcon('location', 18) + '<span>Kampala, Uganda</span>';
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let valid = true;
+      document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
+      if (!document.getElementById('name').value.trim()) { document.getElementById('err-name').textContent = 'Required'; document.getElementById('err-name').classList.remove('hidden'); valid = false; }
+      if (!document.getElementById('email').value.includes('@')) { document.getElementById('err-email').textContent = 'Valid email required'; document.getElementById('err-email').classList.remove('hidden'); valid = false; }
+      if (!document.getElementById('message').value.trim()) { document.getElementById('err-message').textContent = 'Required'; document.getElementById('err-message').classList.remove('hidden'); valid = false; }
+      if (valid) {
+        const msgs = JSON.parse(localStorage.getItem('wikiprice-messages') || '[]');
+        msgs.push({ date: new Date().toISOString() });
+        localStorage.setItem('wikiprice-messages', JSON.stringify(msgs));
+        WPUI.showToast('Message sent! We will respond within 24 hours.');
+        this.reset();
+      }
+    });
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "WikiPrice Uganda",
+  "short_name": "WikiPrice",
+  "description": "Know Your Price, Save Your Money — Kampala price intelligence",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#f8faf9",
+  "theme_color": "#1D4B3A",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

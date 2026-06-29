@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+  <div id="deal-content"></div>
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+
+    const dealId = new URLSearchParams(location.search).get('id');
+    const deal = WPDATA.deals.find(d => d.id === dealId);
+
+    if (!deal) {
+      document.getElementById('deal-content').innerHTML = '<section class="section"><div class="container"><h1>Deal not found</h1><a href="search.html">Back to search</a></div></section>';
+    } else {
+      const seller = WPDATA.sellers[deal.sellerId];
+      const risk = WikiPrice.calculateRiskScore(deal, seller);
+      const trust = WikiPrice.calculateTrustScore(seller || {});
+      const warnings = WikiPrice.getDealWarnings(deal, seller, risk);
+      const trend = WikiPrice.getPriceTrend(deal.priceHistory);
+      const bestPrice = WikiPrice.getBestPriceMonths(deal.priceHistory);
+      const phone = seller?.whatsapp || seller?.phone || '256700000000';
+      const similar = WPDATA.deals.filter(d => d.category === deal.category && d.id !== deal.id).slice(0, 4);
+      const sameSeller = WPDATA.deals.filter(d => d.sellerId === deal.sellerId && d.id !== deal.id).slice(0, 3);
+
+      document.title = deal.name + ' — WikiPrice Uganda';
+
+      let tiktokSection = WPUIEnhance.renderTikTokDealSection(deal, seller);
+      if (tiktokSection && !document.getElementById('tiktok-embed-script')) {
+        setTimeout(() => {
+          const s = document.createElement('script');
+          s.id = 'tiktok-embed-script';
+          s.src = 'https://www.tiktok.com/embed.js';
+          s.async = true;
+          document.body.appendChild(s);
+        }, 100);
+      }
+
+      const html = '<section class="section"><div class="container">' +
+        dealImageTag(deal, 'deal-detail-hero') +
+        '<div class="deal-detail-header">' +
+        '<p class="text-muted">' + deal.category + ' &rsaquo; ' + deal.subCategory + '</p>' +
+        '<h1 style="margin:8px 0;">' + deal.name + '</h1>' +
+        '<div class="deal-meta">' + WPUI.priceTypeBadge(deal) + WPUI.verificationBadge(deal) + WPUI.stockBadge(deal) + WPUI.riskBadge(risk) +
+        (deal.crowdConfirmations >= 5 ? '<span class="badge badge-community">' + WPIcon('users', 14) + ' Community Verified</span>' : '') + '</div>' +
+        '</div>' +
+
+        WPUI.warningsHtml(warnings) +
+        '<p class="text-muted">' + risk.message + '</p>' +
+
+        '<div class="deal-detail-grid">' +
+        '<div>' +
+        '<div class="detail-card">' +
+        '<div class="price-display">' + WikiPrice.formatUGX(deal.retailPrice) + '</div>' +
+        (deal.priceType !== 'retail' ? '<p>Wholesale: ' + WikiPrice.formatUGX(deal.wholesalePrice) + '/piece · Min ' + deal.minQuantity + ' pieces (Total: ' + WikiPrice.formatUGX(deal.wholesalePrice * deal.minQuantity) + ')</p>' : '') +
+        (deal.mallPrice ? '<p style="color:var(--accent);font-weight:600;">Mall price: ' + WikiPrice.formatUGX(deal.mallPrice) + ' · Save ' + Math.round((1 - deal.retailPrice/deal.mallPrice)*100) + '%</p>' : '') +
+        WPUI.wholesaleWarning(deal) +
+        '<p>' + WikiPrice.daysAgo(deal.lastVerified) + ' · ' + WPUI.confidenceBadge(deal) + '</p>' +
+        (bestPrice ? '<span class="badge badge-verified">' + WPIcon('trophy', 14) + ' ' + bestPrice + '</span> ' : '') +
+        WPUI.trendIndicator(trend) +
+        '</div>' +
+
+        '<div class="detail-card">' + WPUI.sectionHeading('location', 'Location') +
+        arcadeImageTag(deal.location.arcade) +
+        '<ul class="location-steps">' +
+        '<li><strong>Arcade</strong> ' + deal.location.arcade + '</li>' +
+        (deal.location.building ? '<li><strong>Building</strong> ' + deal.location.building + '</li>' : '') +
+        (deal.location.floor ? '<li><strong>Floor</strong> ' + deal.location.floor + '</li>' : '') +
+        (deal.location.stall ? '<li><strong>Stall</strong> ' + deal.location.stall + '</li>' : '') +
+        (deal.location.landmark ? '<li><strong>Landmark</strong> ' + deal.location.landmark + '</li>' : '') +
+        '</ul>' +
+        (deal.location.directions ? '<p class="text-muted">' + deal.location.directions + '</p>' : '') +
+        '<a href="' + deal.location.mapsUrl + '" class="btn btn-outline btn-sm" target="_blank" rel="noopener">Open in Google Maps</a></div>' +
+
+        '<div class="detail-card">' + WPUI.sectionHeading('chart', 'Price History') +
+        '<ul class="price-history-list">' +
+        deal.priceHistory.map(h => '<li><span>' + h.date + '</span><strong>' + WikiPrice.formatUGX(h.price) + '</strong></li>').join('') +
+        '</ul></div>' +
+
+        '<div class="detail-card">' + WPUI.sectionHeading('verify', 'Verification History') +
+        deal.verificationHistory.map(v => '<p><strong>' + v.who + '</strong> — ' + v.date + ' (' + v.method + ')</p>').join('') +
+        '<p class="text-muted">Confirmed by ' + deal.crowdConfirmations + ' users since verification.</p></div>' +
+
+        '<div class="detail-card">' + WPUI.sectionHeading('star', 'Reviews') +
+        deal.reviews.map(r => '<div class="review-item">' + WPUI.starRating(r.stars) + '<div class="review-meta">' + r.name + ' · ' + r.date + '</div><p>' + r.comment + '</p></div>').join('') +
+        '</div>' +
+
+        (similar.length ? '<div class="detail-card"><h2>Similar Deals</h2><div class="deals-grid">' + similar.map(d => WPUI.dealCard(d)).join('') + '</div></div>' : '') +
+        (sameSeller.length ? '<div class="detail-card"><h2>More from ' + (seller?.name || 'Seller') + '</h2><div class="deals-grid">' + sameSeller.map(d => WPUI.dealCard(d)).join('') + '</div></div>' : '') +
+        '</div>' +
+
+        '<div>' +
+        '<div class="detail-card">' + WPUI.sectionHeading('shop', 'Seller') +
+        '<p><strong><a href="seller.html?id=' + deal.sellerId + '">' + (seller?.name || 'Unknown') + '</a></strong></p>' +
+        '<p>Trust: <strong>' + trust.score + '%</strong> (' + trust.adj + ') ' + WPUI.starRating(Math.round(seller?.avgRating || 4)) + '</p>' +
+        '<p>Type: ' + (seller?.sellerType || 'retail') + '</p>' +
+        (seller?.tiktokHandle ? '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@' + seller.tiktokHandle + '" target="_blank" rel="noopener">@' + seller.tiktokHandle + '</a> · ' + WikiPrice.formatFollowers(seller.tiktokFollowers) + ' followers</span></p>' : '') +
+        (seller?.memberSince ? '<p>Member since: ' + seller.memberSince + '</p>' : '') +
+        (seller?.bestTimeToContact ? '<p>Best time: ' + seller.bestTimeToContact + '</p>' : '') +
+        (seller?.bioVerified ? '<span class="badge badge-bio-verified">' + WPIcon('verify', 14) + ' Bio Verified</span>' : '') +
+        '</div>' + tiktokSection +
+
+        '<div class="detail-card"><h2>Actions</h2>' +
+        '<div class="action-buttons" style="flex-direction:column;">' +
+        '<a href="' + WikiPrice.whatsappLink(phone, deal) + '" class="btn btn-whatsapp btn-block" target="_blank" rel="noopener">' + WPIcon('whatsapp', 18) + ' Contact on WhatsApp</a>' +
+        '<button class="btn btn-outline btn-block" onclick="WPUI.saveDeal(\'' + deal.id + '\')">' + WPIcon('save', 18) + ' Save Deal</button>' +
+        '<button class="btn btn-outline btn-block" onclick="WPUI.confirmPrice(\'' + deal.id + '\')">' + WPIcon('check', 18) + ' Confirm Price Accurate</button>' +
+        '<button class="btn btn-outline btn-block" onclick="WPUI.reportModal(\'' + deal.id + '\')">' + WPIcon('flag', 18) + ' Report Suspicious</button>' +
+        '<button class="btn btn-outline btn-block" onclick="WPUI.reportModal(\'' + deal.id + '\')">' + WPIcon('priceDown', 18) + ' Price Changed / Out of Stock</button>' +
+        '<a href="https://wa.me/?text=' + encodeURIComponent('Check this deal: ' + deal.name + ' ' + WikiPrice.formatUGX(deal.retailPrice) + ' ' + location.href) + '" class="btn btn-outline btn-block" target="_blank" rel="noopener">' + WPIcon('share', 18) + ' Share on WhatsApp</a>' +
+        '<button class="btn btn-outline btn-block" onclick="location.href=\'sms:?body=' + encodeURIComponent(WikiPrice.shareSMS(deal)) + '\'">' + WPIcon('share', 18) + ' Share via SMS</button>' +
+        '</div></div></div></div></div></section>';
+
+      document.getElementById('deal-content').innerHTML = html;
+    }
+
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>

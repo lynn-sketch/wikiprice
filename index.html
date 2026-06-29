@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WikiPrice — Know Your Price, Save Your Money. Compare prices across Kampala markets, arcades, and TikTok sellers.">
+  <title>WikiPrice — Know Your Price, Save Your Money</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="images/logo.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1D4B3A">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="hero hero-with-image" id="hero-section">
+    <div class="container">
+      <h1 id="hero-title">Know Your Price, Save Your Money</h1>
+      <p class="tagline">Compare real prices across Kampala markets, arcades, and TikTok sellers</p>
+      <form class="search-bar" action="search.html" method="get" data-search-autocomplete style="position:relative;">
+        <input type="search" name="q" id="hero-search" placeholder="Search shoes, TV, perfume, engatto..." aria-label="Search deals">
+        <button type="submit">Search Now</button>
+        <div class="search-suggestions" id="hero-search-suggestions" style="text-align:left;"></div>
+      </form>
+      <div class="hero-cta">
+        <a href="search.html" class="btn btn-accent">Find Deals</a>
+        <a href="budget-finder.html" class="btn btn-outline" style="border-color:white;color:white;">Budget Finder</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section stats-section">
+    <div class="container">
+      <div class="stats-grid" id="stats-grid"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Recent Verified Deals</h2>
+      <div class="deals-grid" id="recent-deals"></div>
+      <p class="text-center mt-16"><a href="search.html" class="btn btn-outline">View All Deals</a></p>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--card);">
+    <div class="container">
+      <h2 class="section-title">Budget Finder — What Can You Buy?</h2>
+      <p class="text-muted">Think you need UGX 80,000 for office pants? Think again. Tell us your budget.</p>
+      <div class="budget-presets" id="home-budget-presets"></div>
+      <p class="text-center"><a href="budget-finder.html" class="btn btn-accent">Open Budget Finder</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Latest from TikTok</h2>
+      <p class="text-muted mb-16">Real deal discoveries from @WikiPriceUG and verified Kampala sellers. Tag <strong>#WikiPriceUG</strong> to submit deals.</p>
+      <div class="tiktok-embed-grid" id="tiktok-feed"></div>
+      <p class="text-center mt-16"><a href="https://tiktok.com/@WikiPriceUG" class="btn btn-outline" target="_blank" rel="noopener">Follow @WikiPriceUG on TikTok</a></p>
+    </div>
+  </section>
+
+  <section class="section" style="background:linear-gradient(135deg,#eef5eb,var(--card));">
+    <div class="container text-center">
+      <h2 class="section-title">List Your Business on WikiPrice</h2>
+      <p class="text-muted mb-16">Get discovered by price-conscious buyers. Build trust with verification. Free basic listing.</p>
+      <a href="for-sellers.html" class="btn btn-primary">For Sellers</a>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('home');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+
+    document.getElementById('hero-section').style.backgroundImage = 'url(' + WPIMAGES.hero + ')';
+
+    if (WikiPrice.getLang() === 'lg') {
+      document.getElementById('hero-title').textContent = WikiPrice.t('knowYourPrice');
+    }
+
+    WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
+
+    const recent = WikiPrice.sortDeals(WPDATA.deals, 'newest').slice(0, 8);
+    document.getElementById('recent-deals').innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
+
+    const presets = [5000, 10000, 20000, 30000, 50000, 80000, 150000];
+    document.getElementById('home-budget-presets').innerHTML = presets.map(p =>
+      '<a href="budget-finder.html?amount=' + p + '" class="budget-preset">UGX ' + p.toLocaleString() + '</a>'
+    ).join('');
+
+    WPUIEnhance.renderTikTokFeed(document.getElementById('tiktok-feed'));
+
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+  <script src="js/sw-register.js" defer></script>
+</body>
+</html>

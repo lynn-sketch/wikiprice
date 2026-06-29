@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="hero" style="padding:40px 16px;">
+    <div class="container">
+      <h1>About WikiPrice</h1>
+      <p class="tagline">Uganda's trusted price intelligence platform for Kampala shoppers</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">The Problem</h2>
+      <p>The same product sells for dramatically different prices depending on where you buy it in Kampala. A compressor costs UGX 5,000,000 downtown but UGX 2,900,000 at China Town in Lugogo. Office pants go for UGX 80,000 at a mall but UGX 30,000 in Kikuubo. Most shoppers don't know where to find the best deals because there is no trusted way to compare prices across markets, online sellers, and formal retail.</p>
+      <p>Meanwhile, TikTok has become Uganda's largest platform for product discovery. Sellers showcase products live, answer questions instantly, and close sales via WhatsApp and mobile money. WikiPrice organizes, verifies, and makes this deal information searchable.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--card);">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><h3>For Buyers</h3><p>Search → Compare → Save. Find verified prices across Mukwano, Kikuubo, Owino, and TikTok sellers.</p></div>
+        <div class="stat-card"><h3>For Sellers</h3><p>Get discovered → Build trust → Grow. Honest sellers with physical shops get verified and prioritized.</p></div>
+        <div class="stat-card"><h3>Verification</h3><p>We physically visit shops, check prices, and re-verify regularly. Green check = someone went there.</p></div>
+        <div class="stat-card"><h3>Protection</h3><p>Risk scoring, scam detection, and community reports keep shoppers safe from fraud.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Market Research</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-number">82%</div><div class="stat-label">of Kampala shoppers would use a price comparison tool</div></div>
+        <div class="stat-card"><div class="stat-number">35%</div><div class="stat-label">average expected savings per purchase</div></div>
+        <div class="stat-card"><div class="stat-number">65%</div><div class="stat-label">use social media to discover deals</div></div>
+        <div class="stat-card"><div class="stat-number">50+</div><div class="stat-label">verified deals across Kampala arcades</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:var(--card);">
+    <div class="container">
+      <h2 class="section-title">Our Vision</h2>
+      <p>To become Uganda's trusted price intelligence platform — where every shopper knows their price and saves their money, and every honest seller gets discovered regardless of whether they have a shop in Kikuubo or just a phone camera and good lighting.</p>
+      <p class="mt-16"><a href="contact.html" class="btn btn-primary">Contact Us</a> <a href="for-sellers.html" class="btn btn-outline">List Your Business</a></p>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('about');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+    window.addEventListener('load', () => WPUI.pageWeight());
+  </script>
+</body>
+</html>
