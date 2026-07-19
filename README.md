@@ -4,54 +4,39 @@ Know Your Price, Save Your Money. Kampala's price intelligence and discovery pla
 
 **Live site:** https://lynn-sketch.github.io/wikiprice/
 
+## What's new (master refinement)
+
+- Navy / white / yellow-orange palette (60-30-10)
+- TikTok-style **Discover** feed (infinite scroll, Save / Comment / Share, deep links)
+- Flexible JSON data layer (`/data/*.json` + `js/data-layer.js`) ready for future consented API sync
+- UX fixes: illustrative stats, no fake testimonials, verification explainer, empty search state
+- Internal **Outreach Assistant** at `/admin.html` (password: `wikiprice2026`)
+- Source badges, hybrid seller schema, arcade/candidate/reference-price JSON
+
 ## Quick Start
 
-No build step required. Open `index.html` in a browser, or serve locally:
+No build step. Open `index.html` or serve locally:
 
 ```bash
 npx serve .
 ```
 
-## Auto-deploy from GitHub
+## Auto-deploy
 
-Every push to `main` automatically updates the live site via GitHub Pages.
+Every push to `main` updates GitHub Pages. See [Actions](https://github.com/lynn-sketch/wikiprice/actions).
 
-1. Edit files locally (deals in `js/data.js`, styles in `css/styles.css`, etc.)
-2. Commit and push:
-   ```bash
-   git add .
-   git commit -m "Update deals"
-   git push
-   ```
-3. GitHub Actions deploys in ~1 minute — check the [Actions tab](https://github.com/lynn-sketch/wikiprice/actions)
+## Data files (source of truth for outreach)
 
-## Deploy to Vercel (optional)
+| File | Purpose |
+|------|---------|
+| `data/sellers.json` | Hybrid seller schema |
+| `data/arcades.json` | Arcade directory |
+| `data/candidates.json` | Confirmed / unknown / unconfirmed seeds |
+| `data/reference-prices.json` | Baselines (not live deals) |
+| `data/outreach.json` | Hashtags, search terms, templates, tracker seed |
 
-```bash
-vercel
-```
+## Trust rules at launch
 
-Or connect the GitHub repo to Vercel — static site, no build command needed.
-
-## Features
-
-- 54 verified sample deals across Kampala arcades
-- Working search with full filters
-- Budget finder with wholesale warnings
-- Deal pages with price history, risk scoring, WhatsApp contact
-- Seller profiles with TikTok four-source extraction
-- Scam detection and safe shopping guidelines
-- Data saver mode and offline service worker
-- English / Luganda toggle
-
-## Structure
-
-- `index.html` — Home
-- `search.html` — Search with filters
-- `budget-finder.html` — Budget finder
-- `deal.html?id=` — Individual deal
-- `seller.html?id=` — Seller profile
-- `for-sellers.html`, `about.html`, `contact.html`, `safe-shopping.html`
-- `js/data.js` — All deals and sellers
-- `js/core.js` — Search, risk scoring, i18n
-- `js/components.js` — UI components
+- Manual, consent-based outreach + in-person verification only
+- No scraping / paid APIs
+- Manual verification remains gold standard for Verified badge

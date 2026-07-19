@@ -345,3 +345,9 @@ WPDATA.stats = {
   totalSavings: 125000000,
   users: 8420
 };
+
+WPDATA.meta = {
+  statsIllustrative: true,
+  verificationGoldStandard: 'manual_in_person',
+  apiReady: true
+};

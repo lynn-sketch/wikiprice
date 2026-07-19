@@ -13,6 +13,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+  <script src="js/data-layer.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -38,22 +39,34 @@
       document.title = seller.name + ' — WikiPrice Uganda';
 
       let tiktokHtml = '';
-      if (seller.tiktokHandle) {
-        tiktokHtml = '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@' + seller.tiktokHandle + '" target="_blank" rel="noopener">@' + seller.tiktokHandle + '</a> · ' + WikiPrice.formatFollowers(seller.tiktokFollowers) + ' followers on TikTok</span></p>';
+      const handle = seller.tiktokHandle || (seller.handle && String(seller.handle).replace(/^@/, ''));
+      if (handle) {
+        const url = WPDataLayer.tiktokProfileUrl(handle);
+        tiktokHtml = '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="' + url + '" target="_blank" rel="noopener">@' + handle + '</a> · ' + WikiPrice.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers on TikTok</span></p>';
       }
 
-      let bioExtracts = seller.bioExtracts.map(b =>
+      const lastVerified = seller.lastVerified || (deals[0] && deals[0].lastVerified);
+      const lastVerifiedHtml = lastVerified
+        ? '<p class="deal-verified-time" style="font-size:0.95rem;margin-top:8px;">' + WikiPrice.daysAgo(lastVerified) + '</p>'
+        : '';
+
+      let bioExtracts = (seller.bioExtracts || []).map(b =>
         '<div class="tiktok-extract"><span class="source-label">' + b.source + '</span><br>' + b.text + '</div>'
       ).join('');
 
-      let locations = seller.locations.map(l =>
+      let locations = (seller.locations || []).map(l =>
         '<div class="tiktok-extract"><span class="source-label">' + l.source + '</span><br>' + l.text + '</div>'
       ).join('');
+      if (seller.location && (seller.location.arcade || seller.location.stall)) {
+        locations = '<div class="tiktok-extract"><span class="source-label">Verified location</span><br>' +
+          [seller.location.arcade, seller.location.address, seller.location.floor, seller.location.stall, seller.location.landmark].filter(Boolean).join(' · ') +
+          '</div>' + locations;
+      }
 
       const html = '<div class="seller-header"><div class="container flex-between">' +
-        '<div><h1 style="margin:0;">' + seller.name + '</h1>' + tiktokHtml +
+        '<div><h1 style="margin:0;">' + (seller.businessName || seller.name) + '</h1>' + tiktokHtml + lastVerifiedHtml +
         '<span class="badge ' + risk.badgeClass + '">' + risk.label + '</span> ' +
-        (seller.bioVerified ? '<span class="badge badge-bio-verified">' + WPIcon('verify', 14) + ' Bio Verified</span>' : '') +
+        (seller.bioVerified || seller.verificationStatus === 'verified' ? '<span class="badge badge-bio-verified">' + WPIcon('verify', 14) + ' Bio Verified</span>' : '') +
         (trust.score >= 80 ? '<span class="badge badge-verified">' + WPIcon('trophy', 14) + ' Trusted Seller</span>' : '') +
         '</div><div class="trust-score-ring">' + trust.score + '%</div></div></div>' +
 

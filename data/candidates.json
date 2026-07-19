@@ -1,0 +1,151 @@
+{
+  "confirmed": [
+    {
+      "businessName": "Salongo House of Shoes",
+      "handle": "@salongohouseofshoes_1",
+      "arcade": "Mukwano Arcade",
+      "followers": 73000,
+      "category": "Fashion",
+      "products": ["Shoes", "Sneakers", "Office shoes"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Mummy Gadgets",
+      "handle": "@mummyarleena",
+      "arcade": "New Pioneer Mall",
+      "followers": 50000,
+      "category": "Electronics",
+      "products": ["Gadgets", "Kids tablets", "Smartwatches"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Big Omuyilibi",
+      "handle": "@bigomuyilibi",
+      "arcade": "Kampala (errands)",
+      "followers": 61000,
+      "category": "Services",
+      "products": ["Errands", "Personal shopping"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Nsambya Furniture Workshop",
+      "handle": "@nsambyafurnitureworkshop",
+      "arcade": "Nsambya",
+      "followers": 20000,
+      "category": "Home and Furniture",
+      "products": ["Beds", "Sofas", "Dining sets"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Mirembe Beddings",
+      "handle": "@mirembebeddings",
+      "arcade": "Kampala",
+      "followers": 15000,
+      "category": "Home and Furniture",
+      "products": ["Bedding", "Pillowcases"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Daniel Perfumes",
+      "handle": "@danielperfumes",
+      "arcade": "Ntinda",
+      "followers": 22000,
+      "category": "Beauty and Fragrance",
+      "products": ["Perfumes"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Noddiz Accessories",
+      "handle": "@noddiz",
+      "arcade": "Online / Jumia",
+      "followers": 10000,
+      "category": "Electronics",
+      "products": ["Selfie sticks", "Accessories"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Mtunda Store",
+      "handle": null,
+      "arcade": "Kampala Plaza",
+      "followers": 0,
+      "category": "Fashion",
+      "products": ["General retail"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Fashion Hub UG",
+      "handle": null,
+      "arcade": "Mukwano Arcade",
+      "followers": 0,
+      "category": "Fashion",
+      "products": ["Clothing"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "TechDeals Uganda",
+      "handle": null,
+      "arcade": "Kikuubo",
+      "followers": 0,
+      "category": "Electronics",
+      "products": ["Phones", "Accessories"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Smartwatch UG",
+      "handle": null,
+      "arcade": "Majestic Plaza",
+      "followers": 0,
+      "category": "Electronics",
+      "products": ["Smartwatches"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Phone World UG",
+      "handle": null,
+      "arcade": "Majestic Plaza",
+      "followers": 0,
+      "category": "Electronics",
+      "products": ["Phone repair", "Phones"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Beauty World UG",
+      "handle": null,
+      "arcade": "Galiraya Arcade",
+      "followers": 0,
+      "category": "Beauty and Fragrance",
+      "products": ["Cosmetics"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Shoe Empire",
+      "handle": null,
+      "arcade": "Mukwano Arcade",
+      "followers": 0,
+      "category": "Fashion",
+      "products": ["Shoes"],
+      "status": "confirmed"
+    },
+    {
+      "businessName": "Didas The Suit Guy",
+      "handle": null,
+      "arcade": "Magoba",
+      "followers": 0,
+      "category": "Fashion",
+      "products": ["Suits"],
+      "status": "confirmed"
+    }
+  ],
+  "handleUnknown": [
+    { "businessName": "Kamanyi Derrick", "area": "Kyanja", "category": "Electronics", "notes": "Phones" },
+    { "businessName": "Hilda Car Accessories", "area": "Eden Mall", "category": "Automotive", "notes": "Car accessories" },
+    { "businessName": "Edmond Electronics", "area": "Kampala", "category": "Electronics", "notes": "Handle TBD" },
+    { "businessName": "Reign Shoe", "area": "Nana Center", "category": "Fashion", "notes": "Shoes" },
+    { "businessName": "Home Essentials UG", "area": "Kampala", "category": "Home and Furniture", "notes": "Home goods" },
+    { "businessName": "Bags and More", "area": "Kampala", "category": "Fashion", "notes": "Handbags" }
+  ],
+  "unconfirmed": [
+    { "handle": "@kikubofashionhub", "note": "Do not use until physically verified" },
+    { "handle": "@kampalastylehub", "note": "Do not use until physically verified" }
+  ]
+}

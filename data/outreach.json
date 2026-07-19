@@ -1,0 +1,102 @@
+{
+  "hashtags": [
+    "#KampalaDeals",
+    "#UgandaShopping",
+    "#KikuuboDeals",
+    "#MukwanoArcade",
+    "#OwinoMarket",
+    "#WikiPriceUG",
+    "#KampalaFashion",
+    "#GazalandArcade"
+  ],
+  "searchTerms": {
+    "Fashion": [
+      "Mukwano Arcade shoes",
+      "Kikuubo fashion",
+      "Owino market fashion",
+      "Kampala tailor",
+      "Gazaland dresses"
+    ],
+    "Electronics": [
+      "Kikuubo electronics",
+      "Majestic Plaza phones",
+      "New Pioneer gadgets",
+      "Kampala smartwatch"
+    ],
+    "Home and Furniture": [
+      "Nsambya furniture",
+      "Kampala beds",
+      "Kampala sofas"
+    ],
+    "Beauty": [
+      "Galiraya cosmetics",
+      "Kampala perfume",
+      "Ntinda fragrance"
+    ],
+    "Services": [
+      "Kampala salon",
+      "Kampala barber",
+      "phone repair Kampala",
+      "errands Kampala"
+    ],
+    "Automotive": [
+      "Eden Mall car accessories",
+      "Kampala mechanic"
+    ],
+    "Thrift": [
+      "Owino mitumba",
+      "Owino thrift jackets"
+    ]
+  },
+  "templates": [
+    {
+      "id": "invite-intake",
+      "name": "Invite to intake form",
+      "body": "Hi! I'm from WikiPrice Uganda — we help Kampala shoppers find verified prices from real shops. We'd love to list your business (free basic listing). Reply or fill this short form: https://lynn-sketch.github.io/wikiprice/for-sellers.html — thanks!"
+    },
+    {
+      "id": "in-person-followup",
+      "name": "In-person visit follow-up",
+      "body": "Hi {name}, great meeting you at {arcade} today. WikiPrice is adding verified sellers with clear stall locations. We'll publish your listing once we confirm your prices. WhatsApp us anytime if prices change."
+    },
+    {
+      "id": "comment-soft",
+      "name": "Public comment (soft invite)",
+      "body": "Love these prices! WikiPrice UG is building a verified deals directory for Kampala — DM if you'd like a free listing with your shop location so buyers can find you easily."
+    }
+  ],
+  "trackerSeed": [
+    {
+      "id": "tr-1",
+      "businessName": "Salongo House of Shoes",
+      "handle": "@salongohouseofshoes_1",
+      "stage": "live",
+      "contactedAt": "2026-06-15",
+      "notes": "In-person at Mukwano Stall 22"
+    },
+    {
+      "id": "tr-2",
+      "businessName": "Mummy Gadgets",
+      "handle": "@mummyarleena",
+      "stage": "live",
+      "contactedAt": "2026-06-18",
+      "notes": "New Pioneer Shop 12"
+    },
+    {
+      "id": "tr-3",
+      "businessName": "Hilda Car Accessories",
+      "handle": "",
+      "stage": "contacted",
+      "contactedAt": "2026-07-02",
+      "notes": "Handle unknown — Eden Mall visit scheduled"
+    },
+    {
+      "id": "tr-4",
+      "businessName": "Fashion Hub UG",
+      "handle": "",
+      "stage": "responded",
+      "contactedAt": "2026-07-05",
+      "notes": "Awaiting in-person verification"
+    }
+  ]
+}

@@ -24,10 +24,46 @@ const WPUI = {
   },
 
   verificationBadge(deal) {
-    if (deal.verificationStatus === 'verified') {
+    const status = deal.verificationStatus || 'check-required';
+    if (status === 'verified') {
       return '<span class="badge badge-verified">' + WPIcon('check', 14) + ' ' + WikiPrice.t('verified') + '</span>';
     }
+    if (status === 'scam-warning') {
+      return '<span class="badge badge-danger">' + WPIcon('alert', 14) + ' Scam Warning</span>';
+    }
+    if (status === 'unverified') {
+      return '<span class="badge badge-caution">' + WPIcon('warning', 14) + ' Unverified</span>';
+    }
     return '<span class="badge badge-caution">' + WPIcon('warning', 14) + ' Check Required</span>';
+  },
+
+  sourceBadge(deal) {
+    const source = (deal && deal.source) || 'in-person';
+    const label = (typeof WPDataLayer !== 'undefined') ? WPDataLayer.sourceBadgeLabel(source) : source;
+    return '<span class="badge badge-source badge-source-' + source + '">' + label + '</span>';
+  },
+
+  tiktokDeepLink(handle, label) {
+    const url = (typeof WPDataLayer !== 'undefined')
+      ? WPDataLayer.tiktokProfileUrl(handle)
+      : (handle ? 'https://www.tiktok.com/@' + String(handle).replace(/^@/, '') : null);
+    if (!url) return '';
+    const text = label || ('@' + String(handle).replace(/^@/, ''));
+    return '<a href="' + url + '" target="_blank" rel="noopener" class="feed-handle">' + WPIcon('tiktok', 16) + ' ' + text + '</a>';
+  },
+
+  contactButton(deal, seller, sm) {
+    // Free tier: WhatsApp available when seller opted in with a number
+    const phone = seller?.whatsapp || seller?.phone;
+    if (phone) {
+      return '<a href="' + WikiPrice.whatsappLink(phone, deal) + '" class="btn btn-whatsapp ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('whatsapp', 16) + ' WhatsApp</a>';
+    }
+    if (seller?.tiktokHandle || seller?.handle) {
+      const h = seller.tiktokHandle || seller.handle;
+      const url = (typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(h) : ('https://www.tiktok.com/@' + String(h).replace(/^@/, ''));
+      return '<a href="' + url + '" class="btn btn-outline ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('tiktok', 16) + ' TikTok</a>';
+    }
+    return '';
   },
 
   stockBadge(deal) {
@@ -77,25 +113,16 @@ const WPUI = {
     return '<div class="warning-box warning-wholesale icon-row">' + WPIcon('box', 18) + '<span>' + WikiPrice.t('wholesaleWarning', { qty: deal.minQuantity, total: total.toLocaleString('en-UG') }) + '</span></div>';
   },
 
-  contactButton(deal, seller, sm) {
-    const phone = seller?.whatsapp || seller?.phone;
-    if (phone) {
-      return '<a href="' + WikiPrice.whatsappLink(phone, deal) + '" class="btn btn-whatsapp ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('whatsapp', 16) + ' WhatsApp</a>';
-    }
-    if (seller?.tiktokHandle) {
-      return '<a href="https://tiktok.com/@' + seller.tiktokHandle + '" class="btn btn-outline ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('tiktok', 16) + ' TikTok</a>';
-    }
-    return '';
-  },
-
   dealCard(deal, opts) {
     opts = opts || {};
     const seller = WPDATA.sellers[deal.sellerId];
     const trust = WikiPrice.calculateTrustScore(seller || {});
-    const followerLine = seller?.tiktokHandle
-      ? ' · <a href="https://tiktok.com/@' + seller.tiktokHandle + '" target="_blank" rel="noopener">@' + seller.tiktokHandle + '</a>' +
-        (seller.tiktokFollowers ? ' · ' + WikiPrice.formatFollowers(seller.tiktokFollowers) + ' followers' : '')
+    const handle = seller?.tiktokHandle || (seller?.handle && String(seller.handle).replace(/^@/, ''));
+    const followerLine = handle
+      ? ' · ' + WPUI.tiktokDeepLink(handle) +
+        ((seller.followerCount || seller.tiktokFollowers) ? ' · ' + WikiPrice.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers' : '')
       : '';
+    const lastVerified = deal.lastVerified || seller?.lastVerified;
 
     return '<article class="deal-card">' +
       '<a href="deal.html?id=' + deal.id + '" class="deal-card-img" data-name="' + deal.name.replace(/"/g, '') + '">' + dealImageTag(deal, 'deal-card-photo') + '</a>' +
@@ -106,17 +133,75 @@ const WPUI = {
       '<div class="deal-meta">' +
       WPUI.priceTypeBadge(deal) +
       WPUI.verificationBadge(deal) +
+      WPUI.sourceBadge(deal) +
       (deal.mentionedOnTiktok ? '<span class="badge badge-tiktok">' + WPIcon('tiktok', 14) + ' TikTok</span>' : '') +
       (deal.crowdConfirmations >= 5 ? '<span class="badge badge-community">' + WPIcon('users', 14) + ' Community</span>' : '') +
       '</div>' +
-      '<div class="deal-verified-time">' + WikiPrice.daysAgo(deal.lastVerified) + '</div>' +
-      '<div class="deal-seller icon-row">' + WPIcon('shop', 14) + '<span><a href="seller.html?id=' + deal.sellerId + '">' + (seller?.name || 'Unknown') + '</a>' + followerLine + ' · ' + WPIcon('star', 14) + ' ' + trust.score + '%</span></div>' +
+      (lastVerified ? '<div class="deal-verified-time">' + WikiPrice.daysAgo(lastVerified) + '</div>' : '') +
+      '<div class="deal-seller icon-row">' + WPIcon('shop', 14) + '<span><a href="seller.html?id=' + deal.sellerId + '">' + (seller?.businessName || seller?.name || 'Unknown') + '</a>' + followerLine + ' · ' + WPIcon('star', 14) + ' ' + trust.score + '%</span></div>' +
       '<div class="deal-card-actions">' +
       '<a href="deal.html?id=' + deal.id + '" class="btn btn-primary btn-sm">' + WikiPrice.t('viewDeal') + '</a>' +
       WPUI.contactButton(deal, seller, true) +
       '</div>' +
       (opts.showWholesaleWarning ? WPUI.wholesaleWarning(deal) : '') +
       '</div></article>';
+  },
+
+  feedCard(deal) {
+    const seller = WPDATA.sellers[deal.sellerId] || {};
+    const handle = seller.tiktokHandle || (seller.handle && String(seller.handle).replace(/^@/, ''));
+    const profileUrl = handle ? ((typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(handle) : 'https://www.tiktok.com/@' + handle) : 'deal.html?id=' + deal.id;
+    const img = (typeof getDealImage === 'function') ? getDealImage(deal) : (deal.image || '');
+    const price = deal.priceType === 'wholesale' ? deal.wholesalePrice : (deal.retailPrice || deal.wholesalePrice);
+    const saved = (JSON.parse(localStorage.getItem('wikiprice-saved') || '[]')).indexOf(deal.id) >= 0;
+    const videoLink = (deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined')
+      ? WPDataLayer.tiktokVideoUrl(handle, deal.tiktokVideoId)
+      : profileUrl;
+
+    return '<article class="feed-card" data-deal-id="' + deal.id + '">' +
+      '<div class="feed-video" style="' + (img ? 'background-image:url(' + img + ')' : '') + '">' +
+      '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' + WPIcon('play', 28) + '</a>' +
+      '<div class="feed-side-actions">' +
+      '<button type="button" class="feed-action' + (saved ? ' saved' : '') + '" data-save-deal="' + deal.id + '" aria-label="Save">' +
+      '<span class="feed-action-icon">' + WPIcon('heart', 22) + '</span><span>Save</span></button>' +
+      '<a class="feed-action" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Comment on TikTok">' +
+      '<span class="feed-action-icon">' + WPIcon('comment', 22) + '</span><span>Comment</span></a>' +
+      '<button type="button" class="feed-action" data-share-deal="' + deal.id + '" aria-label="Share">' +
+      '<span class="feed-action-icon">' + WPIcon('share', 22) + '</span><span>Share</span></button>' +
+      (handle ? '<a class="feed-action" href="' + profileUrl + '" target="_blank" rel="noopener" aria-label="TikTok profile">' +
+      '<span class="feed-action-icon">' + WPIcon('tiktok', 22) + '</span><span>TikTok</span></a>' : '') +
+      '</div></div>' +
+      '<div class="feed-body">' +
+      (handle ? WPUI.tiktokDeepLink(handle) : '<strong>' + (seller.businessName || seller.name || '') + '</strong>') +
+      '<div class="feed-price">' + WikiPrice.formatUGX(price) + '</div>' +
+      '<div class="feed-meta"><a href="deal.html?id=' + deal.id + '" style="color:inherit;">' + deal.name + '</a> · ' +
+      (deal.location.arcade || '') + (deal.location.stall ? ', ' + deal.location.stall : '') + '</div>' +
+      '<div class="feed-badges">' + WPUI.verificationBadge(deal) + WPUI.sourceBadge(deal) + '</div>' +
+      (deal.lastVerified || seller.lastVerified ? '<div class="deal-verified-time" style="color:rgba(255,255,255,0.7);">' + WikiPrice.daysAgo(deal.lastVerified || seller.lastVerified) + '</div>' : '') +
+      '</div></article>';
+  },
+
+  emptyVerifiedExplainer() {
+    return '<div class="empty-state-box">' +
+      '<h3>How WikiPrice Verifies Deals</h3>' +
+      '<p class="text-muted">We only list sellers after consent-based outreach and in-person physical verification — no scraping.</p>' +
+      '<ol class="verify-steps">' +
+      '<li><strong>Physical location</strong> — arcade/building with floor or stall number</li>' +
+      '<li><strong>Video content</strong> — real products and shop, consistent posting</li>' +
+      '<li><strong>Price transparency</strong> — clear, realistic prices</li>' +
+      '<li><strong>Responsiveness</strong> — replies and contact info available</li>' +
+      '</ol>' +
+      '<p><a href="for-sellers.html" class="btn btn-accent">Nominate a seller</a> ' +
+      '<a href="search.html" class="btn btn-outline">Browse sample deals</a></p>' +
+      '</div>';
+  },
+
+  emptySearchState() {
+    return '<div class="empty-state-box">' +
+      '<h3>WikiPrice is growing — check back soon</h3>' +
+      '<p class="text-muted">No deals match those filters right now. Know a trustworthy Kampala seller? Send them our way.</p>' +
+      '<p><a href="for-sellers.html" class="btn btn-accent">Nominate a seller</a></p>' +
+      '</div>';
   },
 
   warningsHtml(warnings) {
@@ -143,7 +228,8 @@ const WPUI = {
       '</div></div>' +
       '<nav id="site-nav" class="site-nav">' +
       '<a href="index.html"' + (active === 'home' ? ' style="background:var(--bg)"' : '') + '>Home</a>' +
-      '<a href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>Search Deals</a>' +
+      '<a href="index.html#discover"' + (active === 'discover' ? ' style="background:var(--bg)"' : '') + '>Discover</a>' +
+      '<a href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>Find Deals</a>' +
       '<a href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>Budget Finder</a>' +
       '<a href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>For Sellers</a>' +
       '<a href="about.html"' + (active === 'about' ? ' style="background:var(--bg)"' : '') + '>About</a>' +

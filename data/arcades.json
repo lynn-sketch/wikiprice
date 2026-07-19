@@ -1,0 +1,93 @@
+[
+  {
+    "id": "mukwano",
+    "name": "Mukwano Arcade",
+    "address": "Ben Kiwanuka Street, opposite Gazaland",
+    "knownFor": ["Fashion", "Shoes", "Wholesale clothing"],
+    "sellersVerified": ["Salongo House of Shoes", "Fashion Hub UG"]
+  },
+  {
+    "id": "new-pioneer",
+    "name": "New Pioneer Mall",
+    "address": "Kampala Road, between Burton and Wilson Road",
+    "knownFor": ["Gadgets", "Art", "Kids electronics"],
+    "sellersVerified": ["Mummy Gadgets"]
+  },
+  {
+    "id": "gazaland",
+    "name": "Gazaland Arcade",
+    "address": "Ben Kiwanuka Street",
+    "knownFor": ["Ladies fashion", "Dresses", "Handbags"],
+    "sellersVerified": []
+  },
+  {
+    "id": "galiraya",
+    "name": "Galiraya Arcade",
+    "address": "Near downtown Kampala",
+    "knownFor": ["Cosmetics", "Beauty"],
+    "sellersVerified": ["Beauty World UG"]
+  },
+  {
+    "id": "majestic",
+    "name": "Majestic Plaza",
+    "address": "William Street",
+    "knownFor": ["Phone repairs", "Smartwatches", "Accessories"],
+    "sellersVerified": ["Smartwatch UG", "Phone World UG"]
+  },
+  {
+    "id": "owino",
+    "name": "Owino Market",
+    "address": "Nakivubo / Owino",
+    "knownFor": ["Thrift", "Mitumba", "Budget fashion"],
+    "sellersVerified": []
+  },
+  {
+    "id": "energy-centre",
+    "name": "Energy Centre",
+    "address": "Kampala",
+    "knownFor": ["Electronics", "Solar"],
+    "sellersVerified": []
+  },
+  {
+    "id": "nalubwana",
+    "name": "Nalubwana Arcade",
+    "address": "Kampala",
+    "knownFor": ["Fashion", "Accessories"],
+    "sellersVerified": []
+  },
+  {
+    "id": "magoba",
+    "name": "Magoba Shopping Centre",
+    "address": "Nakivubo Mews, opposite Old Taxi Park",
+    "knownFor": ["Suits", "Traditional wear"],
+    "sellersVerified": []
+  },
+  {
+    "id": "nana",
+    "name": "Nana Center",
+    "address": "Kampala",
+    "knownFor": ["Shoes"],
+    "sellersVerified": ["Reign Shoe"]
+  },
+  {
+    "id": "eden",
+    "name": "Eden Mall",
+    "address": "Kampala",
+    "knownFor": ["Car accessories"],
+    "sellersVerified": ["Hilda Car Accessories"]
+  },
+  {
+    "id": "kampala-plaza",
+    "name": "Kampala Plaza",
+    "address": "Kampala",
+    "knownFor": ["General retail"],
+    "sellersVerified": ["Mtunda Store"]
+  },
+  {
+    "id": "nsambya",
+    "name": "Nsambya",
+    "address": "Near Nsambya Shopping Centre / Hospital",
+    "knownFor": ["Furniture", "Custom woodwork"],
+    "sellersVerified": ["Nsambya Furniture Workshop"]
+  }
+]

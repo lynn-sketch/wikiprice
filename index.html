@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" href="images/logo.png" type="image/png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1D4B3A">
+  <meta name="theme-color" content="#0A2B5C">
 </head>
 <body>
   <div id="header"></div>
@@ -35,10 +35,20 @@
     </div>
   </section>
 
+  <section class="discovery-section" id="discover">
+    <div class="discovery-header">
+      <h2>Discover Deals</h2>
+      <p>Scroll like TikTok — tap a handle to open the seller’s profile. Prefer filters? Use Find Deals.</p>
+    </div>
+    <div class="discovery-feed" id="discovery-feed"></div>
+  </section>
+
   <section class="section">
     <div class="container">
       <h2 class="section-title">Recent Verified Deals</h2>
-      <div class="deals-grid" id="recent-deals"></div>
+      <div id="recent-deals-wrap">
+        <div class="deals-grid" id="recent-deals"></div>
+      </div>
       <p class="text-center mt-16"><a href="search.html" class="btn btn-outline">View All Deals</a></p>
     </div>
   </section>
@@ -54,17 +64,24 @@
 
   <section class="section">
     <div class="container">
-      <h2 class="section-title">Latest from TikTok</h2>
-      <p class="text-muted mb-16">Real deal discoveries from @WikiPriceUG and verified Kampala sellers. Tag <strong>#WikiPriceUG</strong> to submit deals.</p>
-      <div class="tiktok-embed-grid" id="tiktok-feed"></div>
-      <p class="text-center mt-16"><a href="https://tiktok.com/@WikiPriceUG" class="btn btn-outline" target="_blank" rel="noopener">Follow @WikiPriceUG on TikTok</a></p>
+      <h2 class="section-title">How WikiPrice Verifies Deals</h2>
+      <div class="empty-state-box" style="border-style:solid;">
+        <ol class="verify-steps">
+          <li><strong>Physical location</strong> — arcade/building with floor or stall number</li>
+          <li><strong>Video content</strong> — real products and shop (consistent posting)</li>
+          <li><strong>Price transparency</strong> — clear, realistic prices</li>
+          <li><strong>Responsiveness</strong> — replies and contact available</li>
+        </ol>
+        <p class="text-muted">Manual, consent-based outreach only at launch. No scraping.</p>
+        <p><a href="for-sellers.html" class="btn btn-primary">Nominate a seller</a></p>
+      </div>
     </div>
   </section>
 
-  <section class="section" style="background:linear-gradient(135deg,#eef5eb,var(--card));">
+  <section class="section" style="background:linear-gradient(135deg,#e8eef6,var(--card));">
     <div class="container text-center">
       <h2 class="section-title">List Your Business on WikiPrice</h2>
-      <p class="text-muted mb-16">Get discovered by price-conscious buyers. Build trust with verification. Free basic listing.</p>
+      <p class="text-muted mb-16">Get discovered by price-conscious buyers. Build trust with verification. Free basic listing — WhatsApp contact included.</p>
       <a href="for-sellers.html" class="btn btn-primary">For Sellers</a>
     </div>
   </section>
@@ -73,6 +90,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+  <script src="js/data-layer.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -83,6 +101,7 @@
     document.getElementById('footer').innerHTML = WPUI.footer();
     WikiPrice.initGlobal();
     WPUIEnhance.initAllSearchBars();
+    WPDataLayer.loadExtras();
 
     document.getElementById('hero-section').style.backgroundImage = 'url(' + WPIMAGES.hero + ')';
 
@@ -91,16 +110,20 @@
     }
 
     WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
+    WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'));
 
-    const recent = WikiPrice.sortDeals(WPDATA.deals, 'newest').slice(0, 8);
-    document.getElementById('recent-deals').innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
+    const recent = WikiPrice.sortDeals(WPDATA.deals.filter(d => d.verificationStatus === 'verified'), 'newest').slice(0, 8);
+    const recentEl = document.getElementById('recent-deals');
+    if (!recent.length) {
+      document.getElementById('recent-deals-wrap').innerHTML = WPUI.emptyVerifiedExplainer();
+    } else {
+      recentEl.innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
+    }
 
     const presets = [5000, 10000, 20000, 30000, 50000, 80000, 150000];
     document.getElementById('home-budget-presets').innerHTML = presets.map(p =>
       '<a href="budget-finder.html?amount=' + p + '" class="budget-preset">UGX ' + p.toLocaleString() + '</a>'
     ).join('');
-
-    WPUIEnhance.renderTikTokFeed(document.getElementById('tiktok-feed'));
 
     window.addEventListener('load', () => WPUI.pageWeight());
   </script>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outreach Assistant — WikiPrice Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0A2B5C">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="section">
+    <div class="container admin-gate" id="admin-gate">
+      <h1 class="section-title">Outreach Assistant</h1>
+      <p class="text-muted">Internal tools for consent-based seller outreach. Password-gated (local only).</p>
+      <div class="detail-card" style="max-width:400px;">
+        <div class="form-group">
+          <label for="admin-pass">Password</label>
+          <input type="password" id="admin-pass" placeholder="Enter admin password">
+        </div>
+        <button type="button" class="btn btn-primary" id="admin-login">Unlock</button>
+        <p class="text-muted" style="font-size:0.8rem;margin-top:12px;">Default for demo: <code>wikiprice2026</code></p>
+      </div>
+    </div>
+
+    <div class="container admin-panel hidden" id="admin-panel">
+      <h1 class="section-title">Outreach Assistant</h1>
+      <div class="admin-tabs">
+        <button type="button" class="active" data-tab="intake">Intake form</button>
+        <button type="button" data-tab="tracker">Tracker</button>
+        <button type="button" data-tab="research">Research</button>
+        <button type="button" data-tab="templates">Templates</button>
+        <button type="button" data-tab="export">Export</button>
+      </div>
+
+      <div id="tab-intake" class="admin-tab-panel">
+        <div class="detail-card">
+          <h2>Seller intake</h2>
+          <p class="text-muted">Saves to local tracker. Replace Formspree endpoint in the form action when ready.</p>
+          <form id="intake-form">
+            <div class="form-group">
+              <label for="in-name">Business name *</label>
+              <input id="in-name" name="businessName" required>
+            </div>
+            <div class="form-group">
+              <label for="in-phone">Phone / WhatsApp *</label>
+              <input id="in-phone" name="phone" required placeholder="070...">
+            </div>
+            <div class="form-group">
+              <label for="in-loc">Shop location (arcade, floor, stall) *</label>
+              <input id="in-loc" name="location" required placeholder="Mukwano Arcade, Ground Floor, Stall 22">
+            </div>
+            <div class="form-group">
+              <label for="in-handle">TikTok handle</label>
+              <input id="in-handle" name="tiktokHandle" placeholder="@handle">
+            </div>
+            <div class="form-group">
+              <label for="in-cat">Product categories</label>
+              <input id="in-cat" name="categories" placeholder="Fashion, Shoes">
+            </div>
+            <div class="form-group">
+              <label for="in-notes">Notes</label>
+              <textarea id="in-notes" name="notes" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-accent">Submit intake</button>
+          </form>
+        </div>
+      </div>
+
+      <div id="tab-tracker" class="admin-tab-panel hidden">
+        <div class="detail-card">
+          <h2>Outreach tracker</h2>
+          <p class="text-muted">Stages: contacted → responded → in-person verified → live</p>
+          <div style="overflow-x:auto;">
+            <table class="admin-table" id="tracker-table">
+              <thead>
+                <tr><th>Business</th><th>Handle</th><th>Stage</th><th>Contacted</th><th>Notes</th><th></th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm mt-16" id="add-tracker-row">Add row</button>
+        </div>
+      </div>
+
+      <div id="tab-research" class="admin-tab-panel hidden">
+        <div class="detail-card">
+          <h2>Hashtags</h2>
+          <div class="chip-list" id="hashtag-chips"></div>
+        </div>
+        <div class="detail-card">
+          <h2>Category search terms</h2>
+          <div id="search-terms"></div>
+        </div>
+        <div class="detail-card">
+          <h2>Seed candidates</h2>
+          <div id="candidates-panel"></div>
+        </div>
+        <div class="detail-card">
+          <h2>Arcade directory</h2>
+          <div id="arcades-panel"></div>
+        </div>
+      </div>
+
+      <div id="tab-templates" class="admin-tab-panel hidden">
+        <div class="detail-card">
+          <h2>Message templates</h2>
+          <div id="templates-list"></div>
+        </div>
+      </div>
+
+      <div id="tab-export" class="admin-tab-panel hidden">
+        <div class="detail-card">
+          <h2>Export</h2>
+          <p class="text-muted">JSON is the source of truth. Manual verification remains required for Verified badges.</p>
+          <button type="button" class="btn btn-primary" id="export-json">Download sellers JSON</button>
+          <button type="button" class="btn btn-outline" id="export-handles">Copy verified handles</button>
+          <pre id="export-preview" class="template-card" style="max-height:240px;overflow:auto;margin-top:16px;"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/data-layer.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+
+    const PASS = 'wikiprice2026';
+    const gate = document.getElementById('admin-gate');
+    const panel = document.getElementById('admin-panel');
+
+    function unlock() {
+      gate.classList.add('hidden');
+      panel.classList.remove('hidden');
+      sessionStorage.setItem('wp-admin', '1');
+      bootAdmin();
+    }
+    if (sessionStorage.getItem('wp-admin') === '1') unlock();
+    document.getElementById('admin-login').onclick = function () {
+      if (document.getElementById('admin-pass').value === PASS) unlock();
+      else WPUI.showToast('Wrong password');
+    };
+
+    document.querySelectorAll('.admin-tabs button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.admin-tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      });
+    });
+
+    function getTracker() {
+      const local = localStorage.getItem('wp-outreach-tracker');
+      if (local) return JSON.parse(local);
+      return (WPDATA.outreach && WPDATA.outreach.trackerSeed) ? WPDATA.outreach.trackerSeed.slice() : [];
+    }
+    function saveTracker(rows) {
+      localStorage.setItem('wp-outreach-tracker', JSON.stringify(rows));
+    }
+
+    function renderTracker() {
+      const tbody = document.querySelector('#tracker-table tbody');
+      const rows = getTracker();
+      const stages = ['contacted', 'responded', 'in-person verified', 'live'];
+      tbody.innerHTML = rows.map((r, i) =>
+        '<tr data-i="' + i + '">' +
+        '<td>' + (r.businessName || '') + '</td>' +
+        '<td>' + (r.handle ? '<a href="https://www.tiktok.com/@' + String(r.handle).replace(/^@/, '') + '" target="_blank" rel="noopener">' + r.handle + '</a>' : '—') + '</td>' +
+        '<td><select data-stage="' + i + '">' + stages.map(s => '<option value="' + s + '"' + (r.stage === s ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></td>' +
+        '<td>' + (r.contactedAt || '') + '</td>' +
+        '<td>' + (r.notes || '') + '</td>' +
+        '<td><button type="button" class="btn btn-outline btn-sm" data-del="' + i + '">Remove</button></td>' +
+        '</tr>'
+      ).join('');
+      tbody.querySelectorAll('[data-stage]').forEach(sel => {
+        sel.onchange = () => {
+          const rows = getTracker();
+          rows[sel.dataset.stage].stage = sel.value;
+          saveTracker(rows);
+        };
+      });
+      tbody.querySelectorAll('[data-del]').forEach(btn => {
+        btn.onclick = () => {
+          const rows = getTracker();
+          rows.splice(+btn.dataset.del, 1);
+          saveTracker(rows);
+          renderTracker();
+        };
+      });
+    }
+
+    document.getElementById('add-tracker-row').onclick = () => {
+      const name = prompt('Business name');
+      if (!name) return;
+      const rows = getTracker();
+      rows.push({
+        id: 'tr-' + Date.now(),
+        businessName: name,
+        handle: prompt('TikTok handle (optional)') || '',
+        stage: 'contacted',
+        contactedAt: new Date().toISOString().slice(0, 10),
+        notes: ''
+      });
+      saveTracker(rows);
+      renderTracker();
+    };
+
+    document.getElementById('intake-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const rows = getTracker();
+      rows.push({
+        id: 'tr-' + Date.now(),
+        businessName: document.getElementById('in-name').value,
+        handle: document.getElementById('in-handle').value,
+        stage: 'contacted',
+        contactedAt: new Date().toISOString().slice(0, 10),
+        notes: document.getElementById('in-notes').value || document.getElementById('in-loc').value
+      });
+      saveTracker(rows);
+      WPUI.showToast('Saved to tracker');
+      this.reset();
+      renderTracker();
+    });
+
+    function bootAdmin() {
+      WPDataLayer.loadExtras().then(() => {
+        renderTracker();
+        const o = WPDATA.outreach || {};
+        document.getElementById('hashtag-chips').innerHTML = (o.hashtags || []).map(h =>
+          '<button type="button" class="chip" data-copy="' + h + '">' + h + '</button>'
+        ).join('');
+        const terms = o.searchTerms || {};
+        document.getElementById('search-terms').innerHTML = Object.keys(terms).map(cat =>
+          '<h3 style="font-size:1rem;margin:16px 0 8px;">' + cat + '</h3>' +
+          '<div class="chip-list">' + terms[cat].map(t => '<button type="button" class="chip" data-copy="' + t + '">' + t + '</button>').join('') + '</div>'
+        ).join('');
+        document.getElementById('templates-list').innerHTML = (o.templates || []).map(t =>
+          '<div class="template-card"><strong>' + t.name + '</strong><pre>' + t.body + '</pre>' +
+          '<button type="button" class="btn btn-sm btn-outline" data-copy="' + t.body.replace(/"/g, '&quot;') + '">Copy</button></div>'
+        ).join('');
+
+        const c = WPDATA.candidates || {};
+        document.getElementById('candidates-panel').innerHTML =
+          '<p><strong>Confirmed</strong></p><ul>' + (c.confirmed || []).map(x =>
+            '<li>' + x.businessName + (x.handle ? ' — <a href="https://www.tiktok.com/@' + x.handle.replace(/^@/, '') + '" target="_blank" rel="noopener">' + x.handle + '</a>' : ' (handle TBD)') + ' · ' + x.arcade + '</li>'
+          ).join('') + '</ul>' +
+          '<p><strong>Handle unknown</strong></p><ul>' + (c.handleUnknown || []).map(x =>
+            '<li>' + x.businessName + ' — ' + x.area + ' (' + x.category + ')</li>'
+          ).join('') + '</ul>' +
+          '<p><strong>Unconfirmed — do not publish</strong></p><ul>' + (c.unconfirmed || []).map(x =>
+            '<li>' + x.handle + ' — ' + x.note + '</li>'
+          ).join('') + '</ul>';
+
+        document.getElementById('arcades-panel').innerHTML = '<ul>' + (WPDATA.arcades || []).map(a =>
+          '<li><strong>' + a.name + '</strong> — ' + a.address + ' · Known for: ' + (a.knownFor || []).join(', ') +
+          (a.sellersVerified && a.sellersVerified.length ? ' · Sellers: ' + a.sellersVerified.join(', ') : '') + '</li>'
+        ).join('') + '</ul>';
+
+        document.querySelectorAll('[data-copy]').forEach(el => {
+          el.addEventListener('click', () => {
+            navigator.clipboard.writeText(el.getAttribute('data-copy')).then(() => WPUI.showToast('Copied'));
+          });
+        });
+      });
+    }
+
+    document.getElementById('export-json').onclick = () => {
+      const json = WPDataLayer.exportSellersJSON();
+      document.getElementById('export-preview').textContent = json.slice(0, 2000) + (json.length > 2000 ? '\n…' : '');
+      const blob = new Blob([json], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'wikiprice-sellers.json';
+      a.click();
+    };
+    document.getElementById('export-handles').onclick = () => {
+      const list = WPDataLayer.exportHandlesList().join('\n');
+      document.getElementById('export-preview').textContent = list || '(none)';
+      navigator.clipboard.writeText(list).then(() => WPUI.showToast('Handles copied'));
+    };
+  </script>
+</body>
+</html>

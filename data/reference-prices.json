@@ -1,0 +1,52 @@
+{
+  "note": "Reference ranges only — not live deals. Used for Budget Finder baselines and verification checks.",
+  "electronics": [
+    { "product": "Used iPhone 11", "min": 350000, "max": 450000 },
+    { "product": "Kids Smartwatch", "min": 80000, "max": 100000 },
+    { "product": "Ring Light", "min": 45000, "max": 60000 },
+    { "product": "Power Bank 10,000mAh", "min": 25000, "max": 40000 },
+    { "product": "Phone Case", "min": 5000, "max": 15000 }
+  ],
+  "fashionMen": [
+    { "product": "Sneakers", "min": 45000, "max": 60000 },
+    { "product": "Office Shoes", "min": 55000, "max": 70000 },
+    { "product": "Jeans", "min": 35000, "max": 50000 },
+    { "product": "Men's Suit", "min": 130000, "max": 200000 }
+  ],
+  "fashionWomen": [
+    { "product": "Office Pants", "min": 30000, "max": 40000 },
+    { "product": "Blouses", "min": 25000, "max": 35000 },
+    { "product": "Handbags", "min": 40000, "max": 80000 }
+  ],
+  "fashionChildren": [
+    { "product": "School Shoes", "min": 40000, "max": 50000 },
+    { "product": "Uniforms", "min": 25000, "max": 45000 }
+  ],
+  "home": [
+    { "product": "Bed Frame Single", "min": 350000, "max": 450000 },
+    { "product": "Bed Frame Double", "min": 500000, "max": 650000 },
+    { "product": "Sofa", "min": 650000, "max": 900000 },
+    { "product": "Bedding set", "min": 50000, "max": 80000 }
+  ],
+  "beauty": [
+    { "product": "Inspired Perfume 50ml", "min": 35000, "max": 50000 },
+    { "product": "Inspired Perfume 100ml", "min": 45000, "max": 65000 }
+  ],
+  "thrift": [
+    { "product": "Thrift Jacket", "min": 15000, "max": 30000 },
+    { "product": "Thrift Shirt", "min": 8000, "max": 15000 }
+  ],
+  "services": [
+    { "product": "Salon", "min": 20000, "max": 100000 },
+    { "product": "Barber", "min": 5000, "max": 15000 },
+    { "product": "Tailor", "min": 10000, "max": 50000 },
+    { "product": "Mechanic", "min": 50000, "max": 500000 },
+    { "product": "Phone Repair", "min": 20000, "max": 100000 },
+    { "product": "IT Services", "min": 30000, "max": 200000 },
+    { "product": "Delivery / Errands", "min": 5000, "max": 50000 },
+    { "product": "Cleaning", "min": 20000, "max": 80000 },
+    { "product": "Photography", "min": 50000, "max": 300000 },
+    { "product": "Tutoring", "min": 20000, "max": 100000 },
+    { "product": "Personal Shopping", "min": 10000, "max": 50000 }
+  ]
+}

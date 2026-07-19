@@ -101,7 +101,7 @@
         <div>
           <p id="results-count" class="text-muted mb-16"></p>
           <div class="deals-grid" id="results-grid"></div>
-          <p id="no-results" class="text-center text-muted hidden">No deals found. Try different keywords or filters.</p>
+          <p id="no-results" class="text-center text-muted hidden"></p>
         </div>
       </div>
     </div>
@@ -111,6 +111,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+  <script src="js/data-layer.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -172,9 +173,15 @@
       results = results.filter(d => d.stockStatus !== 'out-of-stock');
 
       document.getElementById('results-count').textContent = results.length + ' deal' + (results.length !== 1 ? 's' : '') + ' found';
-      document.getElementById('no-results').classList.toggle('hidden', results.length > 0);
-      document.getElementById('results-grid').innerHTML = results.map(d => WPUI.dealCard(d, { showWholesaleWarning: true })).join('');
-    }
+      const noRes = document.getElementById('no-results');
+      if (results.length === 0) {
+        noRes.classList.remove('hidden');
+        noRes.innerHTML = WPUI.emptySearchState();
+        document.getElementById('results-grid').innerHTML = '';
+      } else {
+        noRes.classList.add('hidden');
+        document.getElementById('results-grid').innerHTML = results.map(d => WPUI.dealCard(d, { showWholesaleWarning: true })).join('');
+      }
 
     document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); runSearch(); });
     document.getElementById('apply-filters').addEventListener('click', runSearch);

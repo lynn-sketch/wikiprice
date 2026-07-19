@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "dataSourceDefault": "manual",
+  "sellers": [
+    {
+      "id": "salongo-shoes",
+      "handle": "@salongohouseofshoes_1",
+      "businessName": "Salongo House of Shoes",
+      "followerCount": 73000,
+      "bio": "Quality shoes at affordable prices. Mukwano Arcade, Ben Kiwanuka Street.",
+      "phone": "256702345002",
+      "whatsapp": "256702345002",
+      "location": {
+        "arcade": "Mukwano Arcade",
+        "address": "Ben Kiwanuka Street, opposite Gazaland",
+        "floor": "Ground Floor",
+        "stall": "Stall 22",
+        "landmark": "opposite the escalator"
+      },
+      "category": "Fashion",
+      "subCategory": "Footwear",
+      "products": ["Sneakers", "Office shoes", "School shoes"],
+      "samplePrices": [
+        { "product": "Men's Sneakers", "price": 45000 },
+        { "product": "Office Shoes", "price": 55000 }
+      ],
+      "verificationStatus": "verified",
+      "lastVerified": "2026-07-01",
+      "responseTime": "fast",
+      "submittedBy": "in_person",
+      "tags": ["shoes", "mukwano", "affordable"],
+      "dataSource": "manual",
+      "lastSynced": null,
+      "apiConsentGiven": false,
+      "tiktokUserId": null
+    },
+    {
+      "id": "mummy-gadgets",
+      "handle": "@mummyarleena",
+      "businessName": "Mummy Gadgets",
+      "followerCount": 45000,
+      "bio": "Kids tablets, smartwatches, UK-used phones. New Pioneer Mall.",
+      "phone": "256704567004",
+      "whatsapp": "256704567004",
+      "location": {
+        "arcade": "New Pioneer Mall",
+        "address": "Kampala Road, between Burton and Wilson Road",
+        "floor": "1st Floor",
+        "stall": "Shop 12",
+        "landmark": "near the lifts"
+      },
+      "category": "Electronics",
+      "subCategory": "Gadgets",
+      "products": ["Kids tablets", "Smartwatches", "UK-used phones"],
+      "samplePrices": [
+        { "product": "Kids Smartwatch", "price": 80000 }
+      ],
+      "verificationStatus": "verified",
+      "lastVerified": "2026-07-01",
+      "responseTime": "fast",
+      "submittedBy": "in_person",
+      "tags": ["gadgets", "pioneer", "kids"],
+      "dataSource": "manual",
+      "lastSynced": null,
+      "apiConsentGiven": false,
+      "tiktokUserId": null
+    },
+    {
+      "id": "nsambya-furniture",
+      "handle": "@nsambyafurnitureworkshop",
+      "businessName": "Nsambya Furniture Workshop",
+      "followerCount": 28000,
+      "bio": "Custom beds, sofas, dining sets — Nsambya.",
+      "phone": "256705678005",
+      "whatsapp": "256705678005",
+      "location": {
+        "arcade": "Nsambya",
+        "address": "Near Nsambya Shopping Centre",
+        "floor": "Ground",
+        "stall": "Workshop blue gate",
+        "landmark": "behind Nsambya Hospital"
+      },
+      "category": "Home and Furniture",
+      "subCategory": "Furniture",
+      "products": ["Beds", "Sofas", "Dining sets"],
+      "samplePrices": [
+        { "product": "Bed Frame Single", "price": 350000 }
+      ],
+      "verificationStatus": "verified",
+      "lastVerified": "2026-06-28",
+      "responseTime": "fast",
+      "submittedBy": "in_person",
+      "tags": ["furniture", "nsambya", "custom"],
+      "dataSource": "manual",
+      "lastSynced": null,
+      "apiConsentGiven": false,
+      "tiktokUserId": null
+    }
+  ]
+}
