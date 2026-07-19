@@ -83,12 +83,14 @@ const WPUIEnhance = {
     if (!container) return;
     opts = opts || {};
     const pageSize = opts.pageSize || 4;
+    const pool = (typeof WPDataLayer !== 'undefined' && WPDataLayer.getSearchableDeals)
+      ? WPDataLayer.getSearchableDeals()
+      : (WPDATA.deals || []);
     let deals = WikiPrice.sortDeals(
-      (WPDATA.deals || []).filter(d => d.verificationStatus !== 'scam-warning' && d.id !== 'scam-iphone'),
+      pool.filter(d => d.verificationStatus !== 'scam-warning' && d.id !== 'scam-iphone'),
       'newest'
     );
-    // Prefer TikTok-mentioned deals first for discovery feel
-    deals = deals.slice().sort((a, b) => (b.mentionedOnTiktok ? 1 : 0) - (a.mentionedOnTiktok ? 1 : 0));
+    deals = deals.slice().sort((a, b) => (b.mentionedOnTiktok || b.tiktokVideoId ? 1 : 0) - (a.mentionedOnTiktok || a.tiktokVideoId ? 1 : 0));
     let offset = 0;
 
     function renderMore() {
@@ -99,6 +101,7 @@ const WPUIEnhance = {
       }
       container.insertAdjacentHTML('beforeend', slice.map(d => WPUI.feedCard(d)).join(''));
       offset += slice.length;
+      if (typeof WPDataLayer !== 'undefined') WPDataLayer.ensureEmbedScript();
     }
 
     container.innerHTML = '';

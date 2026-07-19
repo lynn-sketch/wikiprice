@@ -31,6 +31,7 @@
 
   <section class="section stats-section">
     <div class="container">
+      <div id="geo-banner-home"></div>
       <div class="stats-grid" id="stats-grid"></div>
     </div>
   </section>
@@ -90,7 +91,10 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -101,23 +105,24 @@
     document.getElementById('footer').innerHTML = WPUI.footer();
     WikiPrice.initGlobal();
     WPUIEnhance.initAllSearchBars();
-    WPDataLayer.loadExtras();
+    WPDataLayer.loadExtras().then(function () {
+      WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
+      WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'));
+      const pool = WPDataLayer.getSearchableDeals();
+      const recent = WikiPrice.sortDeals(pool.filter(d => d.verificationStatus === 'verified'), 'newest').slice(0, 8);
+      const recentEl = document.getElementById('recent-deals');
+      if (!recent.length) {
+        document.getElementById('recent-deals-wrap').innerHTML = WPUI.emptyVerifiedExplainer();
+      } else {
+        recentEl.innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
+      }
+    });
+    WPGeo.mountBanner(document.getElementById('geo-banner-home'));
 
     document.getElementById('hero-section').style.backgroundImage = 'url(' + WPIMAGES.hero + ')';
 
     if (WikiPrice.getLang() === 'lg') {
       document.getElementById('hero-title').textContent = WikiPrice.t('knowYourPrice');
-    }
-
-    WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
-    WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'));
-
-    const recent = WikiPrice.sortDeals(WPDATA.deals.filter(d => d.verificationStatus === 'verified'), 'newest').slice(0, 8);
-    const recentEl = document.getElementById('recent-deals');
-    if (!recent.length) {
-      document.getElementById('recent-deals-wrap').innerHTML = WPUI.emptyVerifiedExplainer();
-    } else {
-      recentEl.innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
     }
 
     const presets = [5000, 10000, 20000, 30000, 50000, 80000, 150000];

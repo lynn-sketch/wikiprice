@@ -11,6 +11,7 @@
 
   <section class="section">
     <div class="container">
+      <div id="geo-banner-slot"></div>
       <h1 class="section-title">Search Deals</h1>
       <form id="search-form" class="search-bar" style="max-width:100%;margin-bottom:24px;position:relative;" data-search-autocomplete>
         <input type="search" id="search-input" name="q" placeholder="office pants, television, engatto..." aria-label="Search">
@@ -87,9 +88,22 @@
             </select>
           </div>
           <div class="filter-group">
+            <label for="filter-source">Source</label>
+            <select id="filter-source">
+              <option value="">All sources</option>
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="jiji">Jiji</option>
+              <option value="jumia">Jumia</option>
+              <option value="in-person">In-person</option>
+            </select>
+          </div>
+          <div class="filter-group">
             <label for="filter-sort">Sort By</label>
             <select id="filter-sort">
               <option value="newest">Newest First</option>
+              <option value="nearest">Nearest (use location)</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
               <option value="trust">Highest Trust</option>
@@ -111,7 +125,10 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -122,6 +139,14 @@
     document.getElementById('footer').innerHTML = WPUI.footer();
     WikiPrice.initGlobal();
     WPUIEnhance.initAllSearchBars();
+    WPDataLayer.loadExtras();
+    WPGeo.mountBanner(document.getElementById('geo-banner-slot'));
+
+    document.getElementById('filter-sort').addEventListener('change', function () {
+      if (this.value === 'nearest' && !WPGeo.userPos) {
+        WPGeo.requestLocation(() => runSearch());
+      }
+    });
 
     const params = new URLSearchParams(location.search);
     const searchInput = document.getElementById('search-input');
@@ -162,6 +187,8 @@
       if (maxP) f.maxPrice = parseInt(maxP);
       if (document.getElementById('filter-stock').value === 'in-stock') f.inStockOnly = true;
       if (document.getElementById('filter-tiktok').value === 'tiktok') f.hasTiktok = true;
+      const src = document.getElementById('filter-source').value;
+      if (src) f.source = src;
       return f;
     }
 

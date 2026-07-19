@@ -1,8 +1,8 @@
 /**
  * WikiPrice flexible data layer
  * - Normalizes legacy WPDATA sellers/deals into hybrid schema
- * - Loads JSON sources (arcades, candidates, reference prices, outreach)
- * - Exposes sync hooks for future legal TikTok API integration
+ * - Launch catalog prune, TikTok video attach, oEmbed helpers
+ * - Loads JSON sources + sync hooks for future legal TikTok API
  * Manual verification remains the gold standard for Verified badges.
  */
 const WPDataLayer = (function () {
@@ -16,6 +16,27 @@ const WPDataLayer = (function () {
     jiji: 'Jiji',
     jumia: 'Jumia',
     'in-person': 'In-person'
+  };
+
+  /** Confirmed seed sellers (master prompt 11.1) */
+  const LAUNCH_SELLER_IDS = {
+    'salongo-shoes': 1,
+    'mummy-gadgets': 1,
+    'nsambya-furniture': 1,
+    'mirembe-beddings': 1,
+    'daniel-perfumes': 1,
+    'noddiz': 1,
+    'fashion-hub-ug': 1,
+    'fashion-wholesalers': 1,
+    'techdeals-ug': 1,
+    'techdeals-ug-tk': 1,
+    'smartwatch-ug': 1,
+    'phone-world-ug': 1,
+    'beauty-world-ug': 1,
+    'shoe-empire-ug': 1,
+    'home-essentials-ug': 1,
+    'bags-and-more': 1,
+    'royal-perfumes': 1
   };
 
   function cleanHandle(h) {
@@ -34,7 +55,6 @@ const WPDataLayer = (function () {
     return 'https://www.tiktok.com/@' + h + '/video/' + videoId;
   }
 
-  /** Normalize a legacy seller object into hybrid schema fields (non-destructive). */
   function normalizeSeller(id, s) {
     if (!s) return null;
     const handle = cleanHandle(s.handle || s.tiktokHandle);
@@ -84,6 +104,82 @@ const WPDataLayer = (function () {
     });
   }
 
+  function attachTikTokVideos() {
+    const feed = WPDATA.tiktokFeed || [];
+    const byHandle = {};
+    feed.forEach(v => {
+      const h = cleanHandle(v.handle);
+      if (h && v.videoId) byHandle[h] = v.videoId;
+    });
+    (WPDATA.deals || []).forEach(deal => {
+      const seller = WPDATA.sellers[deal.sellerId];
+      const h = cleanHandle(deal.tiktokHandle || seller?.tiktokHandle || seller?.handle);
+      if (!deal.tiktokVideoId && h && byHandle[h]) {
+        deal.tiktokVideoId = byHandle[h];
+        deal.mentionedOnTiktok = true;
+        deal.source = deal.source || 'tiktok';
+      }
+    });
+  }
+
+  function sellerHasPhysicalLocation(seller) {
+    if (!seller) return false;
+    if (seller.physicalShop === false) return false;
+    const loc = seller.location || {};
+    if (loc.arcade && (loc.stall || loc.floor || loc.address)) return true;
+    if (seller.locations && seller.locations.length && seller.locations[0].text) return true;
+    return !!seller.physicalShop;
+  }
+
+  function isPublicDeal(deal) {
+    if (!deal) return false;
+    if (deal.id === 'scam-iphone' || deal.demoOnly) return false;
+    if (deal.verificationStatus === 'scam-warning') return false;
+    const seller = WPDATA.sellers[deal.sellerId];
+    if (!seller) return false;
+    if (seller.id === 'suspect-seller' || seller.tiktokHandle === 'quickdealsug') return false;
+    if (WPDATA.meta && WPDATA.meta.launchMode) {
+      const confirmed = !!LAUNCH_SELLER_IDS[deal.sellerId];
+      const verified = deal.verificationStatus === 'verified';
+      const physical = sellerHasPhysicalLocation(seller) ||
+        (deal.location && deal.location.arcade && deal.location.stall);
+      if (confirmed && verified && physical) return true;
+      if (verified && physical && (seller.verificationHistory || 0) >= 80) return true;
+      return false;
+    }
+    return deal.verificationStatus === 'verified';
+  }
+
+  function buildPublicCatalog() {
+    WPDATA.allDeals = (WPDATA.deals || []).slice();
+    WPDATA.publicDeals = (WPDATA.deals || []).filter(isPublicDeal);
+    (WPDATA.deals || []).forEach(d => {
+      if (!isPublicDeal(d) && d.id !== 'scam-iphone') {
+        d.catalogNote = d.catalogNote || 'Not in launch catalog — awaiting full in-person verification';
+      }
+    });
+    const scam = WPDATA.allDeals.find(d => d.id === 'scam-iphone');
+    if (scam) {
+      scam.demoOnly = true;
+      scam.verificationStatus = 'scam-warning';
+      scam.catalogNote = 'Educational scam example — not a live listing';
+    }
+    if (WPDATA.meta && WPDATA.meta.launchMode) {
+      WPDATA.stats = WPDATA.stats || {};
+      WPDATA.stats.verifiedDeals = WPDATA.publicDeals.length;
+      WPDATA.stats.sellers = Object.keys(WPDATA.sellers).filter(id =>
+        WPDATA.publicDeals.some(d => d.sellerId === id)
+      ).length;
+    }
+  }
+
+  function getSearchableDeals() {
+    if (WPDATA.meta && WPDATA.meta.launchMode && WPDATA.publicDeals) {
+      return WPDATA.publicDeals;
+    }
+    return WPDATA.deals || [];
+  }
+
   function applyToWPDATA() {
     if (typeof WPDATA === 'undefined') return;
     Object.keys(WPDATA.sellers || {}).forEach(id => {
@@ -93,8 +189,11 @@ const WPDataLayer = (function () {
     WPDATA.meta = Object.assign({
       statsIllustrative: true,
       verificationGoldStandard: 'manual_in_person',
-      apiReady: true
+      apiReady: true,
+      launchMode: (typeof WPCONFIG !== 'undefined') ? !!WPCONFIG.launchMode : true
     }, WPDATA.meta || {});
+    attachTikTokVideos();
+    buildPublicCatalog();
   }
 
   async function fetchJSON(path) {
@@ -151,20 +250,15 @@ const WPDataLayer = (function () {
         }));
       });
     }
+    applyToWPDATA();
     document.dispatchEvent(new CustomEvent('wikiprice:data-ready'));
     return WPDATA;
   }
 
-  /**
-   * Future sync hook — call only with seller.apiConsentGiven === true
-   * and an official TikTok API client. Stubbed for architecture readiness.
-   */
   async function syncSellerFromAPI(sellerId, apiClient) {
     const seller = WPDATA.sellers[sellerId];
     if (!seller) throw new Error('Seller not found');
-    if (!seller.apiConsentGiven) {
-      throw new Error('Seller has not consented to API sync');
-    }
+    if (!seller.apiConsentGiven) throw new Error('Seller has not consented to API sync');
     if (!apiClient || typeof apiClient.fetchProfile !== 'function') {
       console.info('[WPDataLayer] No API client — keeping manual data for', sellerId);
       return seller;
@@ -194,11 +288,29 @@ const WPDataLayer = (function () {
     return SOURCE_LABELS[source] || source || 'Manual';
   }
 
-  // Run sync normalize immediately when script loads (after data.js)
+  function oEmbedBlockquote(handle, videoId) {
+    const h = cleanHandle(handle);
+    if (!h || !videoId) return '';
+    const url = 'https://www.tiktok.com/@' + h + '/video/' + videoId;
+    return '<blockquote class="tiktok-embed" cite="' + url + '" data-video-id="' + videoId + '" style="max-width:100%;min-width:280px;">' +
+      '<section><a target="_blank" rel="noopener" href="' + url + '">@' + h + '</a></section></blockquote>';
+  }
+
+  function ensureEmbedScript() {
+    if (!document.getElementById('tiktok-embed-script')) {
+      const s = document.createElement('script');
+      s.id = 'tiktok-embed-script';
+      s.src = 'https://www.tiktok.com/embed.js';
+      s.async = true;
+      document.body.appendChild(s);
+    }
+  }
+
   if (typeof WPDATA !== 'undefined') applyToWPDATA();
 
   return {
     SOURCES,
+    LAUNCH_SELLER_IDS,
     cleanHandle,
     tiktokProfileUrl,
     tiktokVideoUrl,
@@ -209,6 +321,11 @@ const WPDataLayer = (function () {
     syncSellerFromAPI,
     exportSellersJSON,
     exportHandlesList,
-    sourceBadgeLabel
+    sourceBadgeLabel,
+    getSearchableDeals,
+    isPublicDeal,
+    buildPublicCatalog,
+    oEmbedBlockquote,
+    ensureEmbedScript
   };
 })();

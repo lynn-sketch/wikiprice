@@ -4,39 +4,57 @@ Know Your Price, Save Your Money. Kampala's price intelligence and discovery pla
 
 **Live site:** https://lynn-sketch.github.io/wikiprice/
 
-## What's new (master refinement)
+## Master refinement — complete build
 
-- Navy / white / yellow-orange palette (60-30-10)
-- TikTok-style **Discover** feed (infinite scroll, Save / Comment / Share, deep links)
-- Flexible JSON data layer (`/data/*.json` + `js/data-layer.js`) ready for future consented API sync
-- UX fixes: illustrative stats, no fake testimonials, verification explainer, empty search state
-- Internal **Outreach Assistant** at `/admin.html` (password: `wikiprice2026`)
-- Source badges, hybrid seller schema, arcade/candidate/reference-price JSON
+| Area | Status |
+|------|--------|
+| Navy / gold palette (60-30-10) | Done |
+| TikTok Discover feed + infinite scroll | Done |
+| oEmbed embeds when `tiktokVideoId` present | Done |
+| Deep links to `tiktok.com/@handle` | Done |
+| Launch catalog (verified + physical only) | Done |
+| Flexible JSON data layer + API sync hooks | Done |
+| UX: illustrative stats, no fake quotes, empty states | Done |
+| WhatsApp on free tier | Done |
+| Last verified on deals/sellers | Done |
+| Admin outreach assistant + verification checklist | Done |
+| Formspree-ready forms (`js/config.js`) | Done |
+| Kampala geo-fence + nearest sort | Done |
+| Multi-source badges + search filter | Done |
+| Community nominate / confirm prices | Done |
+| Services category + Budget Finder | Done |
 
 ## Quick Start
-
-No build step. Open `index.html` or serve locally:
 
 ```bash
 npx serve .
 ```
 
-## Auto-deploy
+## Configure Formspree (email delivery)
 
-Every push to `main` updates GitHub Pages. See [Actions](https://github.com/lynn-sketch/wikiprice/actions).
+1. Create a form at https://formspree.io  
+2. Put the form ID in `js/config.js`:
+   ```js
+   formspreeEndpoint: 'https://formspree.io/f/YOUR_REAL_ID',
+   ```
+3. Redeploy / push — seller signup, contact, nominate, and admin intake will POST there (with localStorage backup).
 
-## Data files (source of truth for outreach)
+## Admin
+
+- URL: `/admin.html`  
+- Password: `wikiprice2026`  
+- Tabs: Intake, Tracker, Research, Templates, Verification checklist, Export  
+
+## Data files
 
 | File | Purpose |
 |------|---------|
 | `data/sellers.json` | Hybrid seller schema |
 | `data/arcades.json` | Arcade directory |
-| `data/candidates.json` | Confirmed / unknown / unconfirmed seeds |
+| `data/candidates.json` | Seed candidates |
 | `data/reference-prices.json` | Baselines (not live deals) |
-| `data/outreach.json` | Hashtags, search terms, templates, tracker seed |
+| `data/outreach.json` | Hashtags, templates, tracker seed |
 
-## Trust rules at launch
+## Trust rules
 
-- Manual, consent-based outreach + in-person verification only
-- No scraping / paid APIs
-- Manual verification remains gold standard for Verified badge
+Manual consent-based outreach + in-person verification only at launch. No scraping. Manual verification remains gold standard for Verified badges.

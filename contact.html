@@ -81,7 +81,10 @@
   <div id="footer"></div>
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+    <script src="js/config.js"></script>
   <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -97,17 +100,19 @@
     document.getElementById('contact-tiktok').innerHTML = WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@WikiPriceUG" target="_blank" rel="noopener">TikTok @WikiPriceUG</a></span>';
     document.getElementById('contact-loc').innerHTML = WPIcon('location', 18) + '<span>Kampala, Uganda</span>';
 
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       let valid = true;
       document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
-      if (!document.getElementById('name').value.trim()) { document.getElementById('err-name').textContent = 'Required'; document.getElementById('err-name').classList.remove('hidden'); valid = false; }
-      if (!document.getElementById('email').value.includes('@')) { document.getElementById('err-email').textContent = 'Valid email required'; document.getElementById('err-email').classList.remove('hidden'); valid = false; }
-      if (!document.getElementById('message').value.trim()) { document.getElementById('err-message').textContent = 'Required'; document.getElementById('err-message').classList.remove('hidden'); valid = false; }
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const subject = document.getElementById('subject') ? document.getElementById('subject').value : 'inquiry';
+      if (!name) { document.getElementById('err-name').textContent = 'Required'; document.getElementById('err-name').classList.remove('hidden'); valid = false; }
+      if (!email.includes('@')) { document.getElementById('err-email').textContent = 'Valid email required'; document.getElementById('err-email').classList.remove('hidden'); valid = false; }
+      if (!message) { document.getElementById('err-message').textContent = 'Required'; document.getElementById('err-message').classList.remove('hidden'); valid = false; }
       if (valid) {
-        const msgs = JSON.parse(localStorage.getItem('wikiprice-messages') || '[]');
-        msgs.push({ date: new Date().toISOString() });
-        localStorage.setItem('wikiprice-messages', JSON.stringify(msgs));
+        await WPForms.submit('contact', { name, email, subject, message });
         WPUI.showToast('Message sent! We will respond within 24 hours.');
         this.reset();
       }

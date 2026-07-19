@@ -169,12 +169,16 @@ const WikiPrice = (function () {
       if (q.includes(k)) expanded += ' ' + synonyms[k];
     });
 
-    return WPDATA.deals.filter(deal => {
+    const pool = (typeof WPDataLayer !== 'undefined' && WPDataLayer.getSearchableDeals)
+      ? WPDataLayer.getSearchableDeals()
+      : WPDATA.deals;
+
+    return pool.filter(deal => {
       const seller = WPDATA.sellers[deal.sellerId];
       const text = [
         deal.name, deal.category, deal.subCategory,
         deal.location.arcade, deal.location.building, deal.location.stall,
-        seller?.name, seller?.tiktokHandle
+        seller?.name, seller?.tiktokHandle, deal.source
       ].join(' ').toLowerCase();
 
       if (q && !text.includes(q) && !expanded.split(' ').some(w => w.length > 2 && text.includes(w))) return false;
@@ -192,6 +196,7 @@ const WikiPrice = (function () {
         if (filters.verifiedOnly && deal.verificationStatus !== 'verified') return false;
         if (filters.inStockOnly && deal.stockStatus === 'out-of-stock') return false;
         if (filters.hasTiktok && !seller?.tiktokHandle) return false;
+        if (filters.source && deal.source !== filters.source) return false;
         if (filters.minPrice && deal.retailPrice < filters.minPrice) return false;
         if (filters.maxPrice && deal.retailPrice > filters.maxPrice) return false;
         if (filters.minQty) {
@@ -220,6 +225,9 @@ const WikiPrice = (function () {
         const sb = WPDATA.sellers[b.sellerId];
         return calculateTrustScore(sb || {}).score - calculateTrustScore(sa || {}).score;
       });
+      case 'nearest':
+        if (typeof WPGeo !== 'undefined' && WPGeo.userPos) return WPGeo.sortByNearest(sorted);
+        return sorted.sort((a, b) => new Date(b.lastVerified) - new Date(a.lastVerified));
       default: return sorted.sort((a, b) => new Date(b.lastVerified) - new Date(a.lastVerified));
     }
   }

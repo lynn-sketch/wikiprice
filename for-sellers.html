@@ -146,7 +146,10 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -162,19 +165,23 @@
     document.getElementById('seller-icon-3').innerHTML = WPIcon('users', 36);
     document.getElementById('seller-icon-4').innerHTML = WPIcon('free', 36);
 
-    document.getElementById('seller-form').addEventListener('submit', function(e) {
+    document.getElementById('seller-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       const name = document.getElementById('biz-name').value.trim();
       const phone = document.getElementById('biz-phone').value.trim();
+      const location = document.getElementById('biz-location').value.trim();
+      const tiktok = document.getElementById('biz-tiktok').value.trim();
+      const plan = document.getElementById('biz-plan').value;
       let valid = true;
       document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
       if (!name) { document.getElementById('err-name').textContent = 'Required'; document.getElementById('err-name').classList.remove('hidden'); valid = false; }
       if (!phone || phone.length < 9) { document.getElementById('err-phone').textContent = 'Valid phone required'; document.getElementById('err-phone').classList.remove('hidden'); valid = false; }
+      if (!location) { valid = false; WPUI.showToast('Shop location is required for verification'); }
       if (valid) {
-        const apps = JSON.parse(localStorage.getItem('wikiprice-seller-apps') || '[]');
-        apps.push({ name, phone, date: new Date().toISOString() });
-        localStorage.setItem('wikiprice-seller-apps', JSON.stringify(apps));
-        WPUI.showToast('Application submitted! We will contact you within 2 business days.');
+        const res = await WPForms.submit('seller-signup', { name, phone, location, tiktok, plan });
+        WPUI.showToast(res.via === 'formspree'
+          ? 'Application submitted! We will contact you within 2 business days.'
+          : 'Application saved locally. Add your Formspree ID in js/config.js to receive email.');
         this.reset();
       }
     });

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community — Nominate &amp; Confirm — WikiPrice</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <meta name="theme-color" content="#0A2B5C">
+</head>
+<body>
+  <div id="header"></div>
+
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Community</h1>
+      <p class="text-muted">Help grow a trustworthy Kampala deals directory — nominate sellers, confirm prices, report issues. No scraping; humans verify in person.</p>
+
+      <div class="deals-grid" style="margin-top:24px;">
+        <div class="detail-card">
+          <h2>Nominate a seller</h2>
+          <p class="text-muted">Know a shop with a clear stall location and honest prices?</p>
+          <form id="nominate-form">
+            <div class="form-group">
+              <label for="nom-name">Business name *</label>
+              <input id="nom-name" required>
+            </div>
+            <div class="form-group">
+              <label for="nom-handle">TikTok handle</label>
+              <input id="nom-handle" placeholder="@handle">
+            </div>
+            <div class="form-group">
+              <label for="nom-loc">Shop location *</label>
+              <input id="nom-loc" required placeholder="Arcade, floor, stall">
+            </div>
+            <div class="form-group">
+              <label for="nom-source">Where did you find them?</label>
+              <select id="nom-source">
+                <option value="tiktok">TikTok</option>
+                <option value="instagram">Instagram</option>
+                <option value="facebook">Facebook Marketplace</option>
+                <option value="jiji">Jiji</option>
+                <option value="jumia">Jumia</option>
+                <option value="in-person">In person</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="nom-notes">Notes</label>
+              <textarea id="nom-notes" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-accent">Submit nomination</button>
+          </form>
+        </div>
+
+        <div class="detail-card">
+          <h2>Confirm a price</h2>
+          <p class="text-muted">Visited a listed deal recently? Confirm the price is still accurate.</p>
+          <form id="confirm-form">
+            <div class="form-group">
+              <label for="conf-deal">Deal name or ID *</label>
+              <input id="conf-deal" required placeholder="e.g. Men's Sneakers or deal id">
+            </div>
+            <div class="form-group">
+              <label for="conf-price">Price you paid / saw (UGX) *</label>
+              <input id="conf-price" type="number" required min="1000">
+            </div>
+            <div class="form-group">
+              <label for="conf-date">Date seen</label>
+              <input id="conf-date" type="date">
+            </div>
+            <button type="submit" class="btn btn-primary">Confirm price</button>
+          </form>
+        </div>
+
+        <div class="detail-card">
+          <h2>Report a problem</h2>
+          <p class="text-muted">Wrong location, scam suspicion, or stale price?</p>
+          <p><a href="contact.html" class="btn btn-outline">Contact / Report</a></p>
+          <p style="margin-top:16px;"><a href="for-sellers.html" class="btn btn-outline">Seller signup</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('community');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+
+    document.getElementById('nominate-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const payload = {
+        businessName: document.getElementById('nom-name').value.trim(),
+        handle: document.getElementById('nom-handle').value.trim(),
+        location: document.getElementById('nom-loc').value.trim(),
+        source: document.getElementById('nom-source').value,
+        notes: document.getElementById('nom-notes').value.trim()
+      };
+      const res = await WPForms.submit('nominate', payload);
+      WPUI.showToast(res.via === 'formspree' ? 'Nomination sent!' : 'Nomination saved — we will review for outreach.');
+      this.reset();
+    });
+
+    document.getElementById('confirm-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const payload = {
+        deal: document.getElementById('conf-deal').value.trim(),
+        price: document.getElementById('conf-price').value,
+        dateSeen: document.getElementById('conf-date').value || new Date().toISOString().slice(0, 10)
+      };
+      await WPForms.submit('price-confirm', payload);
+      WPUI.showToast('Thanks — price confirmation recorded.');
+      this.reset();
+    });
+  </script>
+</body>
+</html>

@@ -157,10 +157,14 @@ const WPUI = {
     const videoLink = (deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined')
       ? WPDataLayer.tiktokVideoUrl(handle, deal.tiktokVideoId)
       : profileUrl;
+    const hasOEmbed = !!(deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined');
+    const mediaHtml = hasOEmbed
+      ? '<div class="feed-oembed">' + WPDataLayer.oEmbedBlockquote(handle, deal.tiktokVideoId) + '</div>'
+      : '<div class="feed-video" style="' + (img ? 'background-image:url(' + img + ')' : '') + '">' +
+        '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' + WPIcon('play', 28) + '</a></div>';
 
     return '<article class="feed-card" data-deal-id="' + deal.id + '">' +
-      '<div class="feed-video" style="' + (img ? 'background-image:url(' + img + ')' : '') + '">' +
-      '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' + WPIcon('play', 28) + '</a>' +
+      '<div class="feed-media">' + mediaHtml +
       '<div class="feed-side-actions">' +
       '<button type="button" class="feed-action' + (saved ? ' saved' : '') + '" data-save-deal="' + deal.id + '" aria-label="Save">' +
       '<span class="feed-action-icon">' + WPIcon('heart', 22) + '</span><span>Save</span></button>' +
@@ -232,6 +236,7 @@ const WPUI = {
       '<a href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>Find Deals</a>' +
       '<a href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>Budget Finder</a>' +
       '<a href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>For Sellers</a>' +
+      '<a href="community.html"' + (active === 'community' ? ' style="background:var(--bg)"' : '') + '>Community</a>' +
       '<a href="about.html"' + (active === 'about' ? ' style="background:var(--bg)"' : '') + '>About</a>' +
       '<a href="safe-shopping.html"' + (active === 'safe' ? ' style="background:var(--bg)"' : '') + '>Safe Shopping</a>' +
       '<a href="contact.html"' + (active === 'contact' ? ' style="background:var(--bg)"' : '') + '>Contact</a>' +

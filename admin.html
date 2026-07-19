@@ -32,13 +32,14 @@
         <button type="button" data-tab="tracker">Tracker</button>
         <button type="button" data-tab="research">Research</button>
         <button type="button" data-tab="templates">Templates</button>
+        <button type="button" data-tab="checklist">Verification checklist</button>
         <button type="button" data-tab="export">Export</button>
       </div>
 
       <div id="tab-intake" class="admin-tab-panel">
         <div class="detail-card">
           <h2>Seller intake</h2>
-          <p class="text-muted">Saves to local tracker. Replace Formspree endpoint in the form action when ready.</p>
+          <p class="text-muted">Saves to local tracker and Formspree when configured in <code>js/config.js</code>.</p>
           <form id="intake-form">
             <div class="form-group">
               <label for="in-name">Business name *</label>
@@ -111,6 +112,22 @@
         </div>
       </div>
 
+      <div id="tab-checklist" class="admin-tab-panel hidden">
+        <div class="detail-card">
+          <h2>Per-seller verification checklist</h2>
+          <p class="text-muted">Part 14 — mark progress for each outreach target. Saved in this browser.</p>
+          <div id="checklist-panel"></div>
+        </div>
+        <div class="detail-card">
+          <h2>Category targets</h2>
+          <ul>
+            <li>Fashion: 50 · Electronics: 30 · Home: 20 · Beauty: 15 · Services: 25</li>
+            <li>Pace: 5–10 new verified sellers per week</li>
+          </ul>
+          <p id="checklist-progress" class="text-muted"></p>
+        </div>
+      </div>
+
       <div id="tab-export" class="admin-tab-panel hidden">
         <div class="detail-card">
           <h2>Export</h2>
@@ -127,7 +144,10 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
+    <script src="js/config.js"></script>
   <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/images.js"></script>
   <script src="js/core.js"></script>
@@ -231,14 +251,78 @@
         notes: document.getElementById('in-notes').value || document.getElementById('in-loc').value
       });
       saveTracker(rows);
+      WPForms.submit('admin-intake', {
+        businessName: document.getElementById('in-name').value,
+        phone: document.getElementById('in-phone').value,
+        location: document.getElementById('in-loc').value,
+        handle: document.getElementById('in-handle').value,
+        categories: document.getElementById('in-cat').value,
+        notes: document.getElementById('in-notes').value
+      });
       WPUI.showToast('Saved to tracker');
       this.reset();
       renderTracker();
     });
 
+    function getChecklist() {
+      return JSON.parse(localStorage.getItem('wp-verify-checklist') || '{}');
+    }
+    function saveChecklist(data) {
+      localStorage.setItem('wp-verify-checklist', JSON.stringify(data));
+    }
+    function renderChecklist() {
+      const panel = document.getElementById('checklist-panel');
+      if (!panel) return;
+      const steps = ['contacted', 'confirmed', 'locationVerified', 'badgeAssigned', 'live'];
+      const labels = {
+        contacted: 'Contacted',
+        confirmed: 'Self-submitted or in-person confirmed',
+        locationVerified: 'Physical location verified',
+        badgeAssigned: 'Badge assigned',
+        live: 'Live on site'
+      };
+      const candidates = (WPDATA.candidates && WPDATA.candidates.confirmed) || [];
+      const data = getChecklist();
+      panel.innerHTML = '<div class="checklist-grid">' + candidates.map((c, i) => {
+        const key = c.handle || c.businessName;
+        const row = data[key] || {};
+        return '<div class="detail-card" style="margin:0;">' +
+          '<strong>' + c.businessName + '</strong> ' +
+          (c.handle ? '<a href="https://www.tiktok.com/@' + String(c.handle).replace(/^@/, '') + '" target="_blank" rel="noopener">' + c.handle + '</a>' : '') +
+          '<div class="checklist-grid" style="margin-top:8px;">' +
+          steps.map(s =>
+            '<label class="checklist-item"><input type="checkbox" data-ck="' + key + '" data-step="' + s + '"' +
+            (row[s] ? ' checked' : '') + '> ' + labels[s] + '</label>'
+          ).join('') + '</div></div>';
+      }).join('') + '</div>';
+
+      panel.querySelectorAll('input[data-ck]').forEach(inp => {
+        inp.addEventListener('change', () => {
+          const d = getChecklist();
+          const k = inp.getAttribute('data-ck');
+          d[k] = d[k] || {};
+          d[k][inp.getAttribute('data-step')] = inp.checked;
+          saveChecklist(d);
+          updateChecklistProgress();
+        });
+      });
+      updateChecklistProgress();
+    }
+    function updateChecklistProgress() {
+      const el = document.getElementById('checklist-progress');
+      if (!el) return;
+      const data = getChecklist();
+      const keys = Object.keys(data);
+      let live = 0;
+      keys.forEach(k => { if (data[k].live) live++; });
+      const publicCount = (WPDATA.publicDeals || []).length;
+      el.textContent = 'Checklist live: ' + live + ' · Public launch deals on site: ' + publicCount;
+    }
+
     function bootAdmin() {
       WPDataLayer.loadExtras().then(() => {
         renderTracker();
+        renderChecklist();
         const o = WPDATA.outreach || {};
         document.getElementById('hashtag-chips').innerHTML = (o.hashtags || []).map(h =>
           '<button type="button" class="chip" data-copy="' + h + '">' + h + '</button>'
