@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wikiprice-v4';
+const CACHE_NAME = 'wikiprice-v5';
 const ASSETS = [
   '/',
   '/index.html',

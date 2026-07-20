@@ -1,7 +1,7 @@
 /* WikiPrice UI Components */
 const WPUI = {
   logoHtml() {
-    return '<a href="index.html" class="logo"><img src="images/logo.png" alt="WikiPrice" class="logo-img" width="240" height="72"></a>';
+    return '<a href="index.html" class="logo" aria-label="WikiPrice home"><img src="images/logo.png?v=5" alt="WikiPrice" class="logo-img" width="360" height="104"></a>';
   },
 
   searchBarHtml(id, placeholder, compact) {
