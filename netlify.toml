@@ -1,0 +1,15 @@
+# WikiPrice — static site on Netlify
+[build]
+  publish = "."
+  command = "echo 'No build step — static HTML/CSS/JS'"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
