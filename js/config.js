@@ -38,7 +38,7 @@ const WPCONFIG = {
     'Kampala': { lat: 0.3476, lng: 32.5825 }
   },
 
-  siteUrl: 'https://lynn-sketch.github.io/wikiprice/'
+  siteUrl: 'https://wikiprice1.netlify.app/'
 };
 
 // Auto-detect configured Formspree

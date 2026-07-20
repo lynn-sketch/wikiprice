@@ -2,7 +2,8 @@
 
 Know Your Price, Save Your Money. Kampala's price intelligence and discovery platform.
 
-**Live site:** https://lynn-sketch.github.io/wikiprice/
+**Live site:** https://wikiprice1.netlify.app/  
+*(Also on GitHub Pages: https://lynn-sketch.github.io/wikiprice/)*
 
 ## Master refinement — complete build
 
