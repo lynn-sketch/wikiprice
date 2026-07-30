@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Discover Kampala deals in a TikTok-style scroll feed. Same trusted WikiPrice database as Find Deals.">
+  <title>Discover — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="images/logo.png" type="image/png">
+  <meta name="theme-color" content="#0A2B5C">
+</head>
+<body class="discover-page">
+  <div id="header"></div>
+
+  <main class="discovery-section discovery-standalone" id="discover">
+    <div class="discovery-header">
+      <h1>Discover</h1>
+      <p>Scroll deals like a video feed. Need filters? Use <a href="search.html">Find Deals</a> — same database.</p>
+    </div>
+    <div class="discovery-feed discovery-feed-snap" id="discovery-feed" aria-label="Discovery deal feed"></div>
+  </main>
+
+  <div id="footer" class="discover-footer-wrap"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('discover');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPUIEnhance.initAllSearchBars();
+    WPDataLayer.loadExtras().then(function () {
+      WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'), { pageSize: 3 });
+    });
+  </script>
+  <script src="js/sw-register.js" defer></script>
+</body>
+</html>

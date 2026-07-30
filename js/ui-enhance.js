@@ -101,15 +101,19 @@ const WPUIEnhance = {
   initDiscoveryFeed(container, opts) {
     if (!container) return;
     opts = opts || {};
-    const pageSize = opts.pageSize || 4;
+    const pageSize = opts.pageSize || 3;
     const pool = (typeof WPDataLayer !== 'undefined' && WPDataLayer.getSearchableDeals)
       ? WPDataLayer.getSearchableDeals()
       : (WPDATA.deals || []);
     let deals = WikiPrice.sortDeals(
-      pool.filter(d => d.verificationStatus !== 'scam-warning' && d.id !== 'scam-iphone'),
+      pool.filter(d => d.verificationStatus !== 'scam-warning' && d.id !== 'scam-iphone' && !d.demoOnly),
       'newest'
     );
-    deals = deals.slice().sort((a, b) => (b.mentionedOnTiktok || b.tiktokVideoId ? 1 : 0) - (a.mentionedOnTiktok || a.tiktokVideoId ? 1 : 0));
+    // Discovery first: TikTok-mentioned / video deals, then the rest
+    deals = deals.slice().sort((a, b) => {
+      const score = (d) => (d.tiktokVideoId ? 2 : 0) + (d.mentionedOnTiktok ? 1 : 0);
+      return score(b) - score(a);
+    });
     let offset = 0;
 
     function renderMore() {
@@ -118,46 +122,62 @@ const WPUIEnhance = {
         container.innerHTML = WPUI.emptyVerifiedExplainer();
         return;
       }
+      const sentinel = document.getElementById('feed-sentinel');
+      if (sentinel) sentinel.remove();
       container.insertAdjacentHTML('beforeend', slice.map(d => WPUI.feedCard(d)).join(''));
       offset += slice.length;
       if (typeof WPDataLayer !== 'undefined') WPDataLayer.ensureEmbedScript();
+      if (offset < deals.length) {
+        const s = document.createElement('div');
+        s.id = 'feed-sentinel';
+        s.className = 'feed-sentinel';
+        s.setAttribute('aria-hidden', 'true');
+        container.appendChild(s);
+        io.observe(s);
+      } else {
+        container.insertAdjacentHTML('beforeend',
+          '<p class="feed-end">End of discovery feed · <a href="search.html">Find Deals with filters</a></p>');
+      }
     }
 
     container.innerHTML = '';
-    renderMore();
-
-    const sentinel = document.createElement('div');
-    sentinel.id = 'feed-sentinel';
-    sentinel.style.height = '1px';
-    container.appendChild(sentinel);
+    container.classList.add('discovery-feed-active');
 
     const io = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && offset < deals.length) {
-        sentinel.remove();
+      if (entries[0] && entries[0].isIntersecting && offset < deals.length) {
         renderMore();
-        container.appendChild(sentinel);
       }
-    }, { rootMargin: '200px' });
-    io.observe(sentinel);
+    }, { root: opts.root || null, rootMargin: '120px', threshold: 0.01 });
+
+    renderMore();
 
     container.addEventListener('click', function (e) {
       const saveBtn = e.target.closest('[data-save-deal]');
       if (saveBtn) {
+        e.preventDefault();
         const id = saveBtn.getAttribute('data-save-deal');
         let saved = JSON.parse(localStorage.getItem('wikiprice-saved') || '[]');
-        if (saved.indexOf(id) >= 0) saved = saved.filter(x => x !== id);
-        else saved.push(id);
+        const nowSaved = saved.indexOf(id) < 0;
+        if (nowSaved) saved.push(id);
+        else saved = saved.filter(x => x !== id);
         localStorage.setItem('wikiprice-saved', JSON.stringify(saved));
-        saveBtn.classList.toggle('saved', saved.indexOf(id) >= 0);
-        WPUI.showToast(saved.indexOf(id) >= 0 ? 'Saved' : 'Removed from saved');
+        saveBtn.classList.toggle('saved', nowSaved);
+        const iconWrap = saveBtn.querySelector('.feed-action-icon');
+        if (iconWrap) iconWrap.innerHTML = nowSaved ? WPIcon('heartFilled', 22) : WPIcon('heart', 22);
+        WPUI.showToast(nowSaved ? 'Saved' : 'Removed from saved');
         return;
       }
       const shareBtn = e.target.closest('[data-share-deal]');
       if (shareBtn) {
+        e.preventDefault();
         const id = shareBtn.getAttribute('data-share-deal');
-        const url = location.origin + location.pathname.replace(/[^/]*$/, '') + 'deal.html?id=' + id;
-        if (navigator.share) navigator.share({ title: 'WikiPrice deal', url: url }).catch(() => {});
-        else {
+        const base = location.origin + (location.pathname.includes('/')
+          ? location.pathname.replace(/[^/]*$/, '')
+          : '/');
+        const url = base + 'deal.html?id=' + id;
+        if (navigator.share) {
+          navigator.share({ title: 'WikiPrice deal', url: url }).catch(() => {});
+        } else if (navigator.clipboard) {
           navigator.clipboard.writeText(url).then(() => WPUI.showToast('Link copied'));
         }
       }

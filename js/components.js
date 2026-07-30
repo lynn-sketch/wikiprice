@@ -38,30 +38,49 @@ const WPUI = {
   },
 
   sourceBadge(deal) {
+    // Generic source labels stay plain text (e.g. "TikTok" as a channel name)
     const source = (deal && deal.source) || 'in-person';
     const label = (typeof WPDataLayer !== 'undefined') ? WPDataLayer.sourceBadgeLabel(source) : source;
     return '<span class="badge badge-source badge-source-' + source + '">' + label + '</span>';
   },
 
-  tiktokDeepLink(handle, label) {
+  /** Seller-attached TikTok profile deep link: https://www.tiktok.com/@handle */
+  tiktokProfileLink(handle, opts) {
+    opts = opts || {};
+    const h = handle ? String(handle).replace(/^@/, '') : '';
     const url = (typeof WPDataLayer !== 'undefined')
-      ? WPDataLayer.tiktokProfileUrl(handle)
-      : (handle ? 'https://www.tiktok.com/@' + String(handle).replace(/^@/, '') : null);
+      ? WPDataLayer.tiktokProfileUrl(h)
+      : (h ? 'https://www.tiktok.com/@' + h : null);
     if (!url) return '';
-    const text = label || ('@' + String(handle).replace(/^@/, ''));
-    return '<a href="' + url + '" target="_blank" rel="noopener" class="feed-handle">' + WPIcon('tiktok', 16) + ' ' + text + '</a>';
+    const showIcon = opts.icon !== false;
+    const label = opts.label != null ? opts.label : ('@' + h);
+    const cls = opts.className || 'feed-handle';
+    return '<a href="' + url + '" target="_blank" rel="noopener" class="' + cls + '"' +
+      (opts.ariaLabel ? ' aria-label="' + opts.ariaLabel + '"' : '') + '>' +
+      (showIcon ? WPIcon('tiktok', opts.iconSize || 16) + ' ' : '') + label + '</a>';
+  },
+
+  tiktokDeepLink(handle, label) {
+    return WPUI.tiktokProfileLink(handle, { label: label || undefined });
+  },
+
+  /** "TikTok" word linked only when tied to a specific seller handle */
+  tiktokWordLink(handle) {
+    return WPUI.tiktokProfileLink(handle, { label: 'TikTok', icon: false, className: 'tiktok-word-link' });
   },
 
   contactButton(deal, seller, sm) {
-    // Free tier: WhatsApp available when seller opted in with a number
     const phone = seller?.whatsapp || seller?.phone;
     if (phone) {
       return '<a href="' + WikiPrice.whatsappLink(phone, deal) + '" class="btn btn-whatsapp ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('whatsapp', 16) + ' WhatsApp</a>';
     }
     if (seller?.tiktokHandle || seller?.handle) {
       const h = seller.tiktokHandle || seller.handle;
-      const url = (typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(h) : ('https://www.tiktok.com/@' + String(h).replace(/^@/, ''));
-      return '<a href="' + url + '" class="btn btn-outline ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('tiktok', 16) + ' TikTok</a>';
+      return WPUI.tiktokProfileLink(h, {
+        label: 'TikTok',
+        className: 'btn btn-outline ' + (sm ? 'btn-sm' : ''),
+        iconSize: 16
+      });
     }
     return '';
   },
@@ -119,10 +138,16 @@ const WPUI = {
     const trust = WikiPrice.calculateTrustScore(seller || {});
     const handle = seller?.tiktokHandle || (seller?.handle && String(seller.handle).replace(/^@/, ''));
     const followerLine = handle
-      ? ' · ' + WPUI.tiktokDeepLink(handle) +
+      ? ' · ' + WPUI.tiktokProfileLink(handle) +
+        (handle ? ' · ' + WPUI.tiktokWordLink(handle) : '') +
         ((seller.followerCount || seller.tiktokFollowers) ? ' · ' + WikiPrice.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers' : '')
       : '';
     const lastVerified = deal.lastVerified || seller?.lastVerified;
+    const tiktokBadge = deal.mentionedOnTiktok
+      ? (handle
+        ? WPUI.tiktokProfileLink(handle, { label: 'TikTok', className: 'badge badge-tiktok', iconSize: 14 })
+        : '<span class="badge badge-tiktok">' + WPIcon('tiktok', 14) + ' TikTok</span>')
+      : '';
 
     return '<article class="deal-card">' +
       '<a href="deal.html?id=' + deal.id + '" class="deal-card-img" data-name="' + deal.name.replace(/"/g, '') + '">' + dealImageTag(deal, 'deal-card-photo') + '</a>' +
@@ -134,7 +159,7 @@ const WPUI = {
       WPUI.priceTypeBadge(deal) +
       WPUI.verificationBadge(deal) +
       WPUI.sourceBadge(deal) +
-      (deal.mentionedOnTiktok ? '<span class="badge badge-tiktok">' + WPIcon('tiktok', 14) + ' TikTok</span>' : '') +
+      tiktokBadge +
       (deal.crowdConfirmations >= 5 ? '<span class="badge badge-community">' + WPIcon('users', 14) + ' Community</span>' : '') +
       '</div>' +
       (lastVerified ? '<div class="deal-verified-time">' + WikiPrice.daysAgo(lastVerified) + '</div>' : '') +
@@ -150,38 +175,54 @@ const WPUI = {
   feedCard(deal) {
     const seller = WPDATA.sellers[deal.sellerId] || {};
     const handle = seller.tiktokHandle || (seller.handle && String(seller.handle).replace(/^@/, ''));
-    const profileUrl = handle ? ((typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(handle) : 'https://www.tiktok.com/@' + handle) : 'deal.html?id=' + deal.id;
+    const profileUrl = handle
+      ? ((typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(handle) : 'https://www.tiktok.com/@' + handle)
+      : 'deal.html?id=' + deal.id;
     const img = (typeof getDealImage === 'function') ? getDealImage(deal) : (deal.image || '');
     const price = deal.priceType === 'wholesale' ? deal.wholesalePrice : (deal.retailPrice || deal.wholesalePrice);
     const saved = (JSON.parse(localStorage.getItem('wikiprice-saved') || '[]')).indexOf(deal.id) >= 0;
     const videoLink = (deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined')
       ? WPDataLayer.tiktokVideoUrl(handle, deal.tiktokVideoId)
       : profileUrl;
+    const commentUrl = videoLink; // opens TikTok video/comment thread when video id exists
     const hasOEmbed = !!(deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined');
+    const heartIcon = saved ? WPIcon('heartFilled', 22) : WPIcon('heart', 22);
+
+    // Mini TikTok post: public embed when video id exists; otherwise full-bleed product photo + play
     const mediaHtml = hasOEmbed
       ? '<div class="feed-oembed">' + WPDataLayer.oEmbedBlockquote(handle, deal.tiktokVideoId) + '</div>'
       : '<div class="feed-video" style="' + (img ? 'background-image:url(' + img + ')' : '') + '">' +
-        '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' + WPIcon('play', 28) + '</a></div>';
+        (img ? '<img src="' + img + '" alt="' + (deal.name || '').replace(/"/g, '') + '" class="feed-poster" loading="lazy">' : '') +
+        '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' +
+        WPIcon('play', 28) + '</a></div>';
 
     return '<article class="feed-card" data-deal-id="' + deal.id + '">' +
       '<div class="feed-media">' + mediaHtml +
-      '<div class="feed-side-actions">' +
-      '<button type="button" class="feed-action' + (saved ? ' saved' : '') + '" data-save-deal="' + deal.id + '" aria-label="Save">' +
-      '<span class="feed-action-icon">' + WPIcon('heart', 22) + '</span><span>Save</span></button>' +
-      '<a class="feed-action" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Comment on TikTok">' +
+      '<div class="feed-side-actions" role="group" aria-label="Post actions">' +
+      '<button type="button" class="feed-action' + (saved ? ' saved' : '') + '" data-save-deal="' + deal.id + '" aria-label="Save deal">' +
+      '<span class="feed-action-icon">' + heartIcon + '</span><span>Save</span></button>' +
+      '<a class="feed-action" href="' + commentUrl + '" target="_blank" rel="noopener" aria-label="Comment on TikTok">' +
       '<span class="feed-action-icon">' + WPIcon('comment', 22) + '</span><span>Comment</span></a>' +
-      '<button type="button" class="feed-action" data-share-deal="' + deal.id + '" aria-label="Share">' +
+      '<button type="button" class="feed-action" data-share-deal="' + deal.id + '" aria-label="Share deal">' +
       '<span class="feed-action-icon">' + WPIcon('share', 22) + '</span><span>Share</span></button>' +
-      (handle ? '<a class="feed-action" href="' + profileUrl + '" target="_blank" rel="noopener" aria-label="TikTok profile">' +
-      '<span class="feed-action-icon">' + WPIcon('tiktok', 22) + '</span><span>TikTok</span></a>' : '') +
+      (handle
+        ? '<a class="feed-action" href="' + profileUrl + '" target="_blank" rel="noopener" aria-label="Open seller on TikTok">' +
+          '<span class="feed-action-icon">' + WPIcon('tiktok', 22) + '</span><span>TikTok</span></a>'
+        : '') +
       '</div></div>' +
       '<div class="feed-body">' +
-      (handle ? WPUI.tiktokDeepLink(handle) : '<strong>' + (seller.businessName || seller.name || '') + '</strong>') +
+      '<div class="feed-seller-row">' +
+      (handle
+        ? WPUI.tiktokProfileLink(handle) + ' <span class="feed-dot">·</span> ' + WPUI.tiktokWordLink(handle)
+        : '<strong>' + (seller.businessName || seller.name || 'Seller') + '</strong>') +
+      '</div>' +
       '<div class="feed-price">' + WikiPrice.formatUGX(price) + '</div>' +
       '<div class="feed-meta"><a href="deal.html?id=' + deal.id + '" style="color:inherit;">' + deal.name + '</a> · ' +
-      (deal.location.arcade || '') + (deal.location.stall ? ', ' + deal.location.stall : '') + '</div>' +
+      WPIcon('location', 14) + ' ' + (deal.location.arcade || '') + (deal.location.stall ? ', ' + deal.location.stall : '') + '</div>' +
       '<div class="feed-badges">' + WPUI.verificationBadge(deal) + WPUI.sourceBadge(deal) + '</div>' +
-      (deal.lastVerified || seller.lastVerified ? '<div class="deal-verified-time" style="color:rgba(255,255,255,0.7);">' + WikiPrice.daysAgo(deal.lastVerified || seller.lastVerified) + '</div>' : '') +
+      (deal.lastVerified || seller.lastVerified
+        ? '<div class="deal-verified-time feed-verified">' + WikiPrice.daysAgo(deal.lastVerified || seller.lastVerified) + '</div>'
+        : '') +
       '</div></article>';
   },
 
@@ -236,7 +277,7 @@ const WPUI = {
       '<a class="nav-primary nav-budget" href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>Budget Finder</a>' +
       '<a class="nav-primary" href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>For Sellers</a>' +
       '<span class="nav-divider" aria-hidden="true"></span>' +
-      '<a href="index.html#discover"' + (active === 'discover' ? ' style="background:var(--bg)"' : '') + '>Discover</a>' +
+      '<a href="discover.html"' + (active === 'discover' ? ' style="background:var(--bg)"' : '') + '>Discover</a>' +
       '<a href="community.html"' + (active === 'community' ? ' style="background:var(--bg)"' : '') + '>Community</a>' +
       '<a href="about.html"' + (active === 'about' ? ' style="background:var(--bg)"' : '') + '>About</a>' +
       '<a href="safe-shopping.html"' + (active === 'safe' ? ' style="background:var(--bg)"' : '') + '>Safe Shopping</a>' +
@@ -266,14 +307,14 @@ const WPUI = {
       '<div class="footer-grid container">' +
       '<div><img src="images/logo.png" alt="WikiPrice" style="height:36px;margin-bottom:12px;filter:brightness(0) invert(1);opacity:0.9;"><p>Know Your Price, Save Your Money. Kampala\'s trusted price intelligence platform.</p>' +
       '<div class="footer-social">' +
-      '<a href="https://tiktok.com/@WikiPriceUG" target="_blank" rel="noopener" title="TikTok">' + WPIcon('tiktok', 20) + '</a>' +
+      '<a href="https://www.tiktok.com/@WikiPriceUG" target="_blank" rel="noopener" title="TikTok">' + WPIcon('tiktok', 20) + '</a>' +
       '<a href="https://wa.me/256700000000" target="_blank" rel="noopener" title="WhatsApp">' + WPIcon('whatsapp', 20) + '</a>' +
       '<a href="https://linkedin.com/company/wikiprice" target="_blank" rel="noopener" title="LinkedIn">' + WPIcon('linkedin', 20) + '</a>' +
       '<a href="https://facebook.com/wikipriceug" target="_blank" rel="noopener" title="Facebook">' + WPIcon('facebook', 20) + '</a>' +
       '<a href="https://youtube.com/@WikiPriceUG" target="_blank" rel="noopener" title="YouTube">' + WPIcon('youtube', 20) + '</a>' +
-      '</div><p style="margin-top:12px;font-size:0.85rem;"><a href="https://tiktok.com/@WikiPriceUG" target="_blank" rel="noopener">Follow us on TikTok @WikiPriceUG</a></p></div>' +
-      '<div><h4>Quick Links</h4><p><a href="search.html">Search Deals</a></p><p><a href="budget-finder.html">Budget Finder</a></p><p><a href="safe-shopping.html">Safe Shopping Guide</a></p><p><a href="for-sellers.html">List Your Business</a></p></div>' +
-      '<div><h4>Connect</h4><p><a href="https://wa.me/256700000000">WhatsApp</a></p><p><a href="https://tiktok.com/@WikiPriceUG" target="_blank" rel="noopener">TikTok @WikiPriceUG</a></p><p><a href="contact.html">Contact Us</a></p></div>' +
+      '</div><p style="margin-top:12px;font-size:0.85rem;"><a href="https://www.tiktok.com/@WikiPriceUG" target="_blank" rel="noopener">Follow us on TikTok @WikiPriceUG</a></p></div>' +
+      '<div><h4>Quick Links</h4><p><a href="search.html">Find Deals</a></p><p><a href="discover.html">Discover</a></p><p><a href="budget-finder.html">Budget Finder</a></p><p><a href="for-sellers.html">List Your Business</a></p></div>' +
+      '<div><h4>Connect</h4><p><a href="https://wa.me/256700000000">WhatsApp</a></p><p><a href="https://www.tiktok.com/@WikiPriceUG" target="_blank" rel="noopener">TikTok @WikiPriceUG</a></p><p><a href="contact.html">Contact Us</a></p></div>' +
       '</div>' +
       '<div class="footer-bottom"><p>&copy; 2026 WikiPrice Uganda. Built for Kampala shoppers.</p><p class="page-weight" id="page-weight"></p></div>' +
       '</footer>';
