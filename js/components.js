@@ -231,11 +231,12 @@ const WPUI = {
       '<button id="nav-toggle" class="nav-toggle" type="button" aria-label="Menu">' + WPIcon('menu', 22) + '</button>' +
       '</div></div>' +
       '<nav id="site-nav" class="site-nav">' +
-      '<a href="index.html"' + (active === 'home' ? ' style="background:var(--bg)"' : '') + '>Home</a>' +
+      '<a class="nav-primary" href="index.html"' + (active === 'home' ? ' style="background:var(--bg)"' : '') + '>Home</a>' +
+      '<a class="nav-primary" href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>Find Deals</a>' +
+      '<a class="nav-primary nav-budget" href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>Budget Finder</a>' +
+      '<a class="nav-primary" href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>For Sellers</a>' +
+      '<span class="nav-divider" aria-hidden="true"></span>' +
       '<a href="index.html#discover"' + (active === 'discover' ? ' style="background:var(--bg)"' : '') + '>Discover</a>' +
-      '<a href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>Find Deals</a>' +
-      '<a href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>Budget Finder</a>' +
-      '<a href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>For Sellers</a>' +
       '<a href="community.html"' + (active === 'community' ? ' style="background:var(--bg)"' : '') + '>Community</a>' +
       '<a href="about.html"' + (active === 'about' ? ' style="background:var(--bg)"' : '') + '>About</a>' +
       '<a href="safe-shopping.html"' + (active === 'safe' ? ' style="background:var(--bg)"' : '') + '>Safe Shopping</a>' +

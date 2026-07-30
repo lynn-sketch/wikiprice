@@ -164,13 +164,22 @@ const WPDataLayer = (function () {
       scam.verificationStatus = 'scam-warning';
       scam.catalogNote = 'Educational scam example — not a live listing';
     }
-    if (WPDATA.meta && WPDATA.meta.launchMode) {
-      WPDATA.stats = WPDATA.stats || {};
+    // Always wire deal/seller stats to live catalog counts
+    WPDATA.stats = WPDATA.stats || {};
+    WPDATA.stats.verifiedDeals = (WPDATA.publicDeals || WPDATA.deals || []).filter(d =>
+      d.verificationStatus === 'verified' || (WPDATA.publicDeals && WPDATA.publicDeals.indexOf(d) >= 0)
+    ).length;
+    if (WPDATA.publicDeals) {
       WPDATA.stats.verifiedDeals = WPDATA.publicDeals.length;
       WPDATA.stats.sellers = Object.keys(WPDATA.sellers).filter(id =>
         WPDATA.publicDeals.some(d => d.sellerId === id)
       ).length;
+    } else {
+      WPDATA.stats.verifiedDeals = (WPDATA.deals || []).filter(d => d.verificationStatus === 'verified').length;
+      WPDATA.stats.sellers = Object.keys(WPDATA.sellers || {}).length;
     }
+    WPDATA.meta = WPDATA.meta || {};
+    WPDATA.meta.statsIllustrative = !(WPDATA.meta.usersLive && WPDATA.meta.savingsLive);
   }
 
   function getSearchableDeals() {
@@ -188,6 +197,8 @@ const WPDataLayer = (function () {
     WPDATA.deals = (WPDATA.deals || []).map(normalizeDeal);
     WPDATA.meta = Object.assign({
       statsIllustrative: true,
+      usersLive: false,
+      savingsLive: false,
       verificationGoldStandard: 'manual_in_person',
       apiReady: true,
       launchMode: (typeof WPCONFIG !== 'undefined') ? !!WPCONFIG.launchMode : true

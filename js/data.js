@@ -347,7 +347,9 @@ WPDATA.stats = {
 };
 
 WPDATA.meta = {
-  statsIllustrative: true,
+  statsIllustrative: true, // overall: some metrics still illustrative
+  usersLive: false,        // flip to true when real user analytics exist
+  savingsLive: false,      // flip to true when real savings tracking exists
   verificationGoldStandard: 'manual_in_person',
   apiReady: true
 };
