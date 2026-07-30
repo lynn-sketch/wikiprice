@@ -115,7 +115,7 @@
         <div>
           <p id="results-count" class="text-muted mb-16"></p>
           <div class="deals-grid" id="results-grid"></div>
-          <p id="no-results" class="text-center text-muted hidden"></p>
+          <div id="no-results" class="hidden"></div>
         </div>
       </div>
     </div>
@@ -139,7 +139,10 @@
     document.getElementById('footer').innerHTML = WPUI.footer();
     WikiPrice.initGlobal();
     WPUIEnhance.initAllSearchBars();
-    WPDataLayer.loadExtras();
+    WPUIEnhance.showSkeletons(document.getElementById('results-grid'), 6, 'card');
+    WPDataLayer.loadExtras().then(function () {
+      runSearch();
+    });
     WPGeo.mountBanner(document.getElementById('geo-banner-slot'));
 
     document.getElementById('filter-sort').addEventListener('change', function () {
@@ -209,11 +212,11 @@
         noRes.classList.add('hidden');
         document.getElementById('results-grid').innerHTML = results.map(d => WPUI.dealCard(d, { showWholesaleWarning: true })).join('');
       }
+    }
 
     document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); runSearch(); });
     document.getElementById('apply-filters').addEventListener('click', runSearch);
     document.getElementById('filter-sort').addEventListener('change', runSearch);
-    runSearch();
     window.addEventListener('load', () => WPUI.pageWeight());
   </script>
 </body>

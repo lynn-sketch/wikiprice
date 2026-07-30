@@ -10,7 +10,6 @@ const WPDataLayer = (function () {
 
   const SOURCE_LABELS = {
     tiktok: 'TikTok',
-    Instagram: 'Instagram',
     instagram: 'Instagram',
     facebook: 'Facebook',
     jiji: 'Jiji',

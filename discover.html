@@ -36,8 +36,9 @@
   <script>
     document.getElementById('header').innerHTML = WPUI.header('discover');
     document.getElementById('footer').innerHTML = WPUI.footer();
-    WikiPrice.initGlobal();
+    WikiPrice.initGlobal('discover');
     WPUIEnhance.initAllSearchBars();
+    WPUIEnhance.showSkeletons(document.getElementById('discovery-feed'), 2, 'feed');
     WPDataLayer.loadExtras().then(function () {
       WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'), { pageSize: 3 });
     });

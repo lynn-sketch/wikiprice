@@ -391,6 +391,21 @@ a:hover { text-decoration: underline; }
 }
 a.badge.badge-tiktok { text-decoration: none; color: #fff; }
 .feed-price { font-size: 1.35rem; font-weight: 800; color: var(--accent); margin: 6px 0; }
+.feed-price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin: 6px 0;
+}
+.feed-price-row .feed-price { margin: 0; }
+.feed-verified-beside {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.75);
+  font-weight: 600;
+}
+.feed-badges .trust-signals { margin: 6px 0 0; }
+.feed-badges .trust-verified-date { color: rgba(255,255,255,0.7); }
 .feed-meta {
   font-size: 0.85rem;
   opacity: 0.9;
@@ -974,3 +989,158 @@ body.data-saver img { display: none; }
 .hidden { display: none !important; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .share-text { background: var(--bg); padding: 12px; border-radius: 8px; font-size: 0.9rem; }
+
+/* Trust signals — same row on every deal card / seller profile */
+.trust-signals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0;
+}
+.trust-verified-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.deal-price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+  margin: 4px 0;
+}
+.deal-verified-beside {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.detail-card .deal-price {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+.seller-header .trust-signals { margin-top: 10px; }
+.seller-price-sample {
+  margin: 10px 0;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px;
+  max-width: 420px;
+}
+.seller-price-sample .deal-price { color: #fff; }
+.seller-price-sample .deal-verified-beside { color: rgba(255,255,255,0.85); }
+.mall-compare { color: var(--accent-on-light); font-weight: 600; }
+
+/* Skeleton loaders */
+@keyframes wp-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #e8edf4 25%, #f5f7fa 50%, #e8edf4 75%);
+  background-size: 200% 100%;
+  animation: wp-shimmer 1.2s ease-in-out infinite;
+  border-radius: 8px;
+}
+.skeleton-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.skeleton-img { height: 160px; border-radius: 0; }
+.skeleton-card-body { padding: 14px; }
+.skeleton-line { height: 14px; margin-bottom: 10px; }
+.skeleton-line.w60 { width: 60%; }
+.skeleton-line.w40 { width: 40%; }
+.skeleton-line.w50 { width: 50%; }
+.skeleton-line.w70 { width: 70%; }
+.skeleton-feed {
+  background: #111;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.skeleton-media { height: min(70vh, 520px); border-radius: 0; opacity: 0.35; }
+.skeleton-feed-body { padding: 16px; }
+.skeleton-feed .skeleton-line { background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%); background-size: 200% 100%; }
+
+/* Sticky mobile bottom nav */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  grid-template-columns: repeat(4, 1fr);
+  box-shadow: 0 -4px 20px rgba(10, 43, 92, 0.08);
+}
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--tap);
+  padding: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
+  color: var(--primary);
+  text-decoration: none;
+}
+.bottom-nav-item.active { color: var(--accent-on-light); }
+@media (max-width: 767px) {
+  .bottom-nav { display: grid; }
+  body.has-bottom-nav {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+  body.has-bottom-nav .site-footer { margin-bottom: 8px; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { font-size: 16px; }
+  .deal-card h3 { font-size: 1.05rem; }
+  .section-title { font-size: 1.35rem; }
+  .btn { font-size: 1rem; }
+}
+
+/* Accessibility — gold (#D4A843) contrast on light backgrounds */
+:root {
+  --accent-on-light: #8a6a1a;
+  --accent-text-on-gold: #1a2332;
+}
+.btn-accent {
+  background: var(--accent);
+  color: var(--accent-text-on-gold);
+  font-weight: 700;
+}
+.btn-accent:hover {
+  background: var(--accent-dark);
+  color: #fff;
+  text-decoration: none;
+}
+a:not(.btn):not(.bottom-nav-item):not(.nav-primary):not(.budget-preset) {
+  text-underline-offset: 2px;
+}
+.discovery-header a,
+.feed-end a,
+.stat-tag,
+.logo span {
+  color: var(--accent-on-light);
+}
+.discovery-header a { color: var(--accent); }
+.feed-price { color: var(--accent); }
+.chip:hover { color: var(--primary-dark); }
+.review-stars .wp-icon,
+.star-rating.filled { color: var(--accent-on-light); }
+.badge-source-jumia { color: #1a2332; font-weight: 700; }
+.stat-placeholder { color: var(--text-muted) !important; }
+img[alt=""] { outline: 1px dashed var(--caution); }

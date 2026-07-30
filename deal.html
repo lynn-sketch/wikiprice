@@ -62,7 +62,8 @@
         '<div class="deal-detail-header">' +
         '<p class="text-muted">' + deal.category + ' &rsaquo; ' + deal.subCategory + '</p>' +
         '<h1 style="margin:8px 0;">' + deal.name + '</h1>' +
-        '<div class="deal-meta">' + WPUI.priceTypeBadge(deal) + WPUI.verificationBadge(deal) + WPUI.stockBadge(deal) + WPUI.riskBadge(risk) +
+        WPUI.trustSignals(deal, seller) +
+        '<div class="deal-meta">' + WPUI.priceTypeBadge(deal) + WPUI.stockBadge(deal) + WPUI.riskBadge(risk) +
         (deal.crowdConfirmations >= 5 ? '<span class="badge badge-community">' + WPIcon('users', 14) + ' Community Verified</span>' : '') + '</div>' +
         '</div>' +
 
@@ -72,11 +73,10 @@
         '<div class="deal-detail-grid">' +
         '<div>' +
         '<div class="detail-card">' +
-        '<div class="price-display">' + WikiPrice.formatUGX(deal.retailPrice) + '</div>' +
-        (deal.priceType !== 'retail' ? '<p>Wholesale: ' + WikiPrice.formatUGX(deal.wholesalePrice) + '/piece · Min ' + deal.minQuantity + ' pieces (Total: ' + WikiPrice.formatUGX(deal.wholesalePrice * deal.minQuantity) + ')</p>' : '') +
-        (deal.mallPrice ? '<p style="color:var(--accent);font-weight:600;">Mall price: ' + WikiPrice.formatUGX(deal.mallPrice) + ' · Save ' + Math.round((1 - deal.retailPrice/deal.mallPrice)*100) + '%</p>' : '') +
+        WPUI.formatPrices(deal, { seller: seller, showVerifiedBeside: true }) +
+        (deal.mallPrice ? '<p class="mall-compare">Mall price: ' + WikiPrice.formatUGX(deal.mallPrice) + ' · Save ' + Math.round((1 - deal.retailPrice/deal.mallPrice)*100) + '%</p>' : '') +
         WPUI.wholesaleWarning(deal) +
-        '<p>' + WikiPrice.daysAgo(deal.lastVerified) + ' · ' + WPUI.confidenceBadge(deal) + '</p>' +
+        '<p>' + WPUI.confidenceBadge(deal) + '</p>' +
         (bestPrice ? '<span class="badge badge-verified">' + WPIcon('trophy', 14) + ' ' + bestPrice + '</span> ' : '') +
         WPUI.trendIndicator(trend) +
         '</div>' +

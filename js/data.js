@@ -263,6 +263,7 @@ function mkDeal(o) {
     lastVerified: o.lastVerified || '2026-06-14',
     verificationMethod: o.verificationMethod || 'physical',
     priceConfidence: o.priceConfidence || 'high',
+    source: o.source || (o.mentionedOnTiktok ? 'tiktok' : 'in-person'),
     mallPrice: o.mallPrice || Math.round(o.retailPrice * 2),
     mentionedOnTiktok: o.mentionedOnTiktok || false,
     crowdConfirmations: o.crowdConfirmations || Math.floor(Math.random() * 8) + 3,
@@ -331,7 +332,7 @@ WPDATA.deals = [
   mkDeal({ id: 'socks-pack', name: 'Socks (3 Pairs)', category: 'Fashion for Men', subCategory: 'Shirts', retailPrice: 8000, wholesalePrice: 5000, minQuantity: 30, priceType: 'both', mallPrice: 20000, sellerId: 'denim-hub', location: { arcade: 'Kikuubo', building: 'Building C', floor: '1st Floor', stall: 'Stall 9', landmark: 'Near staircase', street: 'Kikuubo Road', mapsUrl: 'https://maps.google.com/?q=Kikuubo+Kampala', directions: 'Building C, 1st floor.' } }),
   mkDeal({ id: 'thrift-shirt', name: 'Thrift Shirt', category: 'Thrift', subCategory: 'Shirts', retailPrice: 10000, wholesalePrice: 7000, minQuantity: 20, priceType: 'both', mallPrice: 30000, sellerId: 'sharon-stall', location: { arcade: 'Owino', building: 'Liberia Section', floor: 'Ground', stall: "Sharon's area", landmark: 'Liberia section for clothes', street: 'Owino Market', mapsUrl: 'https://maps.google.com/?q=Owino+Market+Kampala', directions: 'Liberia section, Owino Market.' } }),
   mkDeal({ id: 'perfume-100ml', name: 'Inspired Perfume (100ml)', category: 'Beauty and Fragrance', subCategory: 'Perfumes', retailPrice: 55000, wholesalePrice: 45000, minQuantity: 12, priceType: 'both', mallPrice: 100000, sellerId: 'daniel-perfumes', mentionedOnTiktok: true, location: { arcade: 'Kampala', building: 'Ntinda', floor: 'Ground', stall: 'Near Capital Shoppers', landmark: 'Near Capital Shoppers, Ntinda', street: 'Ntinda Road', mapsUrl: 'https://maps.google.com/?q=Ntinda+Kampala', directions: 'Near Capital Shoppers in Ntinda.' } }),
-  mkDeal({ id: 'ai-selfie-stick', name: 'AI Selfie Stick Tripod', category: 'Electronics', subCategory: 'Accessories', retailPrice: 150000, wholesalePrice: 130000, minQuantity: 5, priceType: 'both', mallPrice: 200000, sellerId: 'noddiz', mentionedOnTiktok: true, location: { arcade: 'Other', building: 'Online/Jumia', floor: '', stall: '', landmark: 'Available on Jumia', street: '', mapsUrl: 'https://maps.google.com/?q=Kampala', directions: 'Order via Jumia or WhatsApp.' } }),
+  mkDeal({ id: 'ai-selfie-stick', name: 'AI Selfie Stick Tripod', category: 'Electronics', subCategory: 'Accessories', retailPrice: 150000, wholesalePrice: 130000, minQuantity: 5, priceType: 'both', mallPrice: 200000, sellerId: 'noddiz', mentionedOnTiktok: true, source: 'jumia', location: { arcade: 'Other', building: 'Online/Jumia', floor: '', stall: '', landmark: 'Available on Jumia', street: '', mapsUrl: 'https://maps.google.com/?q=Kampala', directions: 'Order via Jumia or WhatsApp.' } }),
   mkDeal({ id: 'men-suit', name: "Men's Suit", category: 'Fashion for Men', subCategory: 'Suits', retailPrice: 150000, wholesalePrice: 130000, minQuantity: 3, priceType: 'both', mallPrice: 280000, sellerId: 'magoba-suits', location: { arcade: 'Magoba', building: 'Magoba Shopping Centre', floor: '2nd Floor', stall: 'Shop 15', landmark: 'Opposite Old Taxi Park', street: 'Nakivubo Mews', mapsUrl: 'https://maps.google.com/?q=Magoba+Shopping+Centre+Kampala', directions: '2nd floor, suits section.' } }),
   mkDeal({ id: 'gomesi', name: 'Gomesi Traditional Garment', category: 'Fashion for Women', subCategory: 'Dresses', retailPrice: 80000, wholesalePrice: 65000, minQuantity: 5, priceType: 'both', mallPrice: 150000, sellerId: 'magoba-suits', location: { arcade: 'Magoba', building: 'Magoba Shopping Centre', floor: '1st Floor', stall: 'Shop 8', landmark: 'Opposite Old Taxi Park', street: 'Nakivubo Mews', mapsUrl: 'https://maps.google.com/?q=Magoba+Shopping+Centre+Kampala', directions: '1st floor, traditional wear.' } }),
   mkDeal({ id: 'pillowcases-pair', name: 'Pillowcases (Pair)', category: 'Home and Furniture', subCategory: 'Bedding', retailPrice: 12000, wholesalePrice: 8000, minQuantity: 20, priceType: 'both', mallPrice: 25000, sellerId: 'mirembe-beddings', location: { arcade: 'Kampala', building: 'DM for location', floor: '', stall: '', landmark: 'DM seller', street: '', mapsUrl: 'https://maps.google.com/?q=Kampala', directions: 'Contact seller for location.' } }),
@@ -342,14 +343,15 @@ WPDATA.deals = [
 WPDATA.stats = {
   verifiedDeals: WPDATA.deals.filter(d => d.verificationStatus === 'verified').length,
   sellers: Object.keys(WPDATA.sellers).length,
-  totalSavings: 125000000,
-  users: 8420
+  // Do not treat these as live until analytics exist
+  totalSavings: null,
+  users: null
 };
 
 WPDATA.meta = {
-  statsIllustrative: true, // overall: some metrics still illustrative
-  usersLive: false,        // flip to true when real user analytics exist
-  savingsLive: false,      // flip to true when real savings tracking exists
+  statsIllustrative: true,
+  usersLive: false,
+  savingsLive: false,
   verificationGoldStandard: 'manual_in_person',
   apiReady: true
 };

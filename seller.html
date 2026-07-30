@@ -48,10 +48,12 @@
         tiktokHtml = '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="' + url + '" target="_blank" rel="noopener">@' + handle + '</a> · ' + WikiPrice.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers on TikTok</span></p>';
       }
 
-      const lastVerified = seller.lastVerified || (deals[0] && deals[0].lastVerified);
-      const lastVerifiedHtml = lastVerified
-        ? '<p class="deal-verified-time" style="font-size:0.95rem;margin-top:8px;">' + WikiPrice.daysAgo(lastVerified) + '</p>'
-        : '';
+      const sampleForTrust = sampleDeal || {
+        verificationStatus: seller.verificationStatus || 'verified',
+        source: seller.source || 'in-person',
+        lastVerified: seller.lastVerified
+      };
+      if (!sampleForTrust.lastVerified && deals[0]) sampleForTrust.lastVerified = deals[0].lastVerified;
 
       let bioExtracts = (seller.bioExtracts || []).map(b =>
         '<div class="tiktok-extract"><span class="source-label">' + b.source + '</span><br>' + b.text + '</div>'
@@ -66,12 +68,19 @@
           '</div>' + locations;
       }
 
+      const lowestDeal = deals.slice().sort((a, b) => (a.retailPrice || 0) - (b.retailPrice || 0))[0];
+      const priceBlock = lowestDeal
+        ? '<div class="seller-price-sample">' + WPUI.formatPrices(lowestDeal, { seller: seller, showVerifiedBeside: true }) + '</div>'
+        : '';
+
       const html = '<div class="seller-header"><div class="container flex-between">' +
-        '<div><h1 style="margin:0;">' + (seller.businessName || seller.name) + '</h1>' + tiktokHtml + lastVerifiedHtml +
+        '<div><h1 style="margin:0;">' + (seller.businessName || seller.name) + '</h1>' + tiktokHtml +
+        WPUI.trustSignalsSeller(seller, sampleForTrust) +
+        priceBlock +
         '<span class="badge ' + risk.badgeClass + '">' + risk.label + '</span> ' +
         (seller.bioVerified || seller.verificationStatus === 'verified' ? '<span class="badge badge-bio-verified">' + WPIcon('verify', 14) + ' Bio Verified</span>' : '') +
         (trust.score >= 80 ? '<span class="badge badge-verified">' + WPIcon('trophy', 14) + ' Trusted Seller</span>' : '') +
-        '</div><div class="trust-score-ring">' + trust.score + '%</div></div></div>' +
+        '</div><div class="trust-score-ring" aria-label="Trust score ' + trust.score + ' percent">' + trust.score + '%</div></div></div>' +
 
         '<section class="section"><div class="container">' +
         '<div class="deal-detail-grid">' +

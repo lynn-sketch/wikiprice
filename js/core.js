@@ -45,9 +45,9 @@ const WikiPrice = (function () {
   function daysAgo(dateStr) {
     const d = new Date(dateStr);
     const diff = Math.floor((Date.now() - d.getTime()) / 86400000);
-    if (diff === 0) return 'Verified today';
-    if (diff === 1) return 'Verified 1 day ago';
-    return 'Verified ' + diff + ' days ago';
+    if (diff === 0) return 'Last verified today';
+    if (diff === 1) return 'Last verified 1 day ago';
+    return 'Last verified ' + diff + ' days ago';
   }
 
   function getDisplayPrice(deal, preferRetail) {
@@ -284,7 +284,17 @@ const WikiPrice = (function () {
     document.body.classList.toggle('data-saver', on);
   }
 
-  function initGlobal() {
+  function bottomNavActiveFromPath() {
+    const p = (location.pathname || '').toLowerCase();
+    if (p.indexOf('discover') >= 0) return 'discover';
+    if (p.indexOf('budget') >= 0) return 'budget';
+    if (p.indexOf('for-sellers') >= 0) return 'sellers';
+    if (p.indexOf('search') >= 0 || p.indexOf('deal') >= 0 || p.indexOf('seller') >= 0) return '';
+    if (p.indexOf('index') >= 0 || /\/(wikiprice)?\/?$/.test(p) || p.endsWith('/')) return 'home';
+    return '';
+  }
+
+  function initGlobal(activeBottom) {
     document.body.classList.toggle('data-saver', dataSaver);
     const langBtn = document.getElementById('lang-toggle');
     if (langBtn) {
@@ -306,6 +316,14 @@ const WikiPrice = (function () {
     const nav = document.getElementById('site-nav');
     if (navToggle && nav) {
       navToggle.onclick = () => nav.classList.toggle('open');
+    }
+    if (typeof WPUI !== 'undefined' && WPUI.bottomNav && !document.getElementById('bottom-nav-root')) {
+      const active = activeBottom != null ? activeBottom : bottomNavActiveFromPath();
+      const wrap = document.createElement('div');
+      wrap.id = 'bottom-nav-root';
+      wrap.innerHTML = WPUI.bottomNav(active);
+      document.body.appendChild(wrap);
+      document.body.classList.add('has-bottom-nav');
     }
   }
 

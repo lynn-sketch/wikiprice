@@ -16,8 +16,11 @@ Know Your Price, Save Your Money. Kampala's price intelligence and discovery pla
 | Launch catalog (verified + physical only) | Done |
 | Flexible JSON data layer + API sync hooks | Done |
 | UX: illustrative stats, no fake quotes, empty states | Done |
-| WhatsApp on free tier | Done |
-| Last verified on deals/sellers | Done |
+| WhatsApp on free tier (paid = placement/promo) | Done |
+| Last verified beside price + trust signal strip | Done |
+| Skeleton loaders (home / search / budget / discover) | Done |
+| Sticky mobile bottom nav | Done |
+| A11y: gold contrast, mobile type, image alt | Done |
 | Admin outreach assistant + verification checklist | Done |
 | Formspree-ready forms (`js/config.js`) | Done |
 | Kampala geo-fence + nearest sort | Done |

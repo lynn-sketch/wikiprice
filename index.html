@@ -54,17 +54,17 @@
     <div class="discovery-feed discovery-feed-snap" id="discovery-feed" aria-label="Discovery deal feed"></div>
   </section>
 
-  <section class="section">
+  <section class="section" id="recent-section">
     <div class="container">
-      <h2 class="section-title">Recent Verified Deals</h2>
+      <h2 class="section-title" id="recent-section-title">Recent Verified Deals</h2>
       <div id="recent-deals-wrap">
         <div class="deals-grid" id="recent-deals"></div>
       </div>
-      <p class="text-center mt-16"><a href="search.html" class="btn btn-outline">View All Deals</a></p>
+      <p class="text-center mt-16" id="recent-view-all"><a href="search.html" class="btn btn-outline">View All Deals</a></p>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="verify-standalone">
     <div class="container">
       <h2 class="section-title">How WikiPrice Verifies Deals</h2>
       <div class="empty-state-box" style="border-style:solid;">
@@ -104,8 +104,10 @@
   <script>
     document.getElementById('header').innerHTML = WPUI.header('home');
     document.getElementById('footer').innerHTML = WPUI.footer();
-    WikiPrice.initGlobal();
+    WikiPrice.initGlobal('home');
     WPUIEnhance.initAllSearchBars();
+    WPUIEnhance.showSkeletons(document.getElementById('discovery-feed'), 2, 'feed');
+    WPUIEnhance.showSkeletons(document.getElementById('recent-deals'), 4, 'card');
     WPDataLayer.loadExtras().then(function () {
       WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
       WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'));
@@ -113,7 +115,11 @@
       const recent = WikiPrice.sortDeals(pool.filter(d => d.verificationStatus === 'verified'), 'newest').slice(0, 8);
       const recentEl = document.getElementById('recent-deals');
       if (!recent.length) {
+        document.getElementById('recent-section-title').textContent = 'How WikiPrice Verifies Deals';
         document.getElementById('recent-deals-wrap').innerHTML = WPUI.emptyVerifiedExplainer();
+        document.getElementById('recent-view-all').classList.add('hidden');
+        const vs = document.getElementById('verify-standalone');
+        if (vs) vs.classList.add('hidden');
       } else {
         recentEl.innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
       }

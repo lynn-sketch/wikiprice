@@ -66,36 +66,78 @@ const WPUIEnhance = {
   renderStatsGrid(container, stats) {
     if (!container) return;
     const meta = (WPDATA && WPDATA.meta) || {};
-    // Live catalog counts (deals + sellers) vs illustrative metrics until real analytics exist
     const liveDeals = stats.verifiedDeals != null ? stats.verifiedDeals : 0;
     const liveSellers = stats.sellers != null ? stats.sellers : 0;
-    const usersLive = meta.usersLive === true;
-    const savingsLive = meta.savingsLive === true;
-    const users = usersLive ? (stats.users || 0) : (stats.users || 0);
-    const savingsM = Math.round((stats.totalSavings || 0) / 1000000);
-    const anyIllustrative = !usersLive || !savingsLive;
+    const usersLive = meta.usersLive === true && stats.users != null;
+    const savingsLive = meta.savingsLive === true && stats.totalSavings != null;
 
-    container.innerHTML =
+    let html =
       '<div class="stat-card stat-live"><div class="stat-icon-wrap">' + WPIcon('tag', 32) + '</div>' +
       '<div class="stat-number" data-count-to="' + liveDeals + '">0</div>' +
-      '<div class="stat-label">Verified Deals</div>' +
+      '<div class="stat-label">Verified deals</div>' +
       '<div class="stat-tag">Live catalog</div></div>' +
       '<div class="stat-card stat-live"><div class="stat-icon-wrap">' + WPIcon('shop', 32) + '</div>' +
       '<div class="stat-number" data-count-to="' + liveSellers + '">0</div>' +
-      '<div class="stat-label">Sellers</div>' +
-      '<div class="stat-tag">Live catalog</div></div>' +
-      '<div class="stat-card' + (usersLive ? ' stat-live' : ' stat-illustrative') + '"><div class="stat-icon-wrap">' + WPIcon('users', 32) + '</div>' +
-      '<div class="stat-number" data-count-to="' + users + '">0</div>' +
-      '<div class="stat-label">Users</div>' +
-      '<div class="stat-tag">' + (usersLive ? 'Live' : 'Illustrative') + '</div></div>' +
-      '<div class="stat-card' + (savingsLive ? ' stat-live' : ' stat-illustrative') + '"><div class="stat-icon-wrap">' + WPIcon('money', 32) + '</div>' +
-      '<div class="stat-number" data-count-to="' + savingsM + '" data-prefix="UGX " data-suffix="M+">0</div>' +
-      '<div class="stat-label">Total Savings</div>' +
-      '<div class="stat-tag">' + (savingsLive ? 'Live' : 'Illustrative') + '</div></div>' +
-      (anyIllustrative
-        ? '<p class="stats-disclaimer" style="grid-column:1/-1;">Verified deals and sellers are live catalog counts. Users and savings are illustrative until real analytics are connected.</p>'
-        : '<p class="stats-disclaimer stats-live-note" style="grid-column:1/-1;">All figures are live.</p>');
+      '<div class="stat-label">Verified sellers</div>' +
+      '<div class="stat-tag">Live · real count</div></div>';
+
+    if (usersLive) {
+      html +=
+        '<div class="stat-card stat-live"><div class="stat-icon-wrap">' + WPIcon('users', 32) + '</div>' +
+        '<div class="stat-number" data-count-to="' + stats.users + '">0</div>' +
+        '<div class="stat-label">Users</div><div class="stat-tag">Live</div></div>';
+    } else {
+      html +=
+        '<div class="stat-card stat-illustrative"><div class="stat-icon-wrap">' + WPIcon('users', 32) + '</div>' +
+        '<div class="stat-number stat-placeholder">—</div>' +
+        '<div class="stat-label">Users</div><div class="stat-tag">Illustrative — coming soon</div></div>';
+    }
+
+    if (savingsLive) {
+      html +=
+        '<div class="stat-card stat-live"><div class="stat-icon-wrap">' + WPIcon('money', 32) + '</div>' +
+        '<div class="stat-number" data-count-to="' + Math.round(stats.totalSavings / 1000000) + '" data-prefix="UGX " data-suffix="M+">0</div>' +
+        '<div class="stat-label">Total savings</div><div class="stat-tag">Live</div></div>';
+    } else {
+      html +=
+        '<div class="stat-card stat-illustrative"><div class="stat-icon-wrap">' + WPIcon('money', 32) + '</div>' +
+        '<div class="stat-number stat-placeholder">—</div>' +
+        '<div class="stat-label">Total savings</div><div class="stat-tag">Illustrative — coming soon</div></div>';
+    }
+
+    html += '<p class="stats-disclaimer" style="grid-column:1/-1;">Showing real catalog counts only. Users and savings stay blank until we have real analytics — we do not invent large numbers.</p>';
+    container.innerHTML = html;
     WPUIEnhance.animateCounters();
+  },
+
+  showSkeletons(container, count, type) {
+    if (!container) return;
+    count = count || 3;
+    type = type || 'card';
+    if (type === 'feed') {
+      container.innerHTML = Array.from({ length: count }, () =>
+        '<div class="skeleton-feed" aria-hidden="true">' +
+        '<div class="skeleton skeleton-media"></div>' +
+        '<div class="skeleton-feed-body"><div class="skeleton skeleton-line w60"></div>' +
+        '<div class="skeleton skeleton-line w40"></div></div></div>'
+      ).join('');
+    } else if (type === 'list') {
+      container.innerHTML = Array.from({ length: count }, () =>
+        '<div class="skeleton-card" aria-hidden="true">' +
+        '<div class="skeleton skeleton-img"></div>' +
+        '<div class="skeleton-card-body"><div class="skeleton skeleton-line"></div>' +
+        '<div class="skeleton skeleton-line w60"></div>' +
+        '<div class="skeleton skeleton-line w40"></div></div></div>'
+      ).join('');
+    } else {
+      container.innerHTML = Array.from({ length: count }, () =>
+        '<div class="skeleton-card" aria-hidden="true">' +
+        '<div class="skeleton skeleton-img"></div>' +
+        '<div class="skeleton-card-body"><div class="skeleton skeleton-line"></div>' +
+        '<div class="skeleton skeleton-line w70"></div>' +
+        '<div class="skeleton skeleton-line w50"></div></div></div>'
+      ).join('');
+    }
   },
 
   initDiscoveryFeed(container, opts) {

@@ -32,6 +32,8 @@
     <div class="container">
       <h2 class="section-title">Pricing Plans</h2>
       <div class="pricing-grid">
+        <p class="text-muted" style="max-width:640px;margin:0 auto 20px;text-align:center;">WhatsApp contact stays on the Free tier. Paid plans add priority placement, video promotion, and stronger distribution — not the basic contact channel.</p>
+        <div class="pricing-grid">
         <div class="pricing-card">
           <h3>Basic</h3>
           <div class="pricing-price">Free</div>
@@ -39,31 +41,32 @@
           <ul style="text-align:left;padding-left:20px;">
             <li>Business profile page</li>
             <li>Product listings</li>
-            <li>WhatsApp contact button</li>
+            <li>WhatsApp contact button (included)</li>
             <li>Basic support</li>
           </ul>
         </div>
         <div class="pricing-card featured">
           <h3>Verified</h3>
           <div class="pricing-price">UGX 30,000/mo</div>
-          <p>Verification badge, priority search, physical check</p>
+          <p>Priority placement + physical verification — WhatsApp still included</p>
           <ul style="text-align:left;padding-left:20px;">
             <li>Verified badge</li>
             <li>Priority in search results</li>
             <li>Physical shop verification</li>
-            <li>Everything in Basic</li>
+            <li>Everything in Basic (incl. WhatsApp)</li>
           </ul>
         </div>
         <div class="pricing-card">
           <h3>Premium</h3>
           <div class="pricing-price">UGX 50,000/mo</div>
-          <p>Everything in Verified plus top placement</p>
+          <p>Stronger distribution: top placement &amp; video promo</p>
           <ul style="text-align:left;padding-left:20px;">
             <li>Top placement in search</li>
             <li>Video promotions</li>
             <li>Featured deal of the day</li>
-            <li>All Verified features</li>
+            <li>All Verified features (incl. WhatsApp)</li>
           </ul>
+        </div>
         </div>
       </div>
     </div>
@@ -153,7 +156,7 @@
   <script>
     document.getElementById('header').innerHTML = WPUI.header('sellers');
     document.getElementById('footer').innerHTML = WPUI.footer();
-    WikiPrice.initGlobal();
+    WikiPrice.initGlobal('sellers');
     WPUIEnhance.initAllSearchBars();
     document.getElementById('seller-icon-1').innerHTML = WPIcon('trending', 36);
     document.getElementById('seller-icon-2').innerHTML = WPIcon('verify', 36);

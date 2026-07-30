@@ -149,7 +149,7 @@ function dealImageTag(deal, className) {
 function arcadeImageTag(arcade, className) {
   const src = getArcadeImage(arcade);
   const fb = 'https://picsum.photos/seed/arcade-' + encodeURIComponent(arcade || 'market') + '/800/400';
-  return '<img src="' + src + '" alt="' + (arcade || 'Market') + '" class="' + (className || 'deal-location-photo') + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + fb + '\'">';
+  return '<img src="' + src + '" alt="' + ((arcade || 'Kampala') + ' market location').replace(/"/g, '&quot;') + '" class="' + (className || 'deal-location-photo') + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + fb + '\'">';
 }
 
 /* Pre-assign image URL on every deal */
