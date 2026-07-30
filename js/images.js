@@ -122,12 +122,32 @@ const WPIMAGES = {
   hero: 'https://images.unsplash.com/photo-1555529669-2269763671de?w=1200&h=500&fit=crop&q=80'
 };
 
+function categoryPlaceholderDataUri(deal) {
+  const label = (deal.subCategory || deal.category || 'Product').slice(0, 28);
+  const line2 = 'Category placeholder';
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">' +
+    '<rect fill="#e8eef6" width="600" height="400"/>' +
+    '<rect x="24" y="24" width="552" height="352" fill="none" stroke="#0A2B5C" stroke-width="2" stroke-dasharray="8 6"/>' +
+    '<text x="300" y="175" text-anchor="middle" fill="#0A2B5C" font-family="system-ui,sans-serif" font-size="22" font-weight="700">' +
+    label.replace(/[<>&]/g, '') + '</text>' +
+    '<text x="300" y="215" text-anchor="middle" fill="#5c6578" font-family="system-ui,sans-serif" font-size="16">' +
+    line2 + '</text>' +
+    '<text x="300" y="250" text-anchor="middle" fill="#8a6a1a" font-family="system-ui,sans-serif" font-size="14">' +
+    'Awaiting seller-sourced photo' + '</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
 function getDealImage(deal) {
-  if (deal.image) return deal.image;
-  if (deal.id && WPIMAGES.byDealId[deal.id]) return WPIMAGES.byDealId[deal.id];
-  if (deal.subCategory && WPIMAGES.bySubCategory[deal.subCategory]) return WPIMAGES.bySubCategory[deal.subCategory];
-  if (deal.category && WPIMAGES.byCategory[deal.category]) return WPIMAGES.byCategory[deal.category];
-  return 'https://picsum.photos/seed/' + encodeURIComponent(deal.id || 'wikiprice') + '/600/400';
+  // Part 4.5: only seller-confirmed images may show as real product photos
+  if (deal.imageConfirmed === true && (deal.imageUrl || deal.image)) {
+    return deal.imageUrl || deal.image;
+  }
+  if (deal.imageConfirmed === true && deal.id && WPIMAGES.byDealId[deal.id]) {
+    return WPIMAGES.byDealId[deal.id];
+  }
+  // No confirmed image → labeled category placeholder (never a mismatched stock photo)
+  return categoryPlaceholderDataUri(deal);
 }
 
 function getArcadeImage(arcade) {
@@ -135,15 +155,22 @@ function getArcadeImage(arcade) {
 }
 
 function imageFallbackUrl(deal) {
-  return 'https://picsum.photos/seed/wp-' + encodeURIComponent(deal.id || 'item') + '/600/400';
+  return categoryPlaceholderDataUri(deal || {});
 }
 
 function dealImageTag(deal, className) {
   const src = getDealImage(deal);
   const fallback = imageFallbackUrl(deal);
-  const alt = deal.name + ' at ' + (deal.location?.arcade || 'Kampala');
+  const confirmed = deal.imageConfirmed === true;
+  const alt = confirmed
+    ? (deal.name + ' at ' + (deal.location?.arcade || 'Kampala'))
+    : ((deal.subCategory || deal.category || 'Product') + ' category placeholder — not a seller photo');
   const priceText = (typeof WikiPrice !== 'undefined') ? WikiPrice.formatUGX(deal.retailPrice) : '';
-  return '<img src="' + src + '" alt="' + (alt + (priceText ? ' — ' + priceText : '')).replace(/"/g, '&quot;') + '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" onerror="if(this.dataset.fb){this.src=this.dataset.fb}else{this.dataset.fb=1;this.src=\'' + fallback + '\'}">';
+  const badge = confirmed ? '' : '<span class="img-placeholder-badge">Category placeholder</span>';
+  return '<div class="deal-img-wrap' + (confirmed ? '' : ' is-placeholder') + '">' +
+    '<img src="' + src + '" alt="' + (alt + (priceText && confirmed ? ' — ' + priceText : '')).replace(/"/g, '&quot;') +
+    '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" onerror="this.onerror=null;this.src=\'' + fallback.replace(/'/g, '%27') + '\'">' +
+    badge + '</div>';
 }
 
 function arcadeImageTag(arcade, className) {
@@ -152,9 +179,9 @@ function arcadeImageTag(arcade, className) {
   return '<img src="' + src + '" alt="' + ((arcade || 'Kampala') + ' market location').replace(/"/g, '&quot;') + '" class="' + (className || 'deal-location-photo') + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + fb + '\'">';
 }
 
-/* Pre-assign image URL on every deal */
+/* Pre-assign image URL only when seller-confirmed; otherwise leave for placeholder */
 if (typeof WPDATA !== 'undefined' && WPDATA.deals) {
   WPDATA.deals.forEach(function (d) {
-    if (!d.image) d.image = getDealImage(d);
+    if (d.imageConfirmed === true && !d.image) d.image = getDealImage(d);
   });
 }

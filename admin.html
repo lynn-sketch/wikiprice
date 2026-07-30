@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Outreach Assistant — WikiPrice Admin</title>
   <link rel="stylesheet" href="css/styles.css">
-  <meta name="robots" content="noindex">
+  <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#0A2B5C">
 </head>
 <body>
@@ -14,44 +14,60 @@
   <section class="section">
     <div class="container admin-gate" id="admin-gate">
       <h1 class="section-title">Outreach Assistant</h1>
-      <p class="text-muted">Internal tools for consent-based seller outreach. Password-gated (local only).</p>
-      <div class="detail-card" style="max-width:400px;">
+      <p class="text-muted">Internal tools for consent-based seller outreach. Password required. Sessions expire. An unlisted URL alone is not protection — enable Netlify/Cloudflare Access on this path for production.</p>
+      <div class="detail-card" style="max-width:420px;">
         <div class="form-group">
           <label for="admin-pass">Password</label>
-          <input type="password" id="admin-pass" placeholder="Enter admin password">
+          <input type="password" id="admin-pass" autocomplete="current-password" placeholder="Admin password">
         </div>
         <button type="button" class="btn btn-primary" id="admin-login">Unlock</button>
-        <p class="text-muted" style="font-size:0.8rem;margin-top:12px;">Default for demo: <code>wikiprice2026</code></p>
+        <p id="admin-auth-msg" class="text-muted" style="font-size:0.85rem;margin-top:12px;" role="status"></p>
       </div>
     </div>
 
     <div class="container admin-panel hidden" id="admin-panel">
-      <h1 class="section-title">Outreach Assistant</h1>
+      <div class="flex-between" style="margin-bottom:12px;">
+        <h1 class="section-title" style="margin:0;">Outreach Assistant</h1>
+        <button type="button" class="btn btn-outline btn-sm" id="admin-logout">Log out</button>
+      </div>
+      <p class="text-muted" style="font-size:0.9rem;">Hard line: extract only with consent / onboarding. Never scrape uncontacted accounts or other people’s comments. Nothing here sends messages automatically.</p>
       <div class="admin-tabs">
         <button type="button" class="active" data-tab="intake">Intake form</button>
         <button type="button" data-tab="tracker">Tracker</button>
         <button type="button" data-tab="research">Research</button>
         <button type="button" data-tab="templates">Templates</button>
-        <button type="button" data-tab="checklist">Verification checklist</button>
+        <button type="button" data-tab="checklist">Verification</button>
         <button type="button" data-tab="export">Export</button>
       </div>
 
       <div id="tab-intake" class="admin-tab-panel">
         <div class="detail-card">
           <h2>Seller intake</h2>
-          <p class="text-muted">Saves to local tracker and Formspree when configured in <code>js/config.js</code>.</p>
+          <p class="text-muted">Pre-launch For-Sellers capture. Saves to local tracker + Formspree when configured in <code>js/config.js</code>.</p>
           <form id="intake-form">
             <div class="form-group">
               <label for="in-name">Business name *</label>
               <input id="in-name" name="businessName" required>
             </div>
             <div class="form-group">
-              <label for="in-phone">Phone / WhatsApp *</label>
+              <label for="in-phone">Phone / WhatsApp (opt-in) *</label>
               <input id="in-phone" name="phone" required placeholder="070...">
             </div>
             <div class="form-group">
-              <label for="in-loc">Shop location (arcade, floor, stall) *</label>
-              <input id="in-loc" name="location" required placeholder="Mukwano Arcade, Ground Floor, Stall 22">
+              <label for="in-arcade">Arcade / building *</label>
+              <input id="in-arcade" name="arcade" required placeholder="Mukwano Arcade">
+            </div>
+            <div class="form-group">
+              <label for="in-floor">Floor</label>
+              <input id="in-floor" name="floor" placeholder="Ground Floor">
+            </div>
+            <div class="form-group">
+              <label for="in-stall">Stall / shop # *</label>
+              <input id="in-stall" name="stall" required placeholder="Stall 22">
+            </div>
+            <div class="form-group">
+              <label for="in-landmark">Landmark</label>
+              <input id="in-landmark" name="landmark" placeholder="Opposite escalator">
             </div>
             <div class="form-group">
               <label for="in-handle">TikTok handle</label>
@@ -62,9 +78,32 @@
               <input id="in-cat" name="categories" placeholder="Fashion, Shoes">
             </div>
             <div class="form-group">
+              <label for="in-source">Source</label>
+              <select id="in-source" name="source">
+                <option value="tiktok">TikTok</option>
+                <option value="instagram">Instagram</option>
+                <option value="facebook">Facebook</option>
+                <option value="jiji">Jiji</option>
+                <option value="jumia">Jumia</option>
+                <option value="in-person">In-person</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="in-submitted">Submitted by</label>
+              <select id="in-submitted" name="submittedBy">
+                <option value="seller_self_submit">Seller self-submit</option>
+                <option value="in_person">In-person</option>
+                <option value="nomination">Nomination</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label for="in-notes">Notes</label>
               <textarea id="in-notes" name="notes" rows="3"></textarea>
             </div>
+            <label class="checklist-item" style="display:block;margin-bottom:12px;">
+              <input type="checkbox" id="in-consent" required>
+              Seller consented to listing / we contacted them (required)
+            </label>
             <button type="submit" class="btn btn-accent">Submit intake</button>
           </form>
         </div>
@@ -73,11 +112,11 @@
       <div id="tab-tracker" class="admin-tab-panel hidden">
         <div class="detail-card">
           <h2>Outreach tracker</h2>
-          <p class="text-muted">Stages: contacted → responded → in-person verified → live</p>
+          <p class="text-muted">Status: contacted → responded → in_person_verified → live (or declined). Keyed to Part 4 outreachLog schema.</p>
           <div style="overflow-x:auto;">
             <table class="admin-table" id="tracker-table">
               <thead>
-                <tr><th>Business</th><th>Handle</th><th>Stage</th><th>Contacted</th><th>Notes</th><th></th></tr>
+                <tr><th>Business</th><th>Handle</th><th>Status</th><th>Contacted</th><th>Notes</th><th></th></tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -87,6 +126,10 @@
       </div>
 
       <div id="tab-research" class="admin-tab-panel hidden">
+        <div class="detail-card">
+          <h2>Pre-filter guidance</h2>
+          <div id="prefilter-panel"></div>
+        </div>
         <div class="detail-card">
           <h2>Hashtags</h2>
           <div class="chip-list" id="hashtag-chips"></div>
@@ -108,14 +151,20 @@
       <div id="tab-templates" class="admin-tab-panel hidden">
         <div class="detail-card">
           <h2>Message templates</h2>
+          <p class="text-muted">Copy-paste only — this tool never sends DMs or comments automatically (TikTok bans that).</p>
           <div id="templates-list"></div>
         </div>
       </div>
 
       <div id="tab-checklist" class="admin-tab-panel hidden">
         <div class="detail-card">
+          <h2>Verification criteria (all four for ✅ Verified)</h2>
+          <ol id="criteria-list" class="verify-steps"></ol>
+          <p class="text-muted">Badge outcomes: Verified (all four) · Check Required (some missing) · Unverified (do not add) · Scam Warning (red flags). Re-verify every 30 days.</p>
+        </div>
+        <div class="detail-card">
           <h2>Per-seller verification checklist</h2>
-          <p class="text-muted">Part 14 — mark progress for each outreach target. Saved in this browser.</p>
+          <p class="text-muted">Mark progress for each outreach target. Saved in this browser.</p>
           <div id="checklist-panel"></div>
         </div>
         <div class="detail-card">
@@ -130,11 +179,16 @@
 
       <div id="tab-export" class="admin-tab-panel hidden">
         <div class="detail-card">
-          <h2>Export</h2>
-          <p class="text-muted">JSON is the source of truth. Manual verification remains required for Verified badges.</p>
-          <button type="button" class="btn btn-primary" id="export-json">Download sellers JSON</button>
-          <button type="button" class="btn btn-outline" id="export-handles">Copy verified handles</button>
-          <pre id="export-preview" class="template-card" style="max-height:240px;overflow:auto;margin-top:16px;"></pre>
+          <h2>Export database</h2>
+          <p class="text-muted">JSON is source of truth. Also CSV (spreadsheet), Markdown (scanning), and verified handles (discovery feed).</p>
+          <div class="action-buttons" style="flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" id="export-json">Download sellers JSON</button>
+            <button type="button" class="btn btn-primary" id="export-full">Download full DB JSON</button>
+            <button type="button" class="btn btn-outline" id="export-csv">Download CSV</button>
+            <button type="button" class="btn btn-outline" id="export-md">Download Markdown</button>
+            <button type="button" class="btn btn-outline" id="export-handles">Copy verified handles</button>
+          </div>
+          <pre id="export-preview" class="template-card" style="max-height:280px;overflow:auto;margin-top:16px;"></pre>
         </div>
       </div>
     </div>
@@ -144,7 +198,8 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
-    <script src="js/config.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/verification.js"></script>
   <script src="js/data-layer.js"></script>
   <script src="js/geo.js"></script>
   <script src="js/forms.js"></script>
@@ -158,21 +213,101 @@
     document.getElementById('footer').innerHTML = WPUI.footer();
     WikiPrice.initGlobal();
 
-    const PASS = 'wikiprice2026';
     const gate = document.getElementById('admin-gate');
     const panel = document.getElementById('admin-panel');
+    const authMsg = document.getElementById('admin-auth-msg');
+    const SESSION_KEY = 'wp-admin-session';
+    const ATTEMPT_KEY = 'wp-admin-attempts';
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    async function sha256hex(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function sessionValid() {
+      try {
+        const raw = sessionStorage.getItem(SESSION_KEY);
+        if (!raw) return false;
+        const s = JSON.parse(raw);
+        if (!s || !s.exp || Date.now() > s.exp) {
+          sessionStorage.removeItem(SESSION_KEY);
+          return false;
+        }
+        return s.ok === true;
+      } catch (e) { return false; }
+    }
+
+    function writeSession() {
+      const hours = (WPCONFIG && WPCONFIG.adminSessionHours) || 8;
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        ok: true,
+        exp: Date.now() + hours * 3600 * 1000
+      }));
+      sessionStorage.removeItem('wp-admin'); // legacy
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem('wp-admin');
+    }
+
+    function getAttempts() {
+      return parseInt(sessionStorage.getItem(ATTEMPT_KEY) || '0', 10) || 0;
+    }
+    function bumpAttempts() {
+      const n = getAttempts() + 1;
+      sessionStorage.setItem(ATTEMPT_KEY, String(n));
+      return n;
+    }
 
     function unlock() {
       gate.classList.add('hidden');
       panel.classList.remove('hidden');
-      sessionStorage.setItem('wp-admin', '1');
+      writeSession();
+      sessionStorage.setItem(ATTEMPT_KEY, '0');
       bootAdmin();
     }
-    if (sessionStorage.getItem('wp-admin') === '1') unlock();
-    document.getElementById('admin-login').onclick = function () {
-      if (document.getElementById('admin-pass').value === PASS) unlock();
-      else WPUI.showToast('Wrong password');
+
+    function lock() {
+      clearSession();
+      panel.classList.add('hidden');
+      gate.classList.remove('hidden');
+    }
+
+    if (sessionValid()) unlock();
+
+    document.getElementById('admin-login').onclick = async function () {
+      const max = (WPCONFIG && WPCONFIG.adminMaxAttempts) || 5;
+      if (getAttempts() >= max) {
+        authMsg.textContent = 'Too many attempts. Refresh later or clear site session data.';
+        return;
+      }
+      const pass = document.getElementById('admin-pass').value || '';
+      const hash = await sha256hex(pass);
+      const expected = (WPCONFIG && WPCONFIG.adminPasswordSha256) || '';
+      if (hash === expected) {
+        unlock();
+        authMsg.textContent = '';
+      } else {
+        const n = bumpAttempts();
+        authMsg.textContent = 'Wrong password (' + n + '/' + max + ').';
+        WPUI.showToast('Wrong password');
+      }
     };
+
+    document.getElementById('admin-logout').onclick = function () {
+      lock();
+      WPUI.showToast('Logged out');
+    };
+
+    document.getElementById('admin-pass').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('admin-login').click();
+    });
 
     document.querySelectorAll('.admin-tabs button').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -183,10 +318,36 @@
       });
     });
 
+    const STAGES = (typeof WPVerification !== 'undefined')
+      ? WPVerification.OUTREACH_STAGES
+      : ['contacted', 'responded', 'in_person_verified', 'live', 'declined'];
+
+    function normalizeStage(s) {
+      if (!s) return 'contacted';
+      const map = {
+        'in-person verified': 'in_person_verified',
+        'in person verified': 'in_person_verified'
+      };
+      return map[s] || s;
+    }
+
     function getTracker() {
       const local = localStorage.getItem('wp-outreach-tracker');
-      if (local) return JSON.parse(local);
-      return (WPDATA.outreach && WPDATA.outreach.trackerSeed) ? WPDATA.outreach.trackerSeed.slice() : [];
+      if (local) {
+        return JSON.parse(local).map(r => {
+          r.stage = normalizeStage(r.stage || r.status);
+          r.status = r.stage;
+          r.sellerHandle = r.sellerHandle || r.handle || '';
+          return r;
+        });
+      }
+      const seed = (WPDATA.outreach && WPDATA.outreach.trackerSeed) ? WPDATA.outreach.trackerSeed.slice() : [];
+      return seed.map(r => {
+        r.stage = normalizeStage(r.stage || r.status);
+        r.status = r.stage;
+        r.sellerHandle = r.sellerHandle || r.handle || '';
+        return r;
+      });
     }
     function saveTracker(rows) {
       localStorage.setItem('wp-outreach-tracker', JSON.stringify(rows));
@@ -195,14 +356,17 @@
     function renderTracker() {
       const tbody = document.querySelector('#tracker-table tbody');
       const rows = getTracker();
-      const stages = ['contacted', 'responded', 'in-person verified', 'live'];
       tbody.innerHTML = rows.map((r, i) =>
         '<tr data-i="' + i + '">' +
-        '<td>' + (r.businessName || '') + '</td>' +
-        '<td>' + (r.handle ? '<a href="https://www.tiktok.com/@' + String(r.handle).replace(/^@/, '') + '" target="_blank" rel="noopener">' + r.handle + '</a>' : '—') + '</td>' +
-        '<td><select data-stage="' + i + '">' + stages.map(s => '<option value="' + s + '"' + (r.stage === s ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></td>' +
-        '<td>' + (r.contactedAt || '') + '</td>' +
-        '<td>' + (r.notes || '') + '</td>' +
+        '<td>' + esc(r.businessName) + '</td>' +
+        '<td>' + (r.handle || r.sellerHandle
+          ? '<a href="https://www.tiktok.com/@' + esc(String(r.handle || r.sellerHandle).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + esc(r.handle || r.sellerHandle) + '</a>'
+          : '—') + '</td>' +
+        '<td><select data-stage="' + i + '">' + STAGES.map(s =>
+          '<option value="' + s + '"' + (normalizeStage(r.stage) === s ? ' selected' : '') + '>' + s + '</option>'
+        ).join('') + '</select></td>' +
+        '<td>' + esc(r.contactedAt) + '</td>' +
+        '<td>' + esc(r.notes) + '</td>' +
         '<td><button type="button" class="btn btn-outline btn-sm" data-del="' + i + '">Remove</button></td>' +
         '</tr>'
       ).join('');
@@ -210,6 +374,7 @@
         sel.onchange = () => {
           const rows = getTracker();
           rows[sel.dataset.stage].stage = sel.value;
+          rows[sel.dataset.stage].status = sel.value;
           saveTracker(rows);
         };
       });
@@ -226,12 +391,15 @@
     document.getElementById('add-tracker-row').onclick = () => {
       const name = prompt('Business name');
       if (!name) return;
+      const handle = prompt('TikTok handle (optional)') || '';
       const rows = getTracker();
       rows.push({
         id: 'tr-' + Date.now(),
         businessName: name,
-        handle: prompt('TikTok handle (optional)') || '',
+        handle: handle,
+        sellerHandle: handle,
         stage: 'contacted',
+        status: 'contacted',
         contactedAt: new Date().toISOString().slice(0, 10),
         notes: ''
       });
@@ -241,23 +409,45 @@
 
     document.getElementById('intake-form').addEventListener('submit', function (e) {
       e.preventDefault();
+      if (!document.getElementById('in-consent').checked) {
+        WPUI.showToast('Consent required');
+        return;
+      }
+      const loc = [
+        document.getElementById('in-arcade').value,
+        document.getElementById('in-floor').value,
+        document.getElementById('in-stall').value,
+        document.getElementById('in-landmark').value
+      ].filter(Boolean).join(', ');
+      const handle = document.getElementById('in-handle').value;
       const rows = getTracker();
       rows.push({
         id: 'tr-' + Date.now(),
         businessName: document.getElementById('in-name').value,
-        handle: document.getElementById('in-handle').value,
+        handle: handle,
+        sellerHandle: handle,
         stage: 'contacted',
+        status: 'contacted',
         contactedAt: new Date().toISOString().slice(0, 10),
-        notes: document.getElementById('in-notes').value || document.getElementById('in-loc').value
+        notes: (document.getElementById('in-notes').value || '') + ' | ' + loc +
+          ' | source=' + document.getElementById('in-source').value +
+          ' | by=' + document.getElementById('in-submitted').value
       });
       saveTracker(rows);
       WPForms.submit('admin-intake', {
         businessName: document.getElementById('in-name').value,
         phone: document.getElementById('in-phone').value,
-        location: document.getElementById('in-loc').value,
-        handle: document.getElementById('in-handle').value,
+        arcade: document.getElementById('in-arcade').value,
+        floor: document.getElementById('in-floor').value,
+        stall: document.getElementById('in-stall').value,
+        landmark: document.getElementById('in-landmark').value,
+        location: loc,
+        handle: handle,
         categories: document.getElementById('in-cat').value,
-        notes: document.getElementById('in-notes').value
+        source: document.getElementById('in-source').value,
+        submittedBy: document.getElementById('in-submitted').value,
+        notes: document.getElementById('in-notes').value,
+        consent: true
       });
       WPUI.showToast('Saved to tracker');
       this.reset();
@@ -273,25 +463,28 @@
     function renderChecklist() {
       const panel = document.getElementById('checklist-panel');
       if (!panel) return;
-      const steps = ['contacted', 'confirmed', 'locationVerified', 'badgeAssigned', 'live'];
+      const steps = ['contacted', 'confirmed', 'locationVerified', 'videoOk', 'priceOk', 'responsiveOk', 'badgeAssigned', 'live'];
       const labels = {
-        contacted: 'Contacted',
+        contacted: 'Contacted (consent)',
         confirmed: 'Self-submitted or in-person confirmed',
-        locationVerified: 'Physical location verified',
+        locationVerified: '1. Physical location verified',
+        videoOk: '2. Video content (≥10, shows shop)',
+        priceOk: '3. Price transparency',
+        responsiveOk: '4. Responsiveness',
         badgeAssigned: 'Badge assigned',
         live: 'Live on site'
       };
       const candidates = (WPDATA.candidates && WPDATA.candidates.confirmed) || [];
       const data = getChecklist();
-      panel.innerHTML = '<div class="checklist-grid">' + candidates.map((c, i) => {
+      panel.innerHTML = '<div class="checklist-grid">' + candidates.map(c => {
         const key = c.handle || c.businessName;
         const row = data[key] || {};
         return '<div class="detail-card" style="margin:0;">' +
-          '<strong>' + c.businessName + '</strong> ' +
-          (c.handle ? '<a href="https://www.tiktok.com/@' + String(c.handle).replace(/^@/, '') + '" target="_blank" rel="noopener">' + c.handle + '</a>' : '') +
+          '<strong>' + esc(c.businessName) + '</strong> ' +
+          (c.handle ? '<a href="https://www.tiktok.com/@' + esc(String(c.handle).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + esc(c.handle) + '</a>' : '') +
           '<div class="checklist-grid" style="margin-top:8px;">' +
           steps.map(s =>
-            '<label class="checklist-item"><input type="checkbox" data-ck="' + key + '" data-step="' + s + '"' +
+            '<label class="checklist-item"><input type="checkbox" data-ck="' + esc(key) + '" data-step="' + s + '"' +
             (row[s] ? ' checked' : '') + '> ' + labels[s] + '</label>'
           ).join('') + '</div></div>';
       }).join('') + '</div>';
@@ -324,34 +517,50 @@
         renderTracker();
         renderChecklist();
         const o = WPDATA.outreach || {};
+
+        const pf = o.preFilter || {};
+        document.getElementById('prefilter-panel').innerHTML =
+          '<p><strong>Min followers:</strong> ' + esc(pf.minFollowers || 1000) + '+</p>' +
+          '<ul>' + (pf.requires || []).map(r => '<li>' + esc(r) + '</li>').join('') + '</ul>' +
+          '<p class="text-muted">' + esc(pf.note || '') + '</p>';
+
+        document.getElementById('criteria-list').innerHTML =
+          (typeof WPVerification !== 'undefined' ? WPVerification.criteriaLabels() : []).map(c =>
+            '<li><strong>' + esc(c.id) + '</strong> — ' + esc(c.label) + '</li>'
+          ).join('');
+
         document.getElementById('hashtag-chips').innerHTML = (o.hashtags || []).map(h =>
-          '<button type="button" class="chip" data-copy="' + h + '">' + h + '</button>'
+          '<button type="button" class="chip" data-copy="' + esc(h) + '">' + esc(h) + '</button>'
         ).join('');
         const terms = o.searchTerms || {};
         document.getElementById('search-terms').innerHTML = Object.keys(terms).map(cat =>
-          '<h3 style="font-size:1rem;margin:16px 0 8px;">' + cat + '</h3>' +
-          '<div class="chip-list">' + terms[cat].map(t => '<button type="button" class="chip" data-copy="' + t + '">' + t + '</button>').join('') + '</div>'
+          '<h3 style="font-size:1rem;margin:16px 0 8px;">' + esc(cat) + '</h3>' +
+          '<div class="chip-list">' + terms[cat].map(t =>
+            '<button type="button" class="chip" data-copy="' + esc(t) + '">' + esc(t) + '</button>'
+          ).join('') + '</div>'
         ).join('');
         document.getElementById('templates-list').innerHTML = (o.templates || []).map(t =>
-          '<div class="template-card"><strong>' + t.name + '</strong><pre>' + t.body + '</pre>' +
-          '<button type="button" class="btn btn-sm btn-outline" data-copy="' + t.body.replace(/"/g, '&quot;') + '">Copy</button></div>'
+          '<div class="template-card"><strong>' + esc(t.name) + '</strong><pre>' + esc(t.body) + '</pre>' +
+          '<button type="button" class="btn btn-sm btn-outline" data-copy="' + esc(t.body) + '">Copy</button></div>'
         ).join('');
 
         const c = WPDATA.candidates || {};
         document.getElementById('candidates-panel').innerHTML =
-          '<p><strong>Confirmed</strong></p><ul>' + (c.confirmed || []).map(x =>
-            '<li>' + x.businessName + (x.handle ? ' — <a href="https://www.tiktok.com/@' + x.handle.replace(/^@/, '') + '" target="_blank" rel="noopener">' + x.handle + '</a>' : ' (handle TBD)') + ' · ' + x.arcade + '</li>'
+          '<p><strong>Confirmed candidates</strong> (still need in-person verify before publish)</p><ul>' +
+          (c.confirmed || []).map(x =>
+            '<li>' + esc(x.businessName) + (x.handle ? ' — <a href="https://www.tiktok.com/@' + esc(String(x.handle).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + esc(x.handle) + '</a>' : ' (handle TBD)') +
+            ' · ' + esc(x.arcade) + '</li>'
           ).join('') + '</ul>' +
           '<p><strong>Handle unknown</strong></p><ul>' + (c.handleUnknown || []).map(x =>
-            '<li>' + x.businessName + ' — ' + x.area + ' (' + x.category + ')</li>'
+            '<li>' + esc(x.businessName) + ' — ' + esc(x.area) + ' (' + esc(x.category) + ')</li>'
           ).join('') + '</ul>' +
           '<p><strong>Unconfirmed — do not publish</strong></p><ul>' + (c.unconfirmed || []).map(x =>
-            '<li>' + x.handle + ' — ' + x.note + '</li>'
+            '<li>' + esc(x.handle) + ' — ' + esc(x.note) + '</li>'
           ).join('') + '</ul>';
 
         document.getElementById('arcades-panel').innerHTML = '<ul>' + (WPDATA.arcades || []).map(a =>
-          '<li><strong>' + a.name + '</strong> — ' + a.address + ' · Known for: ' + (a.knownFor || []).join(', ') +
-          (a.sellersVerified && a.sellersVerified.length ? ' · Sellers: ' + a.sellersVerified.join(', ') : '') + '</li>'
+          '<li><strong>' + esc(a.name) + '</strong> — ' + esc(a.address) + ' · Known for: ' + esc((a.knownFor || []).join(', ')) +
+          (a.sellersVerified && a.sellersVerified.length ? ' · Sellers: ' + esc(a.sellersVerified.join(', ')) : '') + '</li>'
         ).join('') + '</ul>';
 
         document.querySelectorAll('[data-copy]').forEach(el => {
@@ -364,17 +573,28 @@
 
     document.getElementById('export-json').onclick = () => {
       const json = WPDataLayer.exportSellersJSON();
-      document.getElementById('export-preview').textContent = json.slice(0, 2000) + (json.length > 2000 ? '\n…' : '');
-      const blob = new Blob([json], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'wikiprice-sellers.json';
-      a.click();
+      document.getElementById('export-preview').textContent = json.slice(0, 2500) + (json.length > 2500 ? '\n…' : '');
+      WPDataLayer.downloadBlob('wikiprice-sellers.json', json, 'application/json');
+    };
+    document.getElementById('export-full').onclick = () => {
+      const json = WPDataLayer.exportDatabaseJSON();
+      document.getElementById('export-preview').textContent = json.slice(0, 2500) + (json.length > 2500 ? '\n…' : '');
+      WPDataLayer.downloadBlob('wikiprice-database.json', json, 'application/json');
+    };
+    document.getElementById('export-csv').onclick = () => {
+      const csv = WPDataLayer.exportSellersCSV();
+      document.getElementById('export-preview').textContent = csv.slice(0, 2500);
+      WPDataLayer.downloadBlob('wikiprice-sellers.csv', csv, 'text/csv');
+    };
+    document.getElementById('export-md').onclick = () => {
+      const md = WPDataLayer.exportSellersMarkdown();
+      document.getElementById('export-preview').textContent = md;
+      WPDataLayer.downloadBlob('wikiprice-sellers.md', md, 'text/markdown');
     };
     document.getElementById('export-handles').onclick = () => {
       const list = WPDataLayer.exportHandlesList().join('\n');
-      document.getElementById('export-preview').textContent = list || '(none)';
-      navigator.clipboard.writeText(list).then(() => WPUI.showToast('Handles copied'));
+      document.getElementById('export-preview').textContent = list || '(none verified)';
+      navigator.clipboard.writeText(list).then(() => WPUI.showToast('Verified handles copied'));
     };
   </script>
 </body>

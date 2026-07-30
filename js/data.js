@@ -260,17 +260,20 @@ function mkDeal(o) {
     tiktokFollowers: seller?.tiktokFollowers || 0,
     verificationStatus: o.verificationStatus || 'verified',
     stockStatus: o.stockStatus || 'in-stock',
-    lastVerified: o.lastVerified || '2026-06-14',
+    lastVerified: o.lastVerified || '2026-07-15',
     verificationMethod: o.verificationMethod || 'physical',
     priceConfidence: o.priceConfidence || 'high',
     source: o.source || (o.mentionedOnTiktok ? 'tiktok' : 'in-person'),
+    imageConfirmed: o.imageConfirmed === true,
+    isBestDeal: o.isBestDeal === true,
+    currency: 'UGX',
     mallPrice: o.mallPrice || Math.round(o.retailPrice * 2),
     mentionedOnTiktok: o.mentionedOnTiktok || false,
     crowdConfirmations: o.crowdConfirmations || Math.floor(Math.random() * 8) + 3,
     priceHistory: hist,
     verificationHistory: o.verificationHistory || [
-      { who: 'WikiPrice team', date: '2026-06-14', method: 'Physical visit' },
-      { who: 'Community', date: '2026-06-10', method: '3 user confirmations' }
+      { who: 'WikiPrice team', date: '2026-07-15', method: 'Physical visit' },
+      { who: 'Community', date: '2026-07-10', method: '3 user confirmations' }
     ],
     reviews: o.reviews || [
       { name: 'Grace N.', date: '2026-05-20', stars: 5, comment: 'Exactly as described. Will return.' },

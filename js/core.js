@@ -105,10 +105,9 @@ const WikiPrice = (function () {
     // Video history (10%)
     if (seller && seller.shopShownInVideos) score += 10;
 
-    // Contact info (10%)
-    if (seller && seller.phone && seller.whatsapp) score += 10;
-    else if (seller && seller.phone) score += 5;
-    else flags.push('phone-only');
+    // Contact info (10%) — missing contact is a flag; "phone-only bio" is separate scam signal
+    if (seller && (seller.phone || seller.whatsapp)) score += 10;
+    else flags.push('no-contact');
 
     // User reports (10%)
     if (seller && seller.scamReports === 0) score += 10;
@@ -120,13 +119,25 @@ const WikiPrice = (function () {
     else if (deal.verificationStatus === 'verified') score += 6;
     else score += 2;
 
+    // Part 4 scam signals
+    if (typeof WPVerification !== 'undefined') {
+      if (WPVerification.isNationwideNoFixedLocation(seller, deal)) flags.push('nationwide-no-location');
+      if (WPVerification.isPhoneOnlyBio(seller)) flags.push('phone-only-bio');
+      if (WPVerification.isPriceStale(deal)) flags.push('stale-price');
+      if (WPVerification.isNewAccount(seller)) flags.push('new-account');
+    } else {
+      if (seller && seller.accountAgeMonths < 1) flags.push('new-account');
+    }
+
   // Auto triggers
     if (flags.includes('scam-price')) flags.push('auto-high-risk');
-    if (seller && seller.accountAgeMonths < 1) flags.push('new-account');
+    if (flags.includes('nationwide-no-location') || flags.includes('phone-only-bio')) flags.push('auto-high-risk');
     if (!deal.location.arcade || deal.location.arcade === 'Kampala') flags.push('vague-location');
     if (seller && seller.scamReports >= 3) flags.push('auto-high-risk');
 
-    const autoHighRisk = flags.filter(f => ['scam-price', 'auto-high-risk', 'scam-reports'].includes(f)).length >= 2;
+    const autoHighRisk = flags.filter(f =>
+      ['scam-price', 'auto-high-risk', 'scam-reports', 'nationwide-no-location', 'phone-only-bio'].includes(f)
+    ).length >= 2;
 
     let label, badgeClass, message;
     if (autoHighRisk || score < 50) {
@@ -217,18 +228,22 @@ const WikiPrice = (function () {
 
   function sortDeals(deals, sortBy) {
     const sorted = [...deals];
+    const freshness = (d) => (d.freshnessRankPenalty || 0) + ((d.priceMayBeOutdated) ? 500 : 0);
     switch (sortBy) {
-      case 'price-low': return sorted.sort((a, b) => a.retailPrice - b.retailPrice);
-      case 'price-high': return sorted.sort((a, b) => b.retailPrice - a.retailPrice);
+      case 'price-low': return sorted.sort((a, b) => freshness(a) - freshness(b) || a.retailPrice - b.retailPrice);
+      case 'price-high': return sorted.sort((a, b) => freshness(a) - freshness(b) || b.retailPrice - a.retailPrice);
       case 'trust': return sorted.sort((a, b) => {
         const sa = WPDATA.sellers[a.sellerId];
         const sb = WPDATA.sellers[b.sellerId];
-        return calculateTrustScore(sb || {}).score - calculateTrustScore(sa || {}).score;
+        return freshness(a) - freshness(b) ||
+          calculateTrustScore(sb || {}).score - calculateTrustScore(sa || {}).score;
       });
       case 'nearest':
-        if (typeof WPGeo !== 'undefined' && WPGeo.userPos) return WPGeo.sortByNearest(sorted);
-        return sorted.sort((a, b) => new Date(b.lastVerified) - new Date(a.lastVerified));
-      default: return sorted.sort((a, b) => new Date(b.lastVerified) - new Date(a.lastVerified));
+        if (typeof WPGeo !== 'undefined' && WPGeo.userPos) {
+          return WPGeo.sortByNearest(sorted).sort((a, b) => freshness(a) - freshness(b));
+        }
+        return sorted.sort((a, b) => freshness(a) - freshness(b) || new Date(b.lastVerified) - new Date(a.lastVerified));
+      default: return sorted.sort((a, b) => freshness(a) - freshness(b) || new Date(b.lastVerified) - new Date(a.lastVerified));
     }
   }
 
@@ -254,13 +269,26 @@ const WikiPrice = (function () {
 
   function getDealWarnings(deal, seller, risk) {
     const warnings = [];
+    if (deal.priceMayBeOutdated || (typeof WPVerification !== 'undefined' && WPVerification.isPriceStale(deal))) {
+      warnings.push({
+        type: 'caution',
+        icon: 'clock',
+        text: 'Price may be outdated. This price has not been re-confirmed within 30 days. Ask the seller to confirm before buying — it is not eligible for Best Deal until re-verified.'
+      });
+    }
     if (!deal.location.arcade || deal.location.arcade === 'Kampala') {
       warnings.push({ type: 'info', icon: 'location', text: 'Location Not Verified. This seller has not provided a specific arcade, building, or stall number. Legitimate Kikuubo sellers usually have a fixed location. Proceed with caution.' });
     }
     if (seller && !seller.physicalShop && deal.location.arcade === 'Kampala') {
       warnings.push({ type: 'caution', icon: 'phone', text: 'Online-Only Seller. This seller has not provided a physical shop location. We recommend paying only on delivery and never upfront. Ask for a video call to see the product before paying.' });
     }
-    if (risk.flags.includes('abnormally-low') || risk.flags.includes('low-price')) {
+    if (risk.flags && (risk.flags.includes('nationwide-no-location'))) {
+      warnings.push({ type: 'risk', icon: 'warning', text: 'Nationwide delivery with no fixed shop location is a scam-warning signal. Prefer sellers with a verified arcade/stall.' });
+    }
+    if (risk.flags && risk.flags.includes('phone-only-bio')) {
+      warnings.push({ type: 'risk', icon: 'warning', text: 'Phone-number-only bio with no clear shop name is a scam-warning signal.' });
+    }
+    if (risk.flags.includes('abnormally-low') || risk.flags.includes('low-price') || risk.flags.includes('scam-price')) {
       const avg = (getBaseline(deal.category, deal.subCategory).min + getBaseline(deal.category, deal.subCategory).max) / 2;
       warnings.push({ type: 'risk', icon: 'money', text: 'Price Alert: Unusually Low. This price is significantly below the Kampala market average of ' + formatUGX(avg) + '. Scammers sometimes use extremely low prices to attract buyers. Verify the seller has a physical shop before paying.' });
     }
@@ -269,6 +297,9 @@ const WikiPrice = (function () {
     }
     if (risk.autoHighRisk) {
       warnings.push({ type: 'risk', icon: 'warning', text: 'This seller has multiple scam indicators. We strongly recommend physical pickup and cash payment only.' });
+    }
+    if (deal.imageConfirmed !== true) {
+      warnings.push({ type: 'info', icon: 'warning', text: 'Image not seller-confirmed. Showing a labeled category placeholder until a seller-sourced photo is verified.' });
     }
     return warnings;
   }
@@ -386,6 +417,7 @@ const WikiPrice = (function () {
     searchDeals, sortDeals, budgetFinder, whatsappLink, getSubCategories,
     getDealWarnings, initGlobal, getPriceTrend, getBestPriceMonths, shareSMS,
     getLang: () => currentLang, isDataSaver: () => dataSaver,
-    searchSuggestions, formatFollowers
+    searchSuggestions, formatFollowers,
+    isPriceStale: (deal) => (typeof WPVerification !== 'undefined' ? WPVerification.isPriceStale(deal) : false)
   };
 })();

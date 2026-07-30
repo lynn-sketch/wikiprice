@@ -59,7 +59,8 @@ const WPDataLayer = (function () {
     const handle = cleanHandle(s.handle || s.tiktokHandle);
     const loc = s.location || {};
     const fromLegacyLoc = (s.locations && s.locations[0]) ? s.locations[0].text : '';
-    return Object.assign({}, s, {
+    const source = (s.source || 'in-person').toString().toLowerCase().replace(/\s+/g, '-');
+    const normalized = Object.assign({}, s, {
       id: s.id || id,
       handle: handle ? '@' + handle : null,
       tiktokHandle: handle,
@@ -67,7 +68,7 @@ const WPDataLayer = (function () {
       followerCount: s.followerCount != null ? s.followerCount : (s.tiktokFollowers || 0),
       bio: s.bio || s.about || '',
       phone: s.phone || null,
-      whatsapp: s.whatsapp || s.phone || null,
+      whatsapp: s.whatsapp != null ? s.whatsapp : null,
       location: {
         arcade: loc.arcade || '',
         address: loc.address || fromLegacyLoc || '',
@@ -83,24 +84,44 @@ const WPDataLayer = (function () {
       lastVerified: s.lastVerified || s.memberSince || null,
       responseTime: s.responseTime || (s.responseTimeHours <= 2 ? 'fast' : s.responseTimeHours <= 6 ? 'medium' : 'slow'),
       submittedBy: s.submittedBy || 'manual',
+      source: source,
       tags: s.tags || [],
+      imageConfirmed: s.imageConfirmed === true,
       dataSource: s.dataSource || 'manual',
       lastSynced: s.lastSynced != null ? s.lastSynced : null,
       apiConsentGiven: !!s.apiConsentGiven,
       tiktokUserId: s.tiktokUserId || null
     });
+    if (!normalized.whatsapp && s.whatsapp) normalized.whatsapp = s.whatsapp;
+    return normalized;
   }
 
   function normalizeDeal(deal) {
     if (!deal) return deal;
     const source = deal.source || (deal.mentionedOnTiktok ? 'tiktok' : 'in-person');
-    return Object.assign({}, deal, {
+    let out = Object.assign({}, deal, {
+      productName: deal.productName || deal.name,
+      price: deal.price != null ? deal.price : deal.retailPrice,
+      currency: deal.currency || 'UGX',
+      imageUrl: deal.imageUrl || deal.image || null,
+      imageConfirmed: deal.imageConfirmed === true,
       source: source,
+      isBestDeal: deal.isBestDeal === true,
+      stockStatus: deal.stockStatus || 'in-stock',
       dataSource: deal.dataSource || 'manual',
       lastSynced: deal.lastSynced != null ? deal.lastSynced : null,
       tiktokVideoId: deal.tiktokVideoId || null,
       tiktokUrl: deal.tiktokUrl || null
     });
+    if (typeof WPVerification !== 'undefined') {
+      out = WPVerification.applyFreshness(out);
+      if (WPVerification.detectScamWarning(WPDATA.sellers[out.sellerId], out)) {
+        // Flag only — do not silently rewrite verified seed data except scam demo
+        if (out.id === 'scam-iphone') out.verificationStatus = 'scam-warning';
+      }
+      if (!WPVerification.isBestDealEligible(out)) out.isBestDeal = false;
+    }
+    return out;
   }
 
   function attachTikTokVideos() {
@@ -121,7 +142,10 @@ const WPDataLayer = (function () {
     });
   }
 
-  function sellerHasPhysicalLocation(seller) {
+  function sellerHasPhysicalLocation(seller, deal) {
+    if (typeof WPVerification !== 'undefined') {
+      return WPVerification.hasQualifyingPhysicalLocation(seller, deal);
+    }
     if (!seller) return false;
     if (seller.physicalShop === false) return false;
     const loc = seller.location || {};
@@ -133,20 +157,20 @@ const WPDataLayer = (function () {
   function isPublicDeal(deal) {
     if (!deal) return false;
     if (deal.id === 'scam-iphone' || deal.demoOnly) return false;
-    if (deal.verificationStatus === 'scam-warning') return false;
+    if (deal.verificationStatus === 'scam-warning' || deal.verificationStatus === 'unverified') return false;
     const seller = WPDATA.sellers[deal.sellerId];
     if (!seller) return false;
     if (seller.id === 'suspect-seller' || seller.tiktokHandle === 'quickdealsug') return false;
+    if (seller.verificationStatus === 'scam-warning') return false;
+    const physical = sellerHasPhysicalLocation(seller, deal);
     if (WPDATA.meta && WPDATA.meta.launchMode) {
       const confirmed = !!LAUNCH_SELLER_IDS[deal.sellerId];
       const verified = deal.verificationStatus === 'verified';
-      const physical = sellerHasPhysicalLocation(seller) ||
-        (deal.location && deal.location.arcade && deal.location.stall);
       if (confirmed && verified && physical) return true;
       if (verified && physical && (seller.verificationHistory || 0) >= 80) return true;
       return false;
     }
-    return deal.verificationStatus === 'verified';
+    return deal.verificationStatus === 'verified' && physical;
   }
 
   function buildPublicCatalog() {
@@ -250,7 +274,9 @@ const WPDataLayer = (function () {
           lastVerified: ns.lastVerified,
           responseTime: ns.responseTime,
           submittedBy: ns.submittedBy,
+          source: ns.source,
           tags: ns.tags,
+          imageConfirmed: ns.imageConfirmed,
           dataSource: ns.dataSource,
           lastSynced: ns.lastSynced,
           apiConsentGiven: ns.apiConsentGiven,
@@ -282,16 +308,89 @@ const WPDataLayer = (function () {
     return WPDATA.sellers[sellerId];
   }
 
+  function exportDatabaseJSON() {
+    const sellers = Object.keys(WPDATA.sellers).map(id => normalizeSeller(id, WPDATA.sellers[id]));
+    const deals = (WPDATA.deals || []).map(normalizeDeal);
+    const outreachLog = (typeof localStorage !== 'undefined' && localStorage.getItem('wp-outreach-tracker'))
+      ? JSON.parse(localStorage.getItem('wp-outreach-tracker'))
+      : ((WPDATA.outreach && WPDATA.outreach.trackerSeed) || []);
+    return JSON.stringify({
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      schema: 'seller | deal | outreachLog',
+      sellers: sellers,
+      deals: deals,
+      outreachLog: outreachLog
+    }, null, 2);
+  }
+
   function exportSellersJSON() {
     const list = Object.keys(WPDATA.sellers).map(id => normalizeSeller(id, WPDATA.sellers[id]));
     return JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), sellers: list }, null, 2);
   }
 
+  /** Verified + public-eligible handles only (for discovery feed). */
   function exportHandlesList() {
-    return Object.values(WPDATA.sellers)
-      .map(s => cleanHandle(s.handle || s.tiktokHandle))
-      .filter(Boolean)
-      .map(h => '@' + h);
+    const ids = new Set();
+    (WPDATA.publicDeals || []).forEach(d => ids.add(d.sellerId));
+    return Object.keys(WPDATA.sellers)
+      .filter(id => {
+        const s = WPDATA.sellers[id];
+        if (!s) return false;
+        if (s.verificationStatus !== 'verified') return false;
+        if (ids.size && !ids.has(id)) return false;
+        return !!cleanHandle(s.handle || s.tiktokHandle);
+      })
+      .map(id => {
+        const h = cleanHandle(WPDATA.sellers[id].handle || WPDATA.sellers[id].tiktokHandle);
+        return '@' + h;
+      });
+  }
+
+  function exportSellersCSV() {
+    const headers = [
+      'id', 'handle', 'businessName', 'followerCount', 'phone', 'whatsapp',
+      'arcade', 'floor', 'stall', 'category', 'subCategory', 'verificationStatus',
+      'lastVerified', 'responseTime', 'submittedBy', 'source', 'imageConfirmed'
+    ];
+    const rows = [headers.join(',')];
+    Object.keys(WPDATA.sellers).forEach(id => {
+      const s = normalizeSeller(id, WPDATA.sellers[id]);
+      const loc = s.location || {};
+      const cells = [
+        s.id, s.handle, s.businessName, s.followerCount, s.phone, s.whatsapp,
+        loc.arcade, loc.floor, loc.stall, s.category, s.subCategory, s.verificationStatus,
+        s.lastVerified, s.responseTime, s.submittedBy, s.source, s.imageConfirmed
+      ].map(v => {
+        const t = v == null ? '' : String(v);
+        return '"' + t.replace(/"/g, '""') + '"';
+      });
+      rows.push(cells.join(','));
+    });
+    return rows.join('\n');
+  }
+
+  function exportSellersMarkdown() {
+    let md = '# WikiPrice sellers\n\n';
+    md += '| Handle | Business | Arcade | Stall | Status | Last verified | Source |\n';
+    md += '|--------|----------|--------|-------|--------|---------------|--------|\n';
+    Object.keys(WPDATA.sellers).forEach(id => {
+      const s = normalizeSeller(id, WPDATA.sellers[id]);
+      const loc = s.location || {};
+      md += '| ' + (s.handle || '—') + ' | ' + (s.businessName || '') + ' | ' + (loc.arcade || '') +
+        ' | ' + (loc.stall || '') + ' | ' + (s.verificationStatus || '') + ' | ' +
+        (s.lastVerified || '') + ' | ' + (s.source || '') + ' |\n';
+    });
+    return md;
+  }
+
+  function downloadBlob(filename, content, mime) {
+    const blob = new Blob([content], { type: mime || 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
   function sourceBadgeLabel(source) {
@@ -330,10 +429,15 @@ const WPDataLayer = (function () {
     loadExtras,
     syncSellerFromAPI,
     exportSellersJSON,
+    exportDatabaseJSON,
     exportHandlesList,
+    exportSellersCSV,
+    exportSellersMarkdown,
+    downloadBlob,
     sourceBadgeLabel,
     getSearchableDeals,
     isPublicDeal,
+    sellerHasPhysicalLocation,
     buildPublicCatalog,
     oEmbedBlockquote,
     ensureEmbedScript

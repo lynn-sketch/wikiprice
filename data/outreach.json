@@ -5,10 +5,22 @@
     "#KikuuboDeals",
     "#MukwanoArcade",
     "#OwinoMarket",
+    "#UgandaFashion",
+    "#KampalaElectronics",
+    "#UgandaFurniture",
     "#WikiPriceUG",
     "#KampalaFashion",
     "#GazalandArcade"
   ],
+  "preFilter": {
+    "minFollowers": 1000,
+    "requires": [
+      "Visibly shows shop or workspace on camera",
+      "States prices in videos or captions",
+      "Fixed location (arcade/stall) — not DM-only"
+    ],
+    "note": "Human outreach only. Never automate DMs or comments. Never extract from accounts not contacted."
+  },
   "searchTerms": {
     "Fashion": [
       "Mukwano Arcade shoes",
@@ -52,7 +64,7 @@
     {
       "id": "invite-intake",
       "name": "Invite to intake form",
-      "body": "Hi! I'm from WikiPrice Uganda — we help Kampala shoppers find verified prices from real shops. We'd love to list your business (free basic listing). Reply or fill this short form: https://wikiprice1.netlify.app/for-sellers.html — thanks!"
+      "body": "Hi! I'm from WikiPrice Uganda — we help Kampala shoppers find verified prices from real shops. We'd love to list your business (free basic listing + WhatsApp contact). Reply or fill this short form: https://wikiprice1.netlify.app/for-sellers.html — thanks!"
     },
     {
       "id": "in-person-followup",
@@ -68,35 +80,53 @@
   "trackerSeed": [
     {
       "id": "tr-1",
+      "sellerHandle": "@salongohouseofshoes_1",
       "businessName": "Salongo House of Shoes",
       "handle": "@salongohouseofshoes_1",
+      "status": "live",
       "stage": "live",
       "contactedAt": "2026-06-15",
       "notes": "In-person at Mukwano Stall 22"
     },
     {
       "id": "tr-2",
+      "sellerHandle": "@mummyarleena",
       "businessName": "Mummy Gadgets",
       "handle": "@mummyarleena",
+      "status": "live",
       "stage": "live",
       "contactedAt": "2026-06-18",
       "notes": "New Pioneer Shop 12"
     },
     {
       "id": "tr-3",
+      "sellerHandle": "",
       "businessName": "Hilda Car Accessories",
       "handle": "",
+      "status": "contacted",
       "stage": "contacted",
       "contactedAt": "2026-07-02",
       "notes": "Handle unknown — Eden Mall visit scheduled"
     },
     {
       "id": "tr-4",
+      "sellerHandle": "",
       "businessName": "Fashion Hub UG",
       "handle": "",
+      "status": "responded",
       "stage": "responded",
       "contactedAt": "2026-07-05",
       "notes": "Awaiting in-person verification"
+    },
+    {
+      "id": "tr-5",
+      "sellerHandle": "@example-declined",
+      "businessName": "Example Declined Shop",
+      "handle": "@example-declined",
+      "status": "declined",
+      "stage": "declined",
+      "contactedAt": "2026-07-01",
+      "notes": "Seller declined listing — do not re-contact for 90 days"
     }
   ]
 }

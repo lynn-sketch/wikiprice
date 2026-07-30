@@ -37,6 +37,12 @@ const WPUI = {
     return '<span class="badge badge-caution">' + WPIcon('warning', 14) + ' Check Required</span>';
   },
 
+  stalePriceBadge(deal) {
+    const stale = deal.priceMayBeOutdated || (typeof WikiPrice !== 'undefined' && WikiPrice.isPriceStale && WikiPrice.isPriceStale(deal));
+    if (!stale) return '';
+    return '<span class="badge badge-stale">' + WPIcon('clock', 14) + ' Price may be outdated</span>';
+  },
+
   sourceBadge(deal) {
     // Generic source labels stay plain text (e.g. "TikTok" as a channel name)
     const source = (deal && deal.source) || 'in-person';
@@ -142,6 +148,8 @@ const WPUI = {
       WPUI.verificationBadge(d.verificationStatus ? d : Object.assign({}, d, { verificationStatus: s.verificationStatus || 'check-required' })) +
       WPUI.sourceBadge(d) +
       (lastVerified ? '<span class="trust-verified-date">' + WikiPrice.daysAgo(lastVerified) + '</span>' : '') +
+      WPUI.stalePriceBadge(d) +
+      (d.isBestDeal && !(d.priceMayBeOutdated) ? '<span class="badge badge-verified">Best Deal</span>' : '') +
       '</div>';
   },
 

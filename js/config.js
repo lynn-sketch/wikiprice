@@ -9,6 +9,18 @@ const WPCONFIG = {
   /** Launch mode: public surfaces prefer verified + physical-location deals */
   launchMode: true,
 
+  /** Part 4 — stale price / re-verify window (days) */
+  stalePriceDays: 30,
+
+  /**
+   * Part 5 — admin gate (static sites cannot do true server auth).
+   * SHA-256 of the admin password. Rotate before public launch.
+   * Also enable Netlify/Cloudflare Access password protection on /admin.html in production.
+   */
+  adminPasswordSha256: 'cea950230144049d436e87e234401ffb206d1fac6bd84fcebed7a3476b9930b2',
+  adminSessionHours: 8,
+  adminMaxAttempts: 5,
+
   /** Kampala metro approx bounding box (geo-fence) */
   kampalaBounds: {
     latMin: 0.20,
