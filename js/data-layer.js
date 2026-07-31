@@ -90,7 +90,8 @@ const WPDataLayer = (function () {
       dataSource: s.dataSource || 'manual',
       lastSynced: s.lastSynced != null ? s.lastSynced : null,
       apiConsentGiven: !!s.apiConsentGiven,
-      tiktokUserId: s.tiktokUserId || null
+      tiktokUserId: s.tiktokUserId || null,
+      contactOptIn: s.contactOptIn != null ? !!s.contactOptIn : !!(s.whatsapp || s.phone)
     });
     if (!normalized.whatsapp && s.whatsapp) normalized.whatsapp = s.whatsapp;
     return normalized;

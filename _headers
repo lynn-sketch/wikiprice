@@ -1,0 +1,9 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), microphone=(), camera=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.tiktok.com https://*.tiktokcdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src https://www.tiktok.com https://*.tiktok.com; connect-src 'self' https://formspree.io https://www.tiktok.com; base-uri 'self'; form-action 'self' https://formspree.io
+
+/admin.html
+  X-Robots-Tag: noindex, nofollow

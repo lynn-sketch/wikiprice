@@ -25,12 +25,18 @@
               <input id="nom-name" required>
             </div>
             <div class="form-group">
-              <label for="nom-handle">TikTok handle</label>
+              <label for="nom-handle">TikTok / Instagram handle</label>
               <input id="nom-handle" placeholder="@handle">
             </div>
             <div class="form-group">
-              <label for="nom-loc">Shop location *</label>
-              <input id="nom-loc" required placeholder="Arcade, floor, stall">
+              <label for="nom-loc">Approximate location *</label>
+              <input id="nom-loc" required placeholder="Arcade, area, or landmark">
+            </div>
+            <div class="form-group">
+              <label for="nom-cat">Product category</label>
+              <select id="nom-cat">
+                <option value="">Select…</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="nom-source">Where did you find them?</label>
@@ -44,7 +50,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="nom-notes">Notes</label>
+              <label for="nom-notes">Optional note</label>
               <textarea id="nom-notes" rows="3"></textarea>
             </div>
             <button type="submit" class="btn btn-accent">Submit nomination</button>
@@ -101,17 +107,30 @@
     WikiPrice.initGlobal();
     WPUIEnhance.initAllSearchBars();
 
+    const catSel = document.getElementById('nom-cat');
+    Object.keys(WPDATA.categories).forEach(c => {
+      catSel.innerHTML += '<option value="' + c.replace(/"/g, '&quot;') + '">' + c + '</option>';
+    });
+
     document.getElementById('nominate-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const payload = {
         businessName: document.getElementById('nom-name').value.trim(),
         handle: document.getElementById('nom-handle').value.trim(),
         location: document.getElementById('nom-loc').value.trim(),
+        category: document.getElementById('nom-cat').value,
         source: document.getElementById('nom-source').value,
-        notes: document.getElementById('nom-notes').value.trim()
+        notes: document.getElementById('nom-notes').value.trim(),
+        submittedBy: 'nomination'
       };
       const res = await WPForms.submit('nominate', payload);
-      WPUI.showToast(res.via === 'formspree' ? 'Nomination sent!' : 'Nomination saved — we will review for outreach.');
+      if (!res.ok) {
+        WPUI.showToast(res.error || 'Could not submit');
+        return;
+      }
+      WPUI.showToast(res.via === 'formspree'
+        ? 'Nomination sent — added to outreach tracker.'
+        : 'Nomination saved to outreach tracker for the team to review.');
       this.reset();
     });
 

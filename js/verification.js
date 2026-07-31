@@ -5,6 +5,7 @@
 const WPVerification = (function () {
   const STALE_DAYS = 30;
   const REVERIFY_DAYS = 30;
+  const BEST_DEAL_MAX_DAYS = 14;
 
   const BADGE = {
     verified: 'verified',
@@ -165,26 +166,40 @@ const WPVerification = (function () {
     return daysSince(sellerOrDeal && sellerOrDeal.lastVerified) > REVERIFY_DAYS;
   }
 
+  function priceAtOrBelowReference(deal) {
+    const avg = getBaselineAvg(deal);
+    const price = deal.retailPrice || deal.price || 0;
+    if (!avg || !price) return false;
+    // Best Deal: at or below typical market (reference midpoint)
+    return price <= avg;
+  }
+
+  /**
+   * Best Deal (Yellow-Orange) only when:
+   * verified + price ≤ reference + lastVerified ≤ 14 days + imageConfirmed
+   */
+  function isBestDealEligible(deal) {
+    if (!deal) return false;
+    if (deal.verificationStatus !== 'verified') return false;
+    if (deal.imageConfirmed !== true) return false;
+    if (daysSince(deal.lastVerified) > BEST_DEAL_MAX_DAYS) return false;
+    if (deal.verificationStatus === 'scam-warning') return false;
+    if (!priceAtOrBelowReference(deal)) return false;
+    return true;
+  }
+
   /** Stale prices: flag, strip Best Deal, lower ranking. Never present as silently current. */
   function applyFreshness(deal) {
     if (!deal) return deal;
     const stale = isPriceStale(deal);
     deal.priceMayBeOutdated = stale;
+    deal.isBestDeal = isBestDealEligible(deal);
     if (stale) {
-      deal.isBestDeal = false;
       deal.freshnessRankPenalty = 1000;
     } else {
       deal.freshnessRankPenalty = 0;
     }
     return deal;
-  }
-
-  function isBestDealEligible(deal) {
-    if (!deal) return false;
-    if (deal.priceMayBeOutdated || isPriceStale(deal)) return false;
-    if (deal.verificationStatus === 'scam-warning') return false;
-    if (deal.imageConfirmed !== true) return false;
-    return deal.isBestDeal === true;
   }
 
   function canGoLive(deal, seller) {
@@ -213,6 +228,7 @@ const WPVerification = (function () {
   return {
     STALE_DAYS,
     REVERIFY_DAYS,
+    BEST_DEAL_MAX_DAYS,
     BADGE,
     OUTREACH_STAGES,
     daysSince,
@@ -227,6 +243,7 @@ const WPVerification = (function () {
     needsReverification,
     applyFreshness,
     isBestDealEligible,
+    priceAtOrBelowReference,
     canGoLive,
     criteriaLabels,
     getBaselineAvg

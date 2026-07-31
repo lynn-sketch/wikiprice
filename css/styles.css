@@ -1142,6 +1142,32 @@ a:not(.btn):not(.bottom-nav-item):not(.nav-primary):not(.budget-preset) {
 .review-stars .wp-icon,
 .star-rating.filled { color: var(--accent-on-light); }
 .badge-stale { background: #fef3c7; color: #92400e; border: 1px solid #f59e0b; }
+.badge-best-deal {
+  background: var(--accent);
+  color: var(--accent-text-on-gold, #1a2332);
+  font-weight: 800;
+}
+.budget-category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.budget-cat-chip {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.budget-cat-chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
 .deal-img-wrap { position: relative; display: block; }
 .deal-img-wrap.is-placeholder .deal-card-photo,
 .deal-img-wrap.is-placeholder img { object-fit: cover; background: #e8eef6; }

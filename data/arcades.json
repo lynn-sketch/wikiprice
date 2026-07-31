@@ -63,11 +63,81 @@
     "sellersVerified": []
   },
   {
+    "id": "avema",
+    "name": "Avema",
+    "address": "Kampala",
+    "knownFor": ["Fashion", "General retail"],
+    "sellersVerified": []
+  },
+  {
     "id": "nana",
     "name": "Nana Center",
     "address": "Kampala",
     "knownFor": ["Shoes"],
     "sellersVerified": ["Reign Shoe"]
+  },
+  {
+    "id": "ham",
+    "name": "Ham Shopping Grounds",
+    "address": "Kampala",
+    "knownFor": ["Fashion", "Accessories"],
+    "sellersVerified": []
+  },
+  {
+    "id": "top-plaza",
+    "name": "Top Plaza",
+    "address": "Kampala",
+    "knownFor": ["Electronics", "Phones"],
+    "sellersVerified": []
+  },
+  {
+    "id": "modern-shoplex",
+    "name": "Modern Shoplex",
+    "address": "Kampala",
+    "knownFor": ["Fashion", "Wholesale"],
+    "sellersVerified": []
+  },
+  {
+    "id": "grand-corner",
+    "name": "Grand Corner",
+    "address": "Kampala",
+    "knownFor": ["Fashion", "Retail"],
+    "sellersVerified": []
+  },
+  {
+    "id": "arua-park",
+    "name": "Arua Park Arcade",
+    "address": "Near Arua Park, Kampala",
+    "knownFor": ["Transport hub retail", "Fashion"],
+    "sellersVerified": []
+  },
+  {
+    "id": "sekaziga",
+    "name": "Sekaziga Complex",
+    "address": "Kampala",
+    "knownFor": ["Electronics", "Accessories"],
+    "sellersVerified": []
+  },
+  {
+    "id": "teddys",
+    "name": "Teddy's Mall",
+    "address": "Kampala",
+    "knownFor": ["Fashion", "General"],
+    "sellersVerified": []
+  },
+  {
+    "id": "e-tower",
+    "name": "E-Tower",
+    "address": "Kampala",
+    "knownFor": ["Electronics", "Offices"],
+    "sellersVerified": []
+  },
+  {
+    "id": "king-fahad",
+    "name": "King Fahad Plaza",
+    "address": "Kampala",
+    "knownFor": ["Retail", "Fashion"],
+    "sellersVerified": []
   },
   {
     "id": "eden",
@@ -89,5 +159,19 @@
     "address": "Near Nsambya Shopping Centre / Hospital",
     "knownFor": ["Furniture", "Custom woodwork"],
     "sellersVerified": ["Nsambya Furniture Workshop"]
+  },
+  {
+    "id": "kikuubo",
+    "name": "Kikuubo",
+    "address": "Kikuubo Road, Kampala",
+    "knownFor": ["Wholesale", "Electronics", "Fashion"],
+    "sellersVerified": []
+  },
+  {
+    "id": "china-town",
+    "name": "China Town",
+    "address": "Lugogo, former Shoprite area",
+    "knownFor": ["Electronics", "Wholesale imports"],
+    "sellersVerified": []
   }
 ]

@@ -18,6 +18,13 @@
         <label for="budget-input"><strong>Your budget (UGX)</strong></label>
         <input type="number" id="budget-input" min="1000" step="1000" value="50000" style="width:100%;padding:14px;border:1px solid var(--border);border-radius:8px;font-size:18px;margin-top:8px;">
         <div class="budget-presets" id="budget-presets"></div>
+
+        <label for="budget-category" style="display:block;margin-top:16px;"><strong>Category</strong></label>
+        <div class="budget-category-chips" id="budget-category-chips" role="group" aria-label="Category filter"></div>
+        <select id="budget-category" aria-label="Category" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;margin-top:8px;font-size:1rem;">
+          <option value="all">All Categories</option>
+        </select>
+
         <label style="display:flex;align-items:center;margin-top:16px;cursor:pointer;">
           <input type="checkbox" id="retail-only" checked> Show retail only (exclude wholesale-only results)
         </label>
@@ -43,7 +50,7 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
-    <script src="js/config.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/verification.js"></script>
   <script src="js/data-layer.js"></script>
   <script src="js/geo.js"></script>
@@ -63,6 +70,34 @@
     const presets = [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000, 80000, 100000, 150000, 200000, 500000];
     const presetsEl = document.getElementById('budget-presets');
     const budgetInput = document.getElementById('budget-input');
+    const categorySelect = document.getElementById('budget-category');
+    const chipsEl = document.getElementById('budget-category-chips');
+
+    Object.keys(WPDATA.categories).forEach(c => {
+      categorySelect.innerHTML += '<option value="' + c.replace(/"/g, '&quot;') + '">' + c + '</option>';
+    });
+
+    function selectedCategory() {
+      return categorySelect.value || 'all';
+    }
+
+    function syncChips() {
+      const cats = ['all'].concat(Object.keys(WPDATA.categories));
+      const cur = selectedCategory();
+      chipsEl.innerHTML = cats.map(c => {
+        const label = c === 'all' ? WikiPrice.t('allCategories') : c;
+        const active = (c === 'all' && (cur === 'all' || !cur)) || c === cur;
+        return '<button type="button" class="budget-cat-chip' + (active ? ' active' : '') + '" data-cat="' +
+          c.replace(/"/g, '&quot;') + '">' + label + '</button>';
+      }).join('');
+      chipsEl.querySelectorAll('[data-cat]').forEach(btn => {
+        btn.onclick = () => {
+          categorySelect.value = btn.getAttribute('data-cat');
+          syncChips();
+          runBudget();
+        };
+      });
+    }
 
     presets.forEach(p => {
       const btn = document.createElement('button');
@@ -73,10 +108,18 @@
       presetsEl.appendChild(btn);
     });
 
+    function shareUrl(amount, category) {
+      const u = new URL(location.href.split('?')[0], location.origin);
+      u.searchParams.set('amount', amount);
+      if (category && category !== 'all') u.searchParams.set('category', category);
+      return u.toString();
+    }
+
     function runBudget() {
       const amount = parseInt(budgetInput.value) || 0;
       const retailOnly = document.getElementById('retail-only').checked;
-      let results = WikiPrice.budgetFinder(amount, retailOnly);
+      const category = selectedCategory();
+      let results = WikiPrice.budgetFinder(amount, retailOnly, category);
 
       if (retailOnly) {
         results = results.filter(d => d.retailPrice <= amount);
@@ -86,11 +129,17 @@
           return d.retailPrice <= amount;
         });
       }
+      if (category && category !== 'all') {
+        results = results.filter(d => d.category === category);
+      }
 
       results = results.filter(d => d.stockStatus !== 'out-of-stock');
       results = WikiPrice.sortDeals(results, 'price-low');
 
-      document.getElementById('budget-count').textContent = 'With UGX ' + amount.toLocaleString() + ', you can buy ' + results.length + ' product' + (results.length !== 1 ? 's' : '') + ':';
+      const catLabel = category === 'all' ? 'all categories' : category;
+      document.getElementById('budget-count').textContent =
+        'With UGX ' + amount.toLocaleString() + ' in ' + catLabel + ', you can buy ' +
+        results.length + ' product' + (results.length !== 1 ? 's' : '') + ':';
 
       let warnings = '';
       results.forEach(d => {
@@ -109,21 +158,35 @@
       document.getElementById('budget-results').innerHTML = results.map(d => WPUI.dealCard(d, { showWholesaleWarning: true })).join('');
 
       const list = results.slice(0, 8).map(d => d.name + ' (' + WikiPrice.formatUGX(d.retailPrice <= amount ? d.retailPrice : d.wholesalePrice) + ')').join(', ');
-      const shareText = 'With UGX ' + amount.toLocaleString() + ' you can buy: ' + list + '. Found on WikiPrice Uganda!';
+      const link = shareUrl(amount, category);
+      const shareText = 'With UGX ' + amount.toLocaleString() +
+        (category !== 'all' ? ' (' + category + ')' : '') +
+        ' you can buy: ' + list + '. ' + link;
       document.getElementById('share-text').textContent = shareText;
       document.getElementById('budget-share').classList.remove('hidden');
       document.getElementById('share-whatsapp').href = 'https://wa.me/?text=' + encodeURIComponent(shareText);
       document.getElementById('share-sms').onclick = () => {
         location.href = 'sms:?body=' + encodeURIComponent(shareText);
       };
+
+      // Keep address bar shareable
+      if (history.replaceState) {
+        history.replaceState(null, '', shareUrl(amount, category).replace(location.origin, ''));
+      }
     }
 
     document.getElementById('find-budget').onclick = runBudget;
     document.getElementById('retail-only').onchange = runBudget;
+    categorySelect.onchange = () => { syncChips(); runBudget(); };
 
     const params = new URLSearchParams(location.search);
     if (params.get('amount')) budgetInput.value = params.get('amount');
-    runBudget();
+    if (params.get('category')) {
+      const cat = params.get('category');
+      if ([].slice.call(categorySelect.options).some(o => o.value === cat)) categorySelect.value = cat;
+    }
+    syncChips();
+    WPDataLayer.loadExtras().then(runBudget);
     window.addEventListener('load', () => WPUI.pageWeight());
   </script>
 </body>

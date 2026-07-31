@@ -463,14 +463,16 @@
     function renderChecklist() {
       const panel = document.getElementById('checklist-panel');
       if (!panel) return;
-      const steps = ['contacted', 'confirmed', 'locationVerified', 'videoOk', 'priceOk', 'responsiveOk', 'badgeAssigned', 'live'];
+      const steps = ['contacted', 'confirmed', 'locationVerified', 'videoOk', 'priceOk', 'responsiveOk', 'imageConfirmed', 'lastVerifiedSet', 'badgeAssigned', 'live'];
       const labels = {
         contacted: 'Contacted (consent)',
         confirmed: 'Self-submitted or in-person confirmed',
-        locationVerified: '1. Physical location verified',
-        videoOk: '2. Video content (≥10, shows shop)',
-        priceOk: '3. Price transparency',
-        responsiveOk: '4. Responsiveness',
+        locationVerified: 'Physical location verified',
+        videoOk: 'Video content (≥10, shows shop)',
+        priceOk: 'Price transparency',
+        responsiveOk: 'Responsiveness',
+        imageConfirmed: 'Image confirmed matches product',
+        lastVerifiedSet: 'lastVerified date set',
         badgeAssigned: 'Badge assigned',
         live: 'Live on site'
       };

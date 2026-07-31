@@ -76,7 +76,10 @@ const WPUI = {
   },
 
   contactButton(deal, seller, sm) {
-    const phone = seller?.whatsapp || seller?.phone;
+    // Part 12.6 — expose contact only when seller opted in (providing WhatsApp = opt-in)
+    const optedIn = seller && (seller.contactOptIn === true || seller.whatsappOptIn === true ||
+      (seller.whatsapp && seller.contactOptIn !== false && seller.whatsappOptIn !== false));
+    const phone = optedIn ? (seller.whatsapp || seller.phone) : null;
     if (phone) {
       return '<a href="' + WikiPrice.whatsappLink(phone, deal) + '" class="btn btn-whatsapp ' + (sm ? 'btn-sm' : '') + '" target="_blank" rel="noopener">' + WPIcon('whatsapp', 16) + ' WhatsApp</a>';
     }
@@ -149,7 +152,8 @@ const WPUI = {
       WPUI.sourceBadge(d) +
       (lastVerified ? '<span class="trust-verified-date">' + WikiPrice.daysAgo(lastVerified) + '</span>' : '') +
       WPUI.stalePriceBadge(d) +
-      (d.isBestDeal && !(d.priceMayBeOutdated) ? '<span class="badge badge-verified">Best Deal</span>' : '') +
+      ((typeof WPVerification !== 'undefined' ? WPVerification.isBestDealEligible(d) : d.isBestDeal)
+        ? '<span class="badge badge-best-deal">' + WikiPrice.t('bestDeal') + '</span>' : '') +
       '</div>';
   },
 
@@ -278,10 +282,10 @@ const WPUI = {
 
   bottomNav(active) {
     const items = [
-      { id: 'home', href: 'index.html', icon: 'shop', label: 'Home' },
-      { id: 'discover', href: 'discover.html', icon: 'play', label: 'Discover' },
-      { id: 'budget', href: 'budget-finder.html', icon: 'money', label: 'Budget' },
-      { id: 'sellers', href: 'for-sellers.html', icon: 'users', label: 'Sellers' }
+      { id: 'home', href: 'index.html', icon: 'shop', label: WikiPrice.t('home') },
+      { id: 'discover', href: 'discover.html', icon: 'play', label: WikiPrice.t('discover') },
+      { id: 'budget', href: 'budget-finder.html', icon: 'money', label: WikiPrice.t('budget') },
+      { id: 'sellers', href: 'for-sellers.html', icon: 'users', label: WikiPrice.t('sellers') }
     ];
     return '<nav class="bottom-nav" aria-label="Primary mobile">' +
       items.map(item =>
@@ -314,16 +318,17 @@ const WPUI = {
       '<button id="nav-toggle" class="nav-toggle" type="button" aria-label="Menu">' + WPIcon('menu', 22) + '</button>' +
       '</div></div>' +
       '<nav id="site-nav" class="site-nav">' +
-      '<a class="nav-primary" href="index.html"' + (active === 'home' ? ' style="background:var(--bg)"' : '') + '>Home</a>' +
-      '<a class="nav-primary" href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>Find Deals</a>' +
-      '<a class="nav-primary nav-budget" href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>Budget Finder</a>' +
-      '<a class="nav-primary" href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>For Sellers</a>' +
+      '<a class="nav-primary" href="index.html"' + (active === 'home' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('home') + '</a>' +
+      '<a class="nav-primary" href="search.html"' + (active === 'search' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('findDeals') + '</a>' +
+      '<a class="nav-primary nav-budget" href="budget-finder.html"' + (active === 'budget' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('budgetFinder') + '</a>' +
+      '<a class="nav-primary" href="for-sellers.html"' + (active === 'sellers' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('forSellers') + '</a>' +
       '<span class="nav-divider" aria-hidden="true"></span>' +
-      '<a href="discover.html"' + (active === 'discover' ? ' style="background:var(--bg)"' : '') + '>Discover</a>' +
-      '<a href="community.html"' + (active === 'community' ? ' style="background:var(--bg)"' : '') + '>Community</a>' +
-      '<a href="about.html"' + (active === 'about' ? ' style="background:var(--bg)"' : '') + '>About</a>' +
-      '<a href="safe-shopping.html"' + (active === 'safe' ? ' style="background:var(--bg)"' : '') + '>Safe Shopping</a>' +
-      '<a href="contact.html"' + (active === 'contact' ? ' style="background:var(--bg)"' : '') + '>Contact</a>' +
+      '<a href="discover.html"' + (active === 'discover' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('discover') + '</a>' +
+      '<a href="community.html"' + (active === 'community' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('community') + '</a>' +
+      '<a href="arcades.html"' + (active === 'arcades' ? ' style="background:var(--bg)"' : '') + '>Arcades</a>' +
+      '<a href="about.html"' + (active === 'about' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('about') + '</a>' +
+      '<a href="safe-shopping.html"' + (active === 'safe' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('safeShopping') + '</a>' +
+      '<a href="contact.html"' + (active === 'contact' ? ' style="background:var(--bg)"' : '') + '>' + WikiPrice.t('contact') + '</a>' +
       '</nav></header>';
   },
 

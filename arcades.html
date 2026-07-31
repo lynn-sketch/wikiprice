@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcade Directory — WikiPrice Uganda</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <meta name="theme-color" content="#0A2B5C">
+</head>
+<body>
+  <div id="header"></div>
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Kampala Arcade Directory</h1>
+      <p class="text-muted">Internal reference and public directory of markets and arcades. Verified seller counts grow as the team completes in-person checks.</p>
+      <div id="arcade-list" class="deals-grid" style="margin-top:24px;"></div>
+    </div>
+  </section>
+  <div id="footer"></div>
+  <script src="js/data.js"></script>
+  <script src="js/data-extended.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/verification.js"></script>
+  <script src="js/data-layer.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/forms.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/images.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/ui-enhance.js"></script>
+  <script>
+    document.getElementById('header').innerHTML = WPUI.header('arcades');
+    document.getElementById('footer').innerHTML = WPUI.footer();
+    WikiPrice.initGlobal();
+    WPDataLayer.loadExtras().then(function () {
+      const list = WPDATA.arcades || [];
+      document.getElementById('arcade-list').innerHTML = list.map(a =>
+        '<article class="detail-card">' +
+        '<h2 style="margin-top:0;">' + (a.name || '') + '</h2>' +
+        '<p class="text-muted">' + (a.address || '') + '</p>' +
+        '<p><strong>Known for:</strong> ' + (a.knownFor || []).join(', ') + '</p>' +
+        (a.sellersVerified && a.sellersVerified.length
+          ? '<p><strong>Sellers verified so far:</strong> ' + a.sellersVerified.join(', ') + '</p>'
+          : '<p class="text-muted">No verified sellers listed yet.</p>') +
+        '<p><a class="btn btn-outline btn-sm" href="search.html?location=' + encodeURIComponent(a.name) + '">Find deals nearby</a></p>' +
+        '</article>'
+      ).join('') || '<p>Arcade data loading…</p>';
+    });
+  </script>
+</body>
+</html>

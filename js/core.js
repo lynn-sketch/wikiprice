@@ -1,6 +1,14 @@
 /* WikiPrice Core — utilities, risk scoring, search, i18n */
 const WikiPrice = (function () {
+  // Fallback strings; overwritten by data/i18n/{en,lg,sw}.json when available
   const LANG = {
+    en: {},
+    lg: {},
+    sw: {}
+  };
+
+  // Embedded seed (used before/without fetch). // TODO: keep in sync with data/i18n/*.json
+  const EMBEDDED = {
     en: {
       verified: 'Verified', deal: 'Deal', wholesale: 'Wholesale', retail: 'Retail',
       search: 'Search deals...', budgetFinder: 'Budget Finder', viewDeal: 'View Deal',
@@ -12,7 +20,12 @@ const WikiPrice = (function () {
       communityVerified: 'Community Verified', mentionedTiktok: 'Mentioned on TikTok',
       dataSaver: 'Data Saver', dataSaverOff: 'Full Mode',
       wholesaleWarning: 'Wholesale price requires minimum purchase of {qty} pieces. Total cost would be UGX {total}.',
-      showRetailOnly: 'Show retail only', knowYourPrice: 'Know Your Price, Save Your Money'
+      showRetailOnly: 'Show retail only', knowYourPrice: 'Know Your Price, Save Your Money',
+      findDeals: 'Find Deals', forSellers: 'For Sellers', home: 'Home', discover: 'Discover',
+      budget: 'Budget', sellers: 'Sellers', allCategories: 'All Categories',
+      nominateSeller: 'Nominate a seller', bestDeal: 'Best Deal',
+      priceMayBeOutdated: 'Price may be outdated', community: 'Community', about: 'About',
+      contact: 'Contact', safeShopping: 'Safe Shopping'
     },
     lg: {
       verified: 'Kakasidwa', deal: 'Ddiiru', wholesale: 'Mubungi bungi', retail: 'Kutunda kitono',
@@ -25,17 +38,63 @@ const WikiPrice = (function () {
       communityVerified: 'Abantu Bakakase', mentionedTiktok: 'Kyogerwako ku TikTok',
       dataSaver: 'Tereka Data', dataSaverOff: 'Full Mode',
       wholesaleWarning: 'Mubungi bungi yeetaaga okugula {qty} obutundu. Omugatte UGX {total}.',
-      showRetailOnly: 'Laga kitono bukka', knowYourPrice: 'Manya Omuwendo, Ssaawo Ssente'
+      showRetailOnly: 'Laga kitono bukka', knowYourPrice: 'Manya Omuwendo, Ssaawo Ssente',
+      findDeals: 'Noonya Ddiiru', forSellers: 'Ku Basuubuzi', home: 'Awaka', discover: 'Zuula',
+      budget: 'Bajeti', sellers: 'Basuubuzi', allCategories: 'Ebika Byonna',
+      nominateSeller: 'Londa omusuubuzi', bestDeal: 'Ddiiru Esinga',
+      priceMayBeOutdated: 'Omuwendo guyinza okuba ogukadde', community: 'Abantu', about: 'Kukwata ku',
+      contact: 'Tuukirira', safeShopping: 'Kugula kwa Bulamu'
+      // TODO: needs native speaker review
+    },
+    sw: {
+      verified: 'Imethibitishwa', deal: 'Ofa', wholesale: 'Jumla', retail: 'Rejareja',
+      search: 'Tafuta ofa...', budgetFinder: 'Kitafuta Bajeti', viewDeal: 'Angalia Ofa',
+      contactWhatsApp: 'Wasiliana WhatsApp', saveDeal: 'Hifadhi', reportPrice: 'Ripoti bei imebadilika',
+      confirmPrice: 'Thibitisha bei', shareDeal: 'Shiriki', trustedSeller: 'Muuzaji Anayeaminika',
+      cautionAdvised: 'Tahadhari', highRisk: 'Hatari Kubwa', inStock: 'Inapatikana',
+      limitedStock: 'Stock chache', callToConfirm: 'Piga thibitisha', outOfStock: 'Haipatikani',
+      retailOnly: 'Rejareja tu', wholesaleOnly: 'Jumla tu', both: 'Rejareja na Jumla',
+      communityVerified: 'Jamii Imethibitisha', mentionedTiktok: 'Imetajwa TikTok',
+      dataSaver: 'Hifadhi Data', dataSaverOff: 'Hali Kamili',
+      wholesaleWarning: 'Bei ya jumla inahitaji ununuzi wa angalau vipande {qty}. Jumla UGX {total}.',
+      showRetailOnly: 'Onyesha rejareja tu', knowYourPrice: 'Jua Bei Yako, Okoa Pesa',
+      findDeals: 'Tafuta Ofa', forSellers: 'Kwa Wauzaji', home: 'Nyumbani', discover: 'Gundua',
+      budget: 'Bajeti', sellers: 'Wauzaji', allCategories: 'Kategoria Zote',
+      nominateSeller: 'Pendekeza muuzaji', bestDeal: 'Ofa Bora',
+      priceMayBeOutdated: 'Bei inaweza kuwa ya zamani', community: 'Jamii', about: 'Kuhusu',
+      contact: 'Wasiliana', safeShopping: 'Ununuzi Salama'
+      // TODO: needs native speaker review
     }
   };
 
+  Object.assign(LANG.en, EMBEDDED.en);
+  Object.assign(LANG.lg, EMBEDDED.lg);
+  Object.assign(LANG.sw, EMBEDDED.sw);
+
   let currentLang = localStorage.getItem('wikiprice-lang') || 'en';
+  if (!LANG[currentLang]) currentLang = 'en';
   let dataSaver = localStorage.getItem('wikiprice-data-saver') === 'true';
+  const LANG_CYCLE = ['en', 'lg', 'sw'];
 
   function t(key, vars) {
-    let s = (LANG[currentLang][key] || LANG.en[key] || key);
+    let s = (LANG[currentLang] && LANG[currentLang][key]) || LANG.en[key] || key;
     if (vars) Object.keys(vars).forEach(k => { s = s.replace('{' + k + '}', vars[k]); });
     return s;
+  }
+
+  function loadI18nFiles() {
+    return Promise.all(['en', 'lg', 'sw'].map(code =>
+      fetch('data/i18n/' + code + '.json', { cache: 'no-cache' })
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+        .then(json => {
+          if (json) {
+            const clean = Object.assign({}, json);
+            delete clean._meta;
+            LANG[code] = Object.assign({}, LANG[code] || {}, clean);
+          }
+        })
+    ));
   }
 
   function formatUGX(n) {
@@ -247,8 +306,13 @@ const WikiPrice = (function () {
     }
   }
 
-  function budgetFinder(amount, retailOnly) {
-    return searchDeals('', { retailOnly, maxPrice: amount }).filter(d => {
+  function budgetFinder(amount, retailOnly, category) {
+    const filters = { retailOnly: retailOnly, maxPrice: amount };
+    if (category && category !== 'all' && category !== 'All Categories') {
+      filters.category = category;
+    }
+    return searchDeals('', filters).filter(d => {
+      if (category && category !== 'all' && category !== 'All Categories' && d.category !== category) return false;
       if (retailOnly) return d.retailPrice <= amount;
       const eff = d.priceType === 'wholesale' ? d.wholesalePrice : d.retailPrice;
       return eff <= amount || d.retailPrice <= amount;
@@ -305,8 +369,19 @@ const WikiPrice = (function () {
   }
 
   function setLang(lang) {
+    if (!LANG[lang]) lang = 'en';
     currentLang = lang;
     localStorage.setItem('wikiprice-lang', lang);
+    document.documentElement.lang = lang === 'lg' ? 'lg' : lang;
+  }
+
+  function nextLang() {
+    const i = LANG_CYCLE.indexOf(currentLang);
+    return LANG_CYCLE[(i + 1) % LANG_CYCLE.length];
+  }
+
+  function langLabel() {
+    return ({ en: 'EN', lg: 'LG', sw: 'SW' })[currentLang] || 'EN';
   }
 
   function setDataSaver(on) {
@@ -326,12 +401,16 @@ const WikiPrice = (function () {
   }
 
   function initGlobal(activeBottom) {
+    if (typeof WikiPrice !== 'undefined' && WikiPrice.loadI18nFiles) {
+      WikiPrice.loadI18nFiles().catch(function () {});
+    }
     document.body.classList.toggle('data-saver', dataSaver);
     const langBtn = document.getElementById('lang-toggle');
     if (langBtn) {
-      langBtn.textContent = currentLang === 'en' ? 'LG' : 'EN';
+      langBtn.textContent = langLabel();
+      langBtn.setAttribute('aria-label', 'Language: ' + currentLang);
       langBtn.onclick = () => {
-        setLang(currentLang === 'en' ? 'lg' : 'en');
+        setLang(nextLang());
         location.reload();
       };
     }
@@ -417,7 +496,7 @@ const WikiPrice = (function () {
     searchDeals, sortDeals, budgetFinder, whatsappLink, getSubCategories,
     getDealWarnings, initGlobal, getPriceTrend, getBestPriceMonths, shareSMS,
     getLang: () => currentLang, isDataSaver: () => dataSaver,
-    searchSuggestions, formatFollowers,
+    searchSuggestions, formatFollowers, loadI18nFiles, setLang, langLabel,
     isPriceStale: (deal) => (typeof WPVerification !== 'undefined' ? WPVerification.isPriceStale(deal) : false)
   };
 })();

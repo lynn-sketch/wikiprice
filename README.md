@@ -19,6 +19,13 @@ Know Your Price, Save Your Money. Kampala's price intelligence and discovery pla
 | Part 4: schema exports JSON/CSV/MD/handles | Done |
 | Part 4: imageConfirmed + category placeholders | Done |
 | Part 5: outreach admin (hashed gate, tracker, research) | Done |
+| Part 6–7: TikTok deep links / oEmbed / multi-source | Done |
+| Part 8–9: palette + categories + Services | Done |
+| Part 9.5: Budget Finder category filter | Done |
+| Part 10–11: arcade directory + seed candidates | Done |
+| Part 12: Best Deal ≤14d + reference check | Done |
+| Part 12.5: i18n en/lg/sw JSON + switcher | Done |
+| Part 12.6–12.8: headers, rate-limit, nominate→tracker | Done |
 | UX: illustrative stats, no fake quotes, empty states | Done |
 | WhatsApp on free tier (paid = placement/promo) | Done |
 | Last verified beside price + trust signal strip | Done |

@@ -8,9 +8,10 @@ const WPDATA = {
     'Home and Furniture': ['Bed frames', 'Sofas', 'Dining tables', 'Bedding', 'Kitchen', 'Appliances', 'Décor'],
     'Beauty and Fragrance': ['Perfumes', 'Cosmetics', 'Hair accessories', 'Skincare'],
     'Thrift': ['Jackets', 'Jeans', 'Shirts', 'Dresses', 'Shoes', 'Accessories'],
-    'Wholesale for Business': ['Bulk clothing', 'Bulk electronics', 'Bulk home goods', 'Restaurant supplies']
+    'Wholesale for Business': ['Bulk clothing', 'Bulk electronics', 'Bulk home goods', 'Restaurant supplies'],
+    'Services': ['Salon', 'Barber', 'Tailor', 'Mechanic', 'Phone Repair', 'IT Services', 'Delivery', 'Cleaning', 'Photography', 'Tutoring and Coaching', 'Personal Shopping']
   },
-  locations: ['Mukwano Arcade', 'New Pioneer Mall', 'Kikuubo', 'Owino', 'Nsambya', 'China Town', 'Galiraya', 'Majestic Plaza', 'Energy Centre', 'Magoba', 'Crafts Market', 'Avema', 'Gazaland Arcade', 'Other'],
+  locations: ['Mukwano Arcade', 'New Pioneer Mall', 'Kikuubo', 'Owino', 'Nsambya', 'China Town', 'Galiraya', 'Majestic Plaza', 'Energy Centre', 'Magoba', 'Crafts Market', 'Avema', 'Gazaland Arcade', 'Nalubwana Arcade', 'Nana Center', 'Ham Shopping Grounds', 'Top Plaza', 'Modern Shoplex', 'Grand Corner', 'Arua Park Arcade', 'Sekaziga Complex', "Teddy's Mall", 'E-Tower', 'King Fahad Plaza', 'Eden Mall', 'Kampala Plaza', 'Other'],
   baselines: [
     { category: 'Electronics', subCategory: 'Televisions', min: 450000, max: 500000 },
     { category: 'Electronics', subCategory: 'Audio', min: 25000, max: 35000 },
