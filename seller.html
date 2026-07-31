@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seller Profile â€” WikiPrice Uganda</title>
+  <title>Seller Profile — WikiPrice Uganda</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -14,6 +14,7 @@
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
     <script src="js/config.js"></script>
+  <script src="js/api-client.js"></script>
   <script src="js/verification.js"></script>
   <script src="js/data-layer.js"></script>
   <script src="js/geo.js"></script>
@@ -40,13 +41,13 @@
       const sampleDeal = deals[0];
       const risk = sampleDeal ? WikiPrice.calculateRiskScore(sampleDeal, seller) : { label: 'Unknown', badgeClass: 'badge-caution', message: '' };
 
-      document.title = seller.name + ' â€” WikiPrice Uganda';
+      document.title = seller.name + ' — WikiPrice Uganda';
 
       let tiktokHtml = '';
       const handle = seller.tiktokHandle || (seller.handle && String(seller.handle).replace(/^@/, ''));
       if (handle) {
         const url = WPDataLayer.tiktokProfileUrl(handle);
-        tiktokHtml = '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="' + url + '" target="_blank" rel="noopener">@' + handle + '</a> Â· ' + WikiPrice.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers on TikTok</span></p>';
+        tiktokHtml = '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="' + url + '" target="_blank" rel="noopener">@' + handle + '</a> · ' + WikiPrice.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers on TikTok</span></p>';
       }
 
       const sampleForTrust = sampleDeal || {
@@ -65,7 +66,7 @@
       ).join('');
       if (seller.location && (seller.location.arcade || seller.location.stall)) {
         locations = '<div class="tiktok-extract"><span class="source-label">Verified location</span><br>' +
-          [seller.location.arcade, seller.location.address, seller.location.floor, seller.location.stall, seller.location.landmark].filter(Boolean).join(' Â· ') +
+          [seller.location.arcade, seller.location.address, seller.location.floor, seller.location.stall, seller.location.landmark].filter(Boolean).join(' · ') +
           '</div>' + locations;
       }
 
@@ -111,7 +112,7 @@
         '<div class="detail-card"><h2>Details</h2>' +
         '<p>Seller type: ' + seller.sellerType + '</p>' +
         '<p>Member since: ' + seller.memberSince + '</p>' +
-        '<p>Physical shop: ' + (seller.physicalShop ? 'Yes ' + WPIcon('check', 16) : 'No â€” online only') + '</p>' +
+        '<p>Physical shop: ' + (seller.physicalShop ? 'Yes ' + WPIcon('check', 16) : 'No — online only') + '</p>' +
         '<p>Response time: ~' + seller.responseTimeHours + ' hours</p>' +
         '<p>Average rating: ' + seller.avgRating + '/5</p>' +
         '<p>Scam reports: ' + seller.scamReports + '</p></div>' +

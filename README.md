@@ -2,8 +2,39 @@
 
 Know Your Price, Save Your Money. Kampala's price intelligence and discovery platform.
 
-**Live site:** https://wikiprice1.netlify.app/  
-*(Also on GitHub Pages: https://lynn-sketch.github.io/wikiprice/)*
+**Live site:** https://wikiprice3.netlify.app/
+
+## Backend (Netlify Database)
+
+Yes — Netlify has a built-in **Postgres** database (Netlify Database). This repo uses it via:
+
+| Piece | Path |
+|-------|------|
+| Schema migrations | `netlify/database/migrations/` |
+| API (Functions) | `netlify/functions/api.mjs` → `/api/*` |
+| Seed catalog | `data/catalog-seed.json` |
+| Frontend client | `js/api-client.js` |
+
+**Endpoints:** `GET /api/health`, `GET /api/catalog`, `POST /api/forms`
+
+The site still works with static JS data if the database is not provisioned yet.
+
+### Enable on your Netlify project
+
+1. Use a **credit-based** Netlify plan (required for Netlify Database).
+2. Deploy this repo (push to GitHub or `netlify deploy`).
+3. First deploy installs `@netlify/database` and provisions Postgres + runs migrations.
+4. Optional: set env var `ADMIN_API_TOKEN` for protected admin API routes.
+5. Check `https://YOUR-SITE.netlify.app/api/health` — should show `"database":"connected"`.
+
+## Quick Start
+
+```bash
+npm install
+npx netlify dev
+```
+
+Or static-only: `npx serve .`
 
 ## Master refinement — complete build
 

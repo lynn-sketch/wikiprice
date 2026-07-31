@@ -80,6 +80,15 @@ const WPForms = {
       });
     }
 
+    if (typeof WPAPI !== 'undefined' && typeof WPAPI.submitForm === 'function') {
+      try {
+        const remote = await WPAPI.submitForm(formType, clean);
+        if (remote && remote.ok) return { ok: true, via: 'netlify-database', id: remote.id };
+      } catch (e) {
+        console.warn('[WPForms] Database API failed, trying Formspree/local', e.message || e);
+      }
+    }
+
     if (typeof WPCONFIG !== 'undefined' && WPCONFIG.formspreeConfigured) {
       try {
         const res = await fetch(WPCONFIG.formspreeEndpoint, {

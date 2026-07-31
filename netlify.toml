@@ -1,12 +1,27 @@
-# WikiPrice — static site on Netlify
+# WikiPrice — static site + Netlify Database + Functions
 [build]
   publish = "."
-  command = "echo 'No build step — static HTML/CSS/JS'"
+  command = "npm run build"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["data/catalog-seed.json"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
 
 [[headers]]
   for = "/sw.js"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store"
 
 [[headers]]
   for = "/*"

@@ -1,0 +1,17 @@
+{
+  "name": "wikiprice",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WikiPrice Uganda - static frontend + Netlify Database API",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo No frontend build - static HTML/CSS/JS",
+    "seed:export": "node scripts/export-catalog-seed.mjs"
+  },
+  "dependencies": {
+    "@netlify/database": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community â€” Nominate &amp; Confirm â€” WikiPrice</title>
+  <title>Community — Nominate &amp; Confirm — WikiPrice</title>
   <link rel="stylesheet" href="css/styles.css">
   <meta name="theme-color" content="#0A2B5C">
 </head>
@@ -13,7 +13,7 @@
   <section class="section">
     <div class="container">
       <h1 class="section-title">Community</h1>
-      <p class="text-muted">Help grow a trustworthy Kampala deals directory â€” nominate sellers, confirm prices, report issues. No scraping; humans verify in person.</p>
+      <p class="text-muted">Help grow a trustworthy Kampala deals directory — nominate sellers, confirm prices, report issues. No scraping; humans verify in person.</p>
 
       <div class="deals-grid" style="margin-top:24px;">
         <div class="detail-card">
@@ -35,7 +35,7 @@
             <div class="form-group">
               <label for="nom-cat">Product category</label>
               <select id="nom-cat">
-                <option value="">Selectâ€¦</option>
+                <option value="">Select…</option>
               </select>
             </div>
             <div class="form-group">
@@ -92,6 +92,7 @@
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/api-client.js"></script>
   <script src="js/verification.js"></script>
   <script src="js/data-layer.js"></script>
   <script src="js/geo.js"></script>
@@ -129,7 +130,7 @@
         return;
       }
       WPUI.showToast(res.via === 'formspree'
-        ? 'Nomination sent â€” added to outreach tracker.'
+        ? 'Nomination sent — added to outreach tracker.'
         : 'Nomination saved to outreach tracker for the team to review.');
       this.reset();
     });
@@ -142,7 +143,7 @@
         dateSeen: document.getElementById('conf-date').value || new Date().toISOString().slice(0, 10)
       };
       await WPForms.submit('price-confirm', payload);
-      WPUI.showToast('Thanks â€” price confirmation recorded.');
+      WPUI.showToast('Thanks — price confirmation recorded.');
       this.reset();
     });
   </script>

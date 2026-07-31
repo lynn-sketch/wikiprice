@@ -1,9 +1,9 @@
-ï»¿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deal â€” WikiPrice Uganda</title>
+  <title>Deal — WikiPrice Uganda</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -14,6 +14,7 @@
   <script src="js/data.js"></script>
   <script src="js/data-extended.js"></script>
     <script src="js/config.js"></script>
+  <script src="js/api-client.js"></script>
   <script src="js/verification.js"></script>
   <script src="js/data-layer.js"></script>
   <script src="js/geo.js"></script>
@@ -45,7 +46,7 @@
       const similar = WPDATA.deals.filter(d => d.category === deal.category && d.id !== deal.id).slice(0, 4);
       const sameSeller = WPDATA.deals.filter(d => d.sellerId === deal.sellerId && d.id !== deal.id).slice(0, 3);
 
-      document.title = deal.name + ' â€” WikiPrice Uganda';
+      document.title = deal.name + ' — WikiPrice Uganda';
 
       let tiktokSection = WPUIEnhance.renderTikTokDealSection(deal, seller);
       if (tiktokSection && !document.getElementById('tiktok-embed-script')) {
@@ -75,7 +76,7 @@
         '<div>' +
         '<div class="detail-card">' +
         WPUI.formatPrices(deal, { seller: seller, showVerifiedBeside: true }) +
-        (deal.mallPrice ? '<p class="mall-compare">Mall price: ' + WikiPrice.formatUGX(deal.mallPrice) + ' Â· Save ' + Math.round((1 - deal.retailPrice/deal.mallPrice)*100) + '%</p>' : '') +
+        (deal.mallPrice ? '<p class="mall-compare">Mall price: ' + WikiPrice.formatUGX(deal.mallPrice) + ' · Save ' + Math.round((1 - deal.retailPrice/deal.mallPrice)*100) + '%</p>' : '') +
         WPUI.wholesaleWarning(deal) +
         '<p>' + WPUI.confidenceBadge(deal) + '</p>' +
         (bestPrice ? '<span class="badge badge-verified">' + WPIcon('trophy', 14) + ' ' + bestPrice + '</span> ' : '') +
@@ -100,11 +101,11 @@
         '</ul></div>' +
 
         '<div class="detail-card">' + WPUI.sectionHeading('verify', 'Verification History') +
-        deal.verificationHistory.map(v => '<p><strong>' + v.who + '</strong> â€” ' + v.date + ' (' + v.method + ')</p>').join('') +
+        deal.verificationHistory.map(v => '<p><strong>' + v.who + '</strong> — ' + v.date + ' (' + v.method + ')</p>').join('') +
         '<p class="text-muted">Confirmed by ' + deal.crowdConfirmations + ' users since verification.</p></div>' +
 
         '<div class="detail-card">' + WPUI.sectionHeading('star', 'Reviews') +
-        deal.reviews.map(r => '<div class="review-item">' + WPUI.starRating(r.stars) + '<div class="review-meta">' + r.name + ' Â· ' + r.date + '</div><p>' + r.comment + '</p></div>').join('') +
+        deal.reviews.map(r => '<div class="review-item">' + WPUI.starRating(r.stars) + '<div class="review-meta">' + r.name + ' · ' + r.date + '</div><p>' + r.comment + '</p></div>').join('') +
         '</div>' +
 
         (similar.length ? '<div class="detail-card"><h2>Similar Deals</h2><div class="deals-grid">' + similar.map(d => WPUI.dealCard(d)).join('') + '</div></div>' : '') +
@@ -116,7 +117,7 @@
         '<p><strong><a href="seller.html?id=' + deal.sellerId + '">' + (seller?.name || 'Unknown') + '</a></strong></p>' +
         '<p>Trust: <strong>' + trust.score + '%</strong> (' + trust.adj + ') ' + WPUI.starRating(Math.round(seller?.avgRating || 4)) + '</p>' +
         '<p>Type: ' + (seller?.sellerType || 'retail') + '</p>' +
-        (seller?.tiktokHandle ? '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@' + seller.tiktokHandle + '" target="_blank" rel="noopener">@' + seller.tiktokHandle + '</a> Â· ' + WikiPrice.formatFollowers(seller.tiktokFollowers) + ' followers</span></p>' : '') +
+        (seller?.tiktokHandle ? '<p class="icon-row">' + WPIcon('tiktok', 18) + '<span><a href="https://tiktok.com/@' + seller.tiktokHandle + '" target="_blank" rel="noopener">@' + seller.tiktokHandle + '</a> · ' + WikiPrice.formatFollowers(seller.tiktokFollowers) + ' followers</span></p>' : '') +
         (seller?.memberSince ? '<p>Member since: ' + seller.memberSince + '</p>' : '') +
         (seller?.bestTimeToContact ? '<p>Best time: ' + seller.bestTimeToContact + '</p>' : '') +
         (seller?.bioVerified ? '<span class="badge badge-bio-verified">' + WPIcon('verify', 14) + ' Bio Verified</span>' : '') +

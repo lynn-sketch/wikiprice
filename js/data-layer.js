@@ -242,7 +242,34 @@ const WPDataLayer = (function () {
     }
   }
 
+  async function loadFromDatabase() {
+    if (typeof WPCONFIG !== 'undefined' && WPCONFIG.useDatabaseCatalog === false) return false;
+    if (typeof WPAPI === 'undefined' || typeof WPAPI.fetchCatalog !== 'function') return false;
+    try {
+      const data = await WPAPI.fetchCatalog();
+      if (!data || !data.ok || !data.deals || !data.deals.length) return false;
+      if (data.sellers && typeof data.sellers === 'object') {
+        Object.keys(data.sellers).forEach(function (id) {
+          WPDATA.sellers[id] = normalizeSeller(id, data.sellers[id]);
+        });
+      }
+      WPDATA.deals = data.deals.map(normalizeDeal);
+      WPDATA.meta = Object.assign({}, WPDATA.meta || {}, {
+        dataSource: 'netlify-database',
+        catalogLoadedAt: new Date().toISOString()
+      });
+      console.info('[WPDataLayer] Loaded catalog from Netlify Database', data.count || {});
+      return true;
+    } catch (e) {
+      console.info('[WPDataLayer] Database catalog unavailable — using static data', e.message || e);
+      return false;
+    }
+  }
+
   async function loadExtras() {
+    try {
+      await loadFromDatabase();
+    } catch (e) { /* ignore */ }
     try {
       const [arcades, candidates, referencePrices, outreach, sellersDoc] = await Promise.all([
         fetchJSON('data/arcades.json'),
@@ -255,7 +282,7 @@ const WPDataLayer = (function () {
       if (candidates) WPDATA.candidates = candidates;
       if (referencePrices) WPDATA.referencePrices = referencePrices;
       if (outreach) WPDATA.outreach = outreach;
-      if (sellersDoc && Array.isArray(sellersDoc.sellers)) {
+      if (sellersDoc && Array.isArray(sellersDoc.sellers) && !(WPDATA.meta && WPDATA.meta.dataSource === 'netlify-database')) {
         sellersDoc.sellers.forEach(ns => {
           const id = ns.id;
           if (!id) return;

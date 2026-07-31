@@ -50,7 +50,14 @@ const WPCONFIG = {
     'Kampala': { lat: 0.3476, lng: 32.5825 }
   },
 
-  siteUrl: 'https://wikiprice1.netlify.app/'
+  siteUrl: 'https://wikiprice3.netlify.app/',
+
+  /**
+   * Netlify Functions API (Netlify Database / Postgres).
+   * Leave as '/api' on Netlify. Set false to force static-only catalog.
+   */
+  apiBase: '/api',
+  useDatabaseCatalog: true
 };
 
 // Auto-detect configured Formspree
