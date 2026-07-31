@@ -362,8 +362,8 @@ const WikiPrice = (function () {
     if (risk.autoHighRisk) {
       warnings.push({ type: 'risk', icon: 'warning', text: 'This seller has multiple scam indicators. We strongly recommend physical pickup and cash payment only.' });
     }
-    if (deal.imageConfirmed !== true) {
-      warnings.push({ type: 'info', icon: 'warning', text: 'Image not seller-confirmed. Showing a labeled category placeholder until a seller-sourced photo is verified.' });
+    if (deal.imageConfirmed !== true && !(typeof hasCuratedProductImage === 'function' && hasCuratedProductImage(deal))) {
+      warnings.push({ type: 'info', icon: 'warning', text: 'Seller photo not yet confirmed for this listing.' });
     }
     return warnings;
   }

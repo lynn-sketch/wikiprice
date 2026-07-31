@@ -1,153 +1,170 @@
-/* Real product & market images — every deal mapped with fallback */
+/* Real product & market images — hosted locally under /images */
 const WPIMAGES = {
-  fallback: 'https://picsum.photos/seed/wikiprice-default/600/400',
+  fallback: '/images/products/mens-sneakers.jpg',
   byDealId: {
-    'ladies-office-pants': 'https://images.unsplash.com/photo-1594633313593-bab3825d0ffd?w=600&h=400&fit=crop&q=80',
-    'mens-sneakers': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=400&fit=crop&q=80',
-    'tv-32': 'https://images.unsplash.com/photo-1593359677870-a886bb61758f?w=600&h=400&fit=crop&q=80',
-    'tv-43': 'https://images.unsplash.com/photo-1461151304267-38535e780c79?w=600&h=400&fit=crop&q=80',
-    'kids-smartwatch': 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&h=400&fit=crop&q=80',
-    'bed-frame-single': 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop&q=80',
-    'bed-frame-double': 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&h=400&fit=crop&q=80',
-    'sofa-3-seater': 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop&q=80',
-    'dining-table-6': 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&h=400&fit=crop&q=80',
-    'bedding-single': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop&q=80',
-    'bedding-double': 'https://images.unsplash.com/photo-1616628188855-eebc9a788850?w=600&h=400&fit=crop&q=80',
-    'perfume-50ml': 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=400&fit=crop&q=80',
-    'wireless-earbuds': 'https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=600&h=400&fit=crop&q=80',
-    'bluetooth-speaker': 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&h=400&fit=crop&q=80',
-    'power-bank-10000': 'https://images.unsplash.com/photo-1609091839311-9f6374e29401?w=600&h=400&fit=crop&q=80',
-    'iphone-11-used': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=400&fit=crop&q=80',
-    'ring-light-10': 'https://images.unsplash.com/photo-1598387993288-911158a037a8?w=600&h=400&fit=crop&q=80',
-    'men-office-shoes': 'https://images.unsplash.com/photo-1614252238956-18c9c0818432?w=600&h=400&fit=crop&q=80',
-    'children-school-shoes': 'https://images.unsplash.com/photo-1519747867030-85daa2382583?w=600&h=400&fit=crop&q=80',
-    'ladies-blouse': 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&h=400&fit=crop&q=80',
-    'men-jeans': 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=400&fit=crop&q=80',
-    'thrift-denim-jacket': 'https://images.unsplash.com/photo-1576995853123-5a10305d93b0?w=600&h=400&fit=crop&q=80',
-    'electric-kettle': 'https://images.unsplash.com/photo-1585515320310-259814833e95?w=600&h=400&fit=crop&q=80',
-    'air-compressor': 'https://images.unsplash.com/photo-1631545806606-4119b817f088?w=600&h=400&fit=crop&q=80',
-    'blender': 'https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&h=400&fit=crop&q=80',
-    'cosmetic-set': 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&h=400&fit=crop&q=80',
-    'earrings-pair': 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600&h=400&fit=crop&q=80',
-    'greeting-cards': 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600&h=400&fit=crop&q=80',
-    'crafts-basket': 'https://images.unsplash.com/photo-1599643478518-a784e5dc4af6?w=600&h=400&fit=crop&q=80',
-    'smartwatch-basic': 'https://images.unsplash.com/photo-1434493789847-36fc3ce615a2?w=600&h=400&fit=crop&q=80',
-    'phone-charger-fast': 'https://images.unsplash.com/photo-1583863788437-e586919f3018?w=600&h=400&fit=crop&q=80',
-    'laptop-used': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop&q=80',
-    'computer-mouse': 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=400&fit=crop&q=80',
-    'keyboard-wireless': 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&h=400&fit=crop&q=80',
-    'women-heels': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd1?w=600&h=400&fit=crop&q=80',
-    'handbag': 'https://images.unsplash.com/photo-1584917865442-de89a76c861a?w=600&h=400&fit=crop&q=80',
-    'scarf': 'https://images.unsplash.com/photo-1601924994987-69d26eea064c?w=600&h=400&fit=crop&q=80',
-    'men-belt': 'https://images.unsplash.com/photo-1624222247344-550fb60583fd?w=600&h=400&fit=crop&q=80',
-    'electric-iron': 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=600&h=400&fit=crop&q=80',
-    'fan-standing': 'https://images.unsplash.com/photo-1521208919023-8f4976611302?w=600&h=400&fit=crop&q=80',
-    'kitchen-pots-set': 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=600&h=400&fit=crop&q=80',
-    'necklace': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=400&fit=crop&q=80',
-    'hair-accessories': 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=600&h=400&fit=crop&q=80',
-    'wooden-carving': 'https://images.unsplash.com/photo-1459411552884-841db9b3a2ea?w=600&h=400&fit=crop&q=80',
-    'bark-cloth-bag': 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&h=400&fit=crop&q=80',
-    'phone-case': 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=600&h=400&fit=crop&q=80',
-    'socks-pack': 'https://images.unsplash.com/photo-1586350977777-b259281f8649?w=600&h=400&fit=crop&q=80',
-    'thrift-shirt': 'https://images.unsplash.com/photo-1622445275463-afa12ab720dd?w=600&h=400&fit=crop&q=80',
-    'perfume-100ml': 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600&h=400&fit=crop&q=80',
-    'ai-selfie-stick': 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&h=400&fit=crop&q=80',
-    'men-suit': 'https://images.unsplash.com/photo-1593030760827-1dea814a2697?w=600&h=400&fit=crop&q=80',
-    'gomesi': 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=400&fit=crop&q=80',
-    'pillowcases-pair': 'https://images.unsplash.com/photo-1616628188855-eebc9a788850?w=600&h=400&fit=crop&q=80',
-    'small-power-bank': 'https://images.unsplash.com/photo-1609091839311-9f6374e29401?w=600&h=400&fit=crop&q=80',
-    'scam-iphone': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=400&fit=crop&q=80'
+    'ladies-office-pants': '/images/products/ladies-office-pants.jpg',
+    'mens-sneakers': '/images/products/mens-sneakers.jpg',
+    'tv-32': '/images/products/tv-32.jpg',
+    'tv-43': '/images/products/tv-43.jpg',
+    'kids-smartwatch': '/images/products/kids-smartwatch.jpg',
+    'bed-frame-single': '/images/products/bed-frame-single.jpg',
+    'bed-frame-double': '/images/products/bed-frame-double.jpg',
+    'sofa-3-seater': '/images/products/sofa-3-seater.jpg',
+    'dining-table-6': '/images/products/dining-table-6.jpg',
+    'bedding-single': '/images/products/bedding-single.jpg',
+    'bedding-double': '/images/products/bedding-double.jpg',
+    'perfume-50ml': '/images/products/perfume-50ml.jpg',
+    'wireless-earbuds': '/images/products/wireless-earbuds.jpg',
+    'bluetooth-speaker': '/images/products/bluetooth-speaker.jpg',
+    'power-bank-10000': '/images/products/power-bank-10000.jpg',
+    'iphone-11-used': '/images/products/iphone-11-used.jpg',
+    'ring-light-10': '/images/products/ring-light-10.jpg',
+    'men-office-shoes': '/images/products/men-office-shoes.jpg',
+    'children-school-shoes': '/images/products/children-school-shoes.jpg',
+    'ladies-blouse': '/images/products/ladies-blouse.jpg',
+    'men-jeans': '/images/products/men-jeans.jpg',
+    'thrift-denim-jacket': '/images/products/thrift-denim-jacket.jpg',
+    'electric-kettle': '/images/products/electric-kettle.jpg',
+    'air-compressor': '/images/products/air-compressor.jpg',
+    'blender': '/images/products/blender.jpg',
+    'cosmetic-set': '/images/products/cosmetic-set.jpg',
+    'earrings-pair': '/images/products/earrings-pair.jpg',
+    'greeting-cards': '/images/products/greeting-cards.jpg',
+    'crafts-basket': '/images/products/crafts-basket.jpg',
+    'smartwatch-basic': '/images/products/smartwatch-basic.jpg',
+    'phone-charger-fast': '/images/products/phone-charger-fast.jpg',
+    'laptop-used': '/images/products/laptop-used.jpg',
+    'computer-mouse': '/images/products/computer-mouse.jpg',
+    'keyboard-wireless': '/images/products/keyboard-wireless.jpg',
+    'women-heels': '/images/products/women-heels.jpg',
+    'handbag': '/images/products/handbag.jpg',
+    'scarf': '/images/products/scarf.jpg',
+    'men-belt': '/images/products/men-belt.jpg',
+    'electric-iron': '/images/products/electric-iron.jpg',
+    'fan-standing': '/images/products/fan-standing.jpg',
+    'kitchen-pots-set': '/images/products/kitchen-pots-set.jpg',
+    'necklace': '/images/products/necklace.jpg',
+    'hair-accessories': '/images/products/hair-accessories.jpg',
+    'wooden-carving': '/images/products/wooden-carving.jpg',
+    'bark-cloth-bag': '/images/products/bark-cloth-bag.jpg',
+    'phone-case': '/images/products/phone-case.jpg',
+    'socks-pack': '/images/products/socks-pack.jpg',
+    'thrift-shirt': '/images/products/thrift-shirt.jpg',
+    'perfume-100ml': '/images/products/perfume-100ml.jpg',
+    'ai-selfie-stick': '/images/products/ai-selfie-stick.jpg',
+    'men-suit': '/images/products/men-suit.jpg',
+    'gomesi': '/images/products/gomesi.jpg',
+    'pillowcases-pair': '/images/products/pillowcases-pair.jpg',
+    'small-power-bank': '/images/products/small-power-bank.jpg',
+    'scam-iphone': '/images/products/scam-iphone.jpg',
+    'salon-braiding': '/images/products/salon-braiding.jpg',
+    'barber-haircut': '/images/products/barber-haircut.jpg',
+    'tailor-alteration': '/images/products/tailor-alteration.jpg',
+    'mechanic-service': '/images/products/mechanic-service.jpg',
+    'phone-screen-repair': '/images/products/phone-screen-repair.jpg',
+    'it-computer-repair': '/images/products/it-computer-repair.jpg',
+    'boda-delivery': '/images/products/boda-delivery.jpg',
+    'house-cleaning': '/images/products/house-cleaning.jpg',
+    'passport-photos': '/images/products/passport-photos.jpg',
+    'math-tutoring': '/images/products/math-tutoring.jpg',
+    'thrift-vintage-shirt': '/images/products/thrift-vintage-shirt.jpg',
+    'bulk-office-pants-wholesale': '/images/products/bulk-office-pants-wholesale.jpg',
+    'crockery-set-12': '/images/products/crockery-set-12.jpg'
   },
   bySubCategory: {
-    'Office pants': 'https://images.unsplash.com/photo-1594633313593-bab3825d0ffd?w=600&h=400&fit=crop&q=80',
-    'Sneakers': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=400&fit=crop&q=80',
-    'Office shoes': 'https://images.unsplash.com/photo-1614252238956-18c9c0818432?w=600&h=400&fit=crop&q=80',
-    'School shoes': 'https://images.unsplash.com/photo-1519747867030-85daa2382583?w=600&h=400&fit=crop&q=80',
-    'Televisions': 'https://images.unsplash.com/photo-1593359677870-a886bb61758f?w=600&h=400&fit=crop&q=80',
-    'Smartwatches': 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&h=400&fit=crop&q=80',
-    'Smartphones': 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=400&fit=crop&q=80',
-    'Audio': 'https://images.unsplash.com/photo-1598331668826-20cecc596b86?w=600&h=400&fit=crop&q=80',
-    'Accessories': 'https://images.unsplash.com/photo-1609091839311-9f6374e29401?w=600&h=400&fit=crop&q=80',
-    'Laptops': 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=400&fit=crop&q=80',
-    'Bed frames': 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop&q=80',
-    'Sofas': 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop&q=80',
-    'Dining tables': 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&h=400&fit=crop&q=80',
-    'Bedding': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop&q=80',
-    'Kitchen': 'https://images.unsplash.com/photo-1585515320310-259814833e95?w=600&h=400&fit=crop&q=80',
-    'Appliances': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop&q=80',
-    'Perfumes': 'https://images.unsplash.com/photo-1541643600914-78b084683601?w=600&h=400&fit=crop&q=80',
-    'Cosmetics': 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&h=400&fit=crop&q=80',
-    'Hair accessories': 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=600&h=400&fit=crop&q=80',
-    'Blouses': 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&h=400&fit=crop&q=80',
-    'Jeans': 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=400&fit=crop&q=80',
-    'Jackets': 'https://images.unsplash.com/photo-1551028711-00167b16eac5?w=600&h=400&fit=crop&q=80',
-    'Shirts': 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=400&fit=crop&q=80',
-    'Heels and flats': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd1?w=600&h=400&fit=crop&q=80',
-    'Handbags': 'https://images.unsplash.com/photo-1584917865442-de89a76c861a?w=600&h=400&fit=crop&q=80',
-    'Scarves': 'https://images.unsplash.com/photo-1601924994987-69d26eea064c?w=600&h=400&fit=crop&q=80',
-    'Jewelry': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=400&fit=crop&q=80',
-    'Belts': 'https://images.unsplash.com/photo-1624222247344-550fb60583fd?w=600&h=400&fit=crop&q=80',
-    'Suits': 'https://images.unsplash.com/photo-1593030760827-1dea814a2697?w=600&h=400&fit=crop&q=80',
-    'Dresses': 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&h=400&fit=crop&q=80',
-    'Décor': 'https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=600&h=400&fit=crop&q=80'
+    'Office pants': '/images/products/ladies-office-pants.jpg',
+    'Sneakers': '/images/products/mens-sneakers.jpg',
+    'Office shoes': '/images/products/men-office-shoes.jpg',
+    'School shoes': '/images/products/children-school-shoes.jpg',
+    'Televisions': '/images/products/tv-32.jpg',
+    'Smartwatches': '/images/products/smartwatch-basic.jpg',
+    'Smartphones': '/images/products/iphone-11-used.jpg',
+    'Audio': '/images/products/wireless-earbuds.jpg',
+    'Accessories': '/images/products/phone-case.jpg',
+    'Laptops': '/images/products/laptop-used.jpg',
+    'Bed frames': '/images/products/bed-frame-single.jpg',
+    'Sofas': '/images/products/sofa-3-seater.jpg',
+    'Dining tables': '/images/products/dining-table-6.jpg',
+    'Bedding': '/images/products/bedding-single.jpg',
+    'Kitchen': '/images/products/kitchen-pots-set.jpg',
+    'Appliances': '/images/products/blender.jpg',
+    'Perfumes': '/images/products/perfume-50ml.jpg',
+    'Cosmetics': '/images/products/cosmetic-set.jpg',
+    'Hair accessories': '/images/products/hair-accessories.jpg',
+    'Blouses': '/images/products/ladies-blouse.jpg',
+    'Jeans': '/images/products/men-jeans.jpg',
+    'Jackets': '/images/products/thrift-denim-jacket.jpg',
+    'Shirts': '/images/products/thrift-shirt.jpg',
+    'Heels and flats': '/images/products/women-heels.jpg',
+    'Handbags': '/images/products/handbag.jpg',
+    'Scarves': '/images/products/scarf.jpg',
+    'Jewelry': '/images/products/necklace.jpg',
+    'Belts': '/images/products/men-belt.jpg',
+    'Suits': '/images/products/men-suit.jpg',
+    'Dresses': '/images/products/gomesi.jpg',
+    'Décor': '/images/products/wooden-carving.jpg',
+    'Salon Services': '/images/products/salon-braiding.jpg',
+    'Barber Services': '/images/products/barber-haircut.jpg',
+    'Tailor Services': '/images/products/tailor-alteration.jpg',
+    'Mechanic Services': '/images/products/mechanic-service.jpg',
+    'Phone Repair': '/images/products/phone-screen-repair.jpg',
+    'IT Services': '/images/products/it-computer-repair.jpg',
+    'Delivery Services': '/images/products/boda-delivery.jpg',
+    'Cleaning Services': '/images/products/house-cleaning.jpg',
+    'Photography': '/images/products/passport-photos.jpg',
+    'Tutoring and Coaching': '/images/products/math-tutoring.jpg',
+    'Bulk clothing': '/images/products/bulk-office-pants-wholesale.jpg',
+    'Bulk home goods': '/images/products/crockery-set-12.jpg'
   },
   byCategory: {
-    'Electronics': 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=600&h=400&fit=crop&q=80',
-    'Fashion for Men': 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=600&h=400&fit=crop&q=80',
-    'Fashion for Women': 'https://images.unsplash.com/photo-1483985988351-763728e1935b?w=600&h=400&fit=crop&q=80',
-    'Fashion for Children': 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=400&fit=crop&q=80',
-    'Home and Furniture': 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop&q=80',
-    'Beauty and Fragrance': 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=400&fit=crop&q=80',
-    'Thrift': 'https://images.unsplash.com/photo-1441984904996-e0b46a68712d?w=600&h=400&fit=crop&q=80',
-    'Wholesale for Business': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=400&fit=crop&q=80',
-    'Services': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&q=80'
+    'Electronics': '/images/products/cat-electronics.jpg',
+    'Fashion for Men': '/images/products/cat-fashion-for-men.jpg',
+    'Fashion for Women': '/images/products/ladies-blouse.jpg',
+    'Fashion for Children': '/images/products/cat-fashion-for-children.jpg',
+    'Home and Furniture': '/images/products/sofa-3-seater.jpg',
+    'Beauty and Fragrance': '/images/products/cat-beauty-and-fragrance.jpg',
+    'Thrift': '/images/products/thrift-shirt.jpg',
+    'Wholesale for Business': '/images/products/cat-wholesale-for-business.jpg',
+    'Services': '/images/products/cat-services.jpg'
   },
   byArcade: {
-    'Mukwano Arcade': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop&q=80',
-    'Kikuubo': 'https://images.unsplash.com/photo-1555529669-2269763671de?w=800&h=400&fit=crop&q=80',
-    'Owino': 'https://images.unsplash.com/photo-1441984904996-e0b46a68712d?w=800&h=400&fit=crop&q=80',
-    'New Pioneer Mall': 'https://images.unsplash.com/photo-1519567240926-48fce67a675f?w=800&h=400&fit=crop&q=80',
-    'China Town': 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&h=400&fit=crop&q=80',
-    'Crafts Market': 'https://images.unsplash.com/photo-1452457807411-49776985dd22?w=800&h=400&fit=crop&q=80',
-    'Nsambya': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=400&fit=crop&q=80',
-    'Gazaland Arcade': 'https://images.unsplash.com/photo-1441984904996-e0b46a68712d?w=800&h=400&fit=crop&q=80',
-    'Galiraya': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop&q=80',
-    'Majestic Plaza': 'https://images.unsplash.com/photo-1519567240926-48fce67a675f?w=800&h=400&fit=crop&q=80',
-    'Energy Centre': 'https://images.unsplash.com/photo-1555529669-2269763671de?w=800&h=400&fit=crop&q=80',
-    'Magoba': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=400&fit=crop&q=80',
-    'Avema': 'https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=800&h=400&fit=crop&q=80',
-    'Kampala': 'https://images.unsplash.com/photo-1555529669-2269763671de?w=800&h=400&fit=crop&q=80',
-    'Other': 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=800&h=400&fit=crop&q=80'
+    'Mukwano Arcade': '/images/markets/mukwano-arcade.jpg',
+    'Kikuubo': '/images/markets/kikuubo.jpg',
+    'Owino': '/images/markets/owino.jpg',
+    'New Pioneer Mall': '/images/markets/new-pioneer-mall.jpg',
+    'China Town': '/images/markets/china-town.jpg',
+    'Crafts Market': '/images/markets/crafts-market.jpg',
+    'Nsambya': '/images/markets/nsambya.jpg',
+    'Gazaland Arcade': '/images/markets/gazaland-arcade.jpg',
+    'Galiraya': '/images/markets/galiraya.jpg',
+    'Majestic Plaza': '/images/markets/majestic-plaza.jpg',
+    'Energy Centre': '/images/markets/energy-centre.jpg',
+    'Magoba': '/images/markets/magoba.jpg',
+    'Avema': '/images/markets/avema.jpg',
+    'Kampala': '/images/markets/kampala.jpg',
+    'Other': '/images/markets/other.jpg'
   },
-  hero: 'https://images.unsplash.com/photo-1555529669-2269763671de?w=1200&h=500&fit=crop&q=80'
+  hero: '/images/markets/hero.jpg'
 };
 
 function categoryPlaceholderDataUri(deal) {
   const label = (deal.subCategory || deal.category || 'Product').slice(0, 28);
-  const line2 = 'Category placeholder';
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">' +
     '<rect fill="#e8eef6" width="600" height="400"/>' +
     '<rect x="24" y="24" width="552" height="352" fill="none" stroke="#0A2B5C" stroke-width="2" stroke-dasharray="8 6"/>' +
-    '<text x="300" y="175" text-anchor="middle" fill="#0A2B5C" font-family="system-ui,sans-serif" font-size="22" font-weight="700">' +
+    '<text x="300" y="190" text-anchor="middle" fill="#0A2B5C" font-family="system-ui,sans-serif" font-size="22" font-weight="700">' +
     label.replace(/[<>&]/g, '') + '</text>' +
-    '<text x="300" y="215" text-anchor="middle" fill="#5c6578" font-family="system-ui,sans-serif" font-size="16">' +
-    line2 + '</text>' +
-    '<text x="300" y="250" text-anchor="middle" fill="#8a6a1a" font-family="system-ui,sans-serif" font-size="14">' +
-    'Awaiting seller-sourced photo' + '</text></svg>';
+    '<text x="300" y="230" text-anchor="middle" fill="#5c6578" font-family="system-ui,sans-serif" font-size="16">Photo coming soon</text></svg>';
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
+function hasCuratedProductImage(deal) {
+  return !!(deal && deal.id && WPIMAGES.byDealId[deal.id]);
+}
+
 function getDealImage(deal) {
-  // Confirmed seller-sourced photo first
-  if (deal.imageConfirmed === true && (deal.imageUrl || deal.image)) {
-    return deal.imageUrl || deal.image;
-  }
-  if (deal.imageConfirmed === true && deal.id && WPIMAGES.byDealId[deal.id]) {
-    return WPIMAGES.byDealId[deal.id];
-  }
-  // Until seller photo is confirmed: use mapped category/demo art with a clear placeholder badge in the UI
-  // (never claim it is the seller's own photo)
+  if (deal.imageUrl || deal.image) return deal.imageUrl || deal.image;
   if (deal.id && WPIMAGES.byDealId[deal.id]) return WPIMAGES.byDealId[deal.id];
   if (deal.subCategory && WPIMAGES.bySubCategory[deal.subCategory]) return WPIMAGES.bySubCategory[deal.subCategory];
   if (deal.category && WPIMAGES.byCategory[deal.category]) return WPIMAGES.byCategory[deal.category];
@@ -160,19 +177,18 @@ function getArcadeImage(arcade) {
 
 function imageFallbackUrl(deal) {
   if (deal && deal.category && WPIMAGES.byCategory[deal.category]) return WPIMAGES.byCategory[deal.category];
-  return categoryPlaceholderDataUri(deal || {});
+  return WPIMAGES.fallback;
 }
 
 function dealImageTag(deal, className) {
   const src = getDealImage(deal);
   const fallback = imageFallbackUrl(deal);
-  const confirmed = deal.imageConfirmed === true;
-  const alt = confirmed
-    ? (deal.name + ' at ' + (deal.location?.arcade || 'Kampala'))
-    : ((deal.name || deal.subCategory || deal.category || 'Product') + ' (category image — not a seller photo)');
+  const realPhoto = deal.imageConfirmed === true || hasCuratedProductImage(deal) || !!(deal.imageUrl || deal.image);
+  const alt = (deal.name || deal.subCategory || deal.category || 'Product') +
+    (deal.location && deal.location.arcade ? ' at ' + deal.location.arcade : '');
   const priceText = (typeof WikiPrice !== 'undefined') ? WikiPrice.formatUGX(deal.retailPrice) : '';
-  const badge = confirmed ? '' : '<span class="img-placeholder-badge">Category image</span>';
-  return '<div class="deal-img-wrap' + (confirmed ? '' : ' is-placeholder') + '">' +
+  const badge = realPhoto ? '' : '<span class="img-placeholder-badge">Photo coming soon</span>';
+  return '<div class="deal-img-wrap' + (realPhoto ? '' : ' is-placeholder') + '">' +
     '<img src="' + src + '" alt="' + (alt + (priceText ? ' — ' + priceText : '')).replace(/"/g, '&quot;') +
     '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" onerror="this.onerror=null;this.src=\'' + String(fallback).replace(/'/g, '%27') + '\'">' +
     badge + '</div>';
@@ -180,13 +196,13 @@ function dealImageTag(deal, className) {
 
 function arcadeImageTag(arcade, className) {
   const src = getArcadeImage(arcade);
-  const fb = 'https://picsum.photos/seed/arcade-' + encodeURIComponent(arcade || 'market') + '/800/400';
+  const fb = WPIMAGES.hero;
   return '<img src="' + src + '" alt="' + ((arcade || 'Kampala') + ' market location').replace(/"/g, '&quot;') + '" class="' + (className || 'deal-location-photo') + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + fb + '\'">';
 }
 
-/* Pre-assign image URL only when seller-confirmed; otherwise leave for placeholder */
+/* Pre-assign curated local image URLs onto deals for feed/cards */
 if (typeof WPDATA !== 'undefined' && WPDATA.deals) {
   WPDATA.deals.forEach(function (d) {
-    if (d.imageConfirmed === true && !d.image) d.image = getDealImage(d);
+    if (!d.image) d.image = getDealImage(d);
   });
 }
