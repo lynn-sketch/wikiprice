@@ -189,12 +189,12 @@
   serviceDeals.forEach(d => WPDATA.deals.push(mkSvc(d)));
 
   WPDATA.tiktokFeed = [
-    { handle: 'WikiPriceUG', videoId: '7123456789012345678', caption: 'Office pants UGX 80K in Garden City but UGX 30K in Kikuubo?!' },
-    { handle: 'WikiPriceUG', videoId: '7123456789012345679', caption: 'Did you know? Compressor UGX 2.9M at China Town vs UGX 5M downtown' },
-    { handle: 'WikiPriceUG', videoId: '7123456789012345680', caption: 'Under UGX 50K budget finds in Kampala markets' },
-    { handle: 'salongohouseofshoes_1', videoId: '7123456789012345681', caption: 'Sneakers from UGX 45,000 at Mukwano Arcade' },
-    { handle: 'mummyarleena', videoId: '7123456789012345682', caption: 'Kids smartwatch UGX 80,000 at Pioneer Mall' },
-    { handle: 'nsambyafurnitureworkshop', videoId: '7123456789012345683', caption: 'Custom bed frame from UGX 350,000 — watch us build it' }
+    { handle: 'WikiPriceUG', dealId: 'ladies-office-pants', image: '/images/products/ladies-office-pants.jpg', caption: 'Office pants UGX 80K in Garden City but UGX 30K in Kikuubo?!' },
+    { handle: 'WikiPriceUG', dealId: 'air-compressor', image: '/images/products/air-compressor.jpg', caption: 'Did you know? Compressor UGX 2.9M at China Town vs UGX 5M downtown' },
+    { handle: 'WikiPriceUG', dealId: 'mens-sneakers', image: '/images/products/mens-sneakers.jpg', caption: 'Under UGX 50K budget finds in Kampala markets' },
+    { handle: 'salongohouseofshoes_1', dealId: 'mens-sneakers', image: '/images/products/mens-sneakers.jpg', caption: 'Sneakers from UGX 45,000 at Mukwano Arcade' },
+    { handle: 'mummyarleena', dealId: 'kids-smartwatch', image: '/images/products/kids-smartwatch.jpg', caption: 'Kids smartwatch UGX 80,000 at Pioneer Mall' },
+    { handle: 'nsambyafurnitureworkshop', dealId: 'bed-frame-single', image: '/images/products/bed-frame-single.jpg', caption: 'Custom bed frame from UGX 350,000 — watch us build it' }
   ];
 
   WPDATA.stats.verifiedDeals = WPDATA.deals.filter(d => d.verificationStatus === 'verified').length;

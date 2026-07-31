@@ -206,6 +206,67 @@ a:hover { text-decoration: underline; }
 }
 .tiktok-embed-card blockquote { margin: 0; }
 .tiktok-caption { padding: 12px; font-size: 0.85rem; color: var(--text-muted); }
+.tiktok-poster-card .tiktok-poster-link {
+  position: relative;
+  display: block;
+  background: #111;
+  min-height: 280px;
+}
+.tiktok-poster-img {
+  display: block;
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  max-width: none !important;
+}
+.tiktok-poster-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(212,168,67,0.95);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  pointer-events: none;
+}
+.tiktok-card-actions {
+  padding: 0 12px 12px;
+  margin: 0;
+  font-size: 0.85rem;
+}
+.feed-tiktok-badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.72);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+.deal-img-wrap .deal-detail-hero,
+.deal-detail-hero {
+  width: 100%;
+  max-height: 520px;
+  min-height: 280px;
+  height: 360px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  display: block;
+  background: #e8eef6;
+}
 
 .footer-social { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
 .footer-social a {

@@ -49,15 +49,6 @@
       document.title = deal.name + ' — WikiPrice Uganda';
 
       let tiktokSection = WPUIEnhance.renderTikTokDealSection(deal, seller);
-      if (tiktokSection && !document.getElementById('tiktok-embed-script')) {
-        setTimeout(() => {
-          const s = document.createElement('script');
-          s.id = 'tiktok-embed-script';
-          s.src = 'https://www.tiktok.com/embed.js';
-          s.async = true;
-          document.body.appendChild(s);
-        }, 100);
-      }
 
       const html = '<section class="section"><div class="container">' +
         dealImageTag(deal, 'deal-detail-hero') +

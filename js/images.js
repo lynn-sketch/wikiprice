@@ -188,9 +188,11 @@ function dealImageTag(deal, className) {
     (deal.location && deal.location.arcade ? ' at ' + deal.location.arcade : '');
   const priceText = (typeof WikiPrice !== 'undefined') ? WikiPrice.formatUGX(deal.retailPrice) : '';
   const badge = realPhoto ? '' : '<span class="img-placeholder-badge">Photo coming soon</span>';
+  const safeFallback = String(fallback).replace(/'/g, '%27');
   return '<div class="deal-img-wrap' + (realPhoto ? '' : ' is-placeholder') + '">' +
     '<img src="' + src + '" alt="' + (alt + (priceText ? ' — ' + priceText : '')).replace(/"/g, '&quot;') +
-    '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" onerror="this.onerror=null;this.src=\'' + String(fallback).replace(/'/g, '%27') + '\'">' +
+    '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" ' +
+    'onerror="this.onerror=null;this.src=\'' + safeFallback + '\'">' +
     badge + '</div>';
 }
 

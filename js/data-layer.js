@@ -126,19 +126,23 @@ const WPDataLayer = (function () {
   }
 
   function attachTikTokVideos() {
+    // Seed feed uses poster images (not real TikTok video IDs) so we do not attach
+    // fake video IDs that produce blank embeds. Keep mentionedOnTiktok for ranking.
     const feed = WPDATA.tiktokFeed || [];
     const byHandle = {};
     feed.forEach(v => {
       const h = cleanHandle(v.handle);
-      if (h && v.videoId) byHandle[h] = v.videoId;
+      if (h) byHandle[h] = v;
     });
     (WPDATA.deals || []).forEach(deal => {
       const seller = WPDATA.sellers[deal.sellerId];
       const h = cleanHandle(deal.tiktokHandle || seller?.tiktokHandle || seller?.handle);
-      if (!deal.tiktokVideoId && h && byHandle[h]) {
-        deal.tiktokVideoId = byHandle[h];
+      if (h && byHandle[h]) {
         deal.mentionedOnTiktok = true;
         deal.source = deal.source || 'tiktok';
+        if (byHandle[h].dealId === deal.id && byHandle[h].image && !deal.image) {
+          deal.image = byHandle[h].image;
+        }
       }
     });
   }

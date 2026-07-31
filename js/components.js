@@ -207,23 +207,28 @@ const WPUI = {
     const profileUrl = handle
       ? ((typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(handle) : 'https://www.tiktok.com/@' + handle)
       : 'deal.html?id=' + deal.id;
-    const img = (typeof getDealImage === 'function') ? getDealImage(deal) : (deal.image || '');
+    const img = (typeof getDealImage === 'function') ? getDealImage(deal) : (deal.image || deal.imageUrl || '');
+    const fallback = (typeof WPIMAGES !== 'undefined' && WPIMAGES.fallback) ? WPIMAGES.fallback : '/images/products/mens-sneakers.jpg';
+    const poster = img || fallback;
     const price = deal.priceType === 'wholesale' ? deal.wholesalePrice : (deal.retailPrice || deal.wholesalePrice);
     const saved = (JSON.parse(localStorage.getItem('wikiprice-saved') || '[]')).indexOf(deal.id) >= 0;
-    const videoLink = (deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined')
+    // Prefer profile when we only have placeholder video ids — still open TikTok visibly
+    const videoLink = (deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined' && String(deal.tiktokVideoId).length > 15)
       ? WPDataLayer.tiktokVideoUrl(handle, deal.tiktokVideoId)
       : profileUrl;
-    const commentUrl = videoLink; // opens TikTok video/comment thread when video id exists
-    const hasOEmbed = !!(deal.tiktokVideoId && handle && typeof WPDataLayer !== 'undefined');
+    const commentUrl = videoLink;
     const heartIcon = saved ? WPIcon('heartFilled', 22) : WPIcon('heart', 22);
+    const alt = ((deal.name || 'Product') + ' — ' + (seller.businessName || seller.name || 'seller')).replace(/"/g, '&quot;');
 
-    // Mini TikTok post: public embed when video id exists; otherwise full-bleed product photo + play
-    const mediaHtml = hasOEmbed
-      ? '<div class="feed-oembed">' + WPDataLayer.oEmbedBlockquote(handle, deal.tiktokVideoId) + '</div>'
-      : '<div class="feed-video" style="' + (img ? 'background-image:url(' + img + ')' : '') + '">' +
-        (img ? '<img src="' + img + '" alt="' + ((deal.name || 'Product') + ' — ' + (seller.businessName || seller.name || 'seller')).replace(/"/g, '') + '" class="feed-poster" loading="lazy">' : '') +
-        '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' +
-        WPIcon('play', 28) + '</a></div>';
+    // Always show a real product poster (TikTok embeds are often blank in Uganda / with seed IDs)
+    const mediaHtml =
+      '<div class="feed-video" style="background-image:url(' + poster + ')">' +
+      '<img src="' + poster + '" alt="' + alt + '" class="feed-poster" loading="lazy" decoding="async" ' +
+      'onerror="this.onerror=null;this.src=\'' + fallback + '\';this.parentElement.style.backgroundImage=\'url(' + fallback + ')\'">' +
+      '<a class="feed-video-play" href="' + videoLink + '" target="_blank" rel="noopener" aria-label="Open on TikTok">' +
+      WPIcon('play', 28) + '</a>' +
+      (handle ? '<span class="feed-tiktok-badge">' + WPIcon('tiktok', 14) + ' TikTok</span>' : '') +
+      '</div>';
 
     return '<article class="feed-card" data-deal-id="' + deal.id + '">' +
       '<div class="feed-media">' + mediaHtml +

@@ -168,7 +168,7 @@ const WPUIEnhance = {
       if (sentinel) sentinel.remove();
       container.insertAdjacentHTML('beforeend', slice.map(d => WPUI.feedCard(d)).join(''));
       offset += slice.length;
-      if (typeof WPDataLayer !== 'undefined') WPDataLayer.ensureEmbedScript();
+      // Product posters only — TikTok embed.js left off (seed embeds render blank)
       if (offset < deals.length) {
         const s = document.createElement('div');
         s.id = 'feed-sentinel';
@@ -228,19 +228,32 @@ const WPUIEnhance = {
 
   renderTikTokFeed(container) {
     if (!container || !WPDATA.tiktokFeed) return;
-    container.innerHTML = WPDATA.tiktokFeed.map(v =>
-      '<div class="tiktok-embed-card">' +
-      '<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@' + v.handle + '/video/' + v.videoId + '" data-video-id="' + v.videoId + '" style="max-width:100%;min-width:280px;">' +
-      '<section><a target="_blank" rel="noopener" href="https://www.tiktok.com/@' + v.handle + '/video/' + v.videoId + '">@' + v.handle + '</a></section></blockquote>' +
-      '<div class="tiktok-caption">' + v.caption + '</div></div>'
-    ).join('');
-    if (!document.getElementById('tiktok-embed-script')) {
-      const s = document.createElement('script');
-      s.id = 'tiktok-embed-script';
-      s.src = 'https://www.tiktok.com/embed.js';
-      s.async = true;
-      document.body.appendChild(s);
-    }
+    const fallback = (typeof WPIMAGES !== 'undefined' && WPIMAGES.fallback)
+      ? WPIMAGES.fallback
+      : '/images/products/mens-sneakers.jpg';
+    container.innerHTML = WPDATA.tiktokFeed.map(v => {
+      const handle = String(v.handle || '').replace(/^@/, '');
+      const profileUrl = handle
+        ? ('https://www.tiktok.com/@' + handle)
+        : 'discover.html';
+      let img = v.image || '';
+      if (!img && v.dealId && typeof getDealImage === 'function') {
+        const deal = (WPDATA.deals || []).find(d => d.id === v.dealId);
+        if (deal) img = getDealImage(deal);
+      }
+      if (!img) img = fallback;
+      const dealHref = v.dealId ? ('deal.html?id=' + v.dealId) : profileUrl;
+      return '<div class="tiktok-embed-card tiktok-poster-card">' +
+        '<a class="tiktok-poster-link" href="' + profileUrl + '" target="_blank" rel="noopener" aria-label="Open @' + handle + ' on TikTok">' +
+        '<img src="' + img + '" alt="@' + handle + ' — ' + String(v.caption || 'TikTok').replace(/"/g, '') + '" class="tiktok-poster-img" loading="lazy" ' +
+        'onerror="this.onerror=null;this.src=\'' + fallback + '\'">' +
+        '<span class="tiktok-poster-play">' + WPIcon('play', 28) + '</span>' +
+        '<span class="feed-tiktok-badge">' + WPIcon('tiktok', 14) + ' @' + handle + '</span>' +
+        '</a>' +
+        '<div class="tiktok-caption">' + (v.caption || '') + '</div>' +
+        '<p class="tiktok-card-actions"><a href="' + profileUrl + '" target="_blank" rel="noopener">Open on TikTok</a>' +
+        (v.dealId ? ' · <a href="' + dealHref + '">View deal</a>' : '') + '</p></div>';
+    }).join('');
   },
 
   formatFollowers(n) {
@@ -266,15 +279,20 @@ const WPUIEnhance = {
     if (seller?.commentReplies) seller.commentReplies.forEach(c => extracts.push({ source: 'From comment reply', text: '@' + c.user + ' asked "' + c.question + '" — ' + c.reply }));
     if (seller?.ocrExtracts) seller.ocrExtracts.forEach(o => extracts.push(o));
     const profileUrl = (typeof WPDataLayer !== 'undefined') ? WPDataLayer.tiktokProfileUrl(handle) : ('https://www.tiktok.com/@' + handle);
-    const videoId = deal.tiktokVideoId || (WPDATA.tiktokFeed && WPDATA.tiktokFeed.find(t => t.handle === handle)?.videoId);
-    let embed = '';
-    if (videoId) {
-      embed = '<div class="tiktok-embed-card mt-16"><blockquote class="tiktok-embed" cite="https://www.tiktok.com/@' + handle + '/video/' + videoId + '" data-video-id="' + videoId + '" style="max-width:100%;"><section><a href="https://www.tiktok.com/@' + handle + '/video/' + videoId + '" target="_blank" rel="noopener">Watch on TikTok</a></section></blockquote></div>';
-    }
+    const img = (typeof getDealImage === 'function') ? getDealImage(deal) : (deal.image || '/images/products/mens-sneakers.jpg');
+    const fallback = (typeof WPIMAGES !== 'undefined' && WPIMAGES.fallback) ? WPIMAGES.fallback : '/images/products/mens-sneakers.jpg';
+    const poster =
+      '<div class="tiktok-embed-card tiktok-poster-card mt-16">' +
+      '<a class="tiktok-poster-link" href="' + profileUrl + '" target="_blank" rel="noopener" aria-label="Open @' + handle + ' on TikTok">' +
+      '<img src="' + img + '" alt="' + (deal.name || 'Product').replace(/"/g, '') + ' on TikTok" class="tiktok-poster-img" loading="lazy" ' +
+      'onerror="this.onerror=null;this.src=\'' + fallback + '\'">' +
+      '<span class="tiktok-poster-play">' + WPIcon('play', 28) + '</span>' +
+      '<span class="feed-tiktok-badge">' + WPIcon('tiktok', 14) + ' Open on TikTok</span>' +
+      '</a></div>';
     return '<div class="detail-card">' + WPUI.sectionHeading('tiktok', 'TikTok Integration') +
       '<p><a href="' + profileUrl + '" target="_blank" rel="noopener">@' + handle + '</a>' +
       ((seller?.followerCount || seller?.tiktokFollowers) ? ' · ' + WPUIEnhance.formatFollowers(seller.followerCount || seller.tiktokFollowers) + ' followers' : '') + '</p>' +
-      embed +
+      poster +
       (extracts.length ? '<h3 style="font-size:0.95rem;margin:16px 0 8px;">Extracted Information</h3>' + extracts.map(e => '<div class="tiktok-extract"><span class="source-label">' + e.source + '</span><br>' + e.text + '</div>').join('') : '') +
       '</div>';
   }
