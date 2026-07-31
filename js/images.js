@@ -139,14 +139,18 @@ function categoryPlaceholderDataUri(deal) {
 }
 
 function getDealImage(deal) {
-  // Part 4.5: only seller-confirmed images may show as real product photos
+  // Confirmed seller-sourced photo first
   if (deal.imageConfirmed === true && (deal.imageUrl || deal.image)) {
     return deal.imageUrl || deal.image;
   }
   if (deal.imageConfirmed === true && deal.id && WPIMAGES.byDealId[deal.id]) {
     return WPIMAGES.byDealId[deal.id];
   }
-  // No confirmed image → labeled category placeholder (never a mismatched stock photo)
+  // Until seller photo is confirmed: use mapped category/demo art with a clear placeholder badge in the UI
+  // (never claim it is the seller's own photo)
+  if (deal.id && WPIMAGES.byDealId[deal.id]) return WPIMAGES.byDealId[deal.id];
+  if (deal.subCategory && WPIMAGES.bySubCategory[deal.subCategory]) return WPIMAGES.bySubCategory[deal.subCategory];
+  if (deal.category && WPIMAGES.byCategory[deal.category]) return WPIMAGES.byCategory[deal.category];
   return categoryPlaceholderDataUri(deal);
 }
 
@@ -155,6 +159,7 @@ function getArcadeImage(arcade) {
 }
 
 function imageFallbackUrl(deal) {
+  if (deal && deal.category && WPIMAGES.byCategory[deal.category]) return WPIMAGES.byCategory[deal.category];
   return categoryPlaceholderDataUri(deal || {});
 }
 
@@ -164,12 +169,12 @@ function dealImageTag(deal, className) {
   const confirmed = deal.imageConfirmed === true;
   const alt = confirmed
     ? (deal.name + ' at ' + (deal.location?.arcade || 'Kampala'))
-    : ((deal.subCategory || deal.category || 'Product') + ' category placeholder — not a seller photo');
+    : ((deal.name || deal.subCategory || deal.category || 'Product') + ' (category image — not a seller photo)');
   const priceText = (typeof WikiPrice !== 'undefined') ? WikiPrice.formatUGX(deal.retailPrice) : '';
-  const badge = confirmed ? '' : '<span class="img-placeholder-badge">Category placeholder</span>';
+  const badge = confirmed ? '' : '<span class="img-placeholder-badge">Category image</span>';
   return '<div class="deal-img-wrap' + (confirmed ? '' : ' is-placeholder') + '">' +
-    '<img src="' + src + '" alt="' + (alt + (priceText && confirmed ? ' — ' + priceText : '')).replace(/"/g, '&quot;') +
-    '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" onerror="this.onerror=null;this.src=\'' + fallback.replace(/'/g, '%27') + '\'">' +
+    '<img src="' + src + '" alt="' + (alt + (priceText ? ' — ' + priceText : '')).replace(/"/g, '&quot;') +
+    '" class="' + (className || 'deal-card-photo') + '" loading="lazy" decoding="async" width="600" height="400" onerror="this.onerror=null;this.src=\'' + String(fallback).replace(/'/g, '%27') + '\'">' +
     badge + '</div>';
 }
 

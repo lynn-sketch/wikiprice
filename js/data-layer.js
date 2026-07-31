@@ -243,52 +243,63 @@ const WPDataLayer = (function () {
   }
 
   async function loadExtras() {
-    const [arcades, candidates, referencePrices, outreach, sellersDoc] = await Promise.all([
-      fetchJSON('data/arcades.json'),
-      fetchJSON('data/candidates.json'),
-      fetchJSON('data/reference-prices.json'),
-      fetchJSON('data/outreach.json'),
-      fetchJSON('data/sellers.json')
-    ]);
-    if (arcades) WPDATA.arcades = arcades;
-    if (candidates) WPDATA.candidates = candidates;
-    if (referencePrices) WPDATA.referencePrices = referencePrices;
-    if (outreach) WPDATA.outreach = outreach;
-    if (sellersDoc && Array.isArray(sellersDoc.sellers)) {
-      sellersDoc.sellers.forEach(ns => {
-        const id = ns.id;
-        if (!id) return;
-        const existing = WPDATA.sellers[id] || {};
-        WPDATA.sellers[id] = normalizeSeller(id, Object.assign({}, existing, {
-          name: ns.businessName || existing.name,
-          tiktokHandle: cleanHandle(ns.handle),
-          tiktokFollowers: ns.followerCount,
-          about: ns.bio,
-          phone: ns.phone || existing.phone,
-          whatsapp: ns.whatsapp || existing.whatsapp,
-          location: ns.location,
-          category: ns.category,
-          subCategory: ns.subCategory,
-          products: ns.products,
-          samplePrices: ns.samplePrices,
-          verificationStatus: ns.verificationStatus,
-          lastVerified: ns.lastVerified,
-          responseTime: ns.responseTime,
-          submittedBy: ns.submittedBy,
-          source: ns.source,
-          tags: ns.tags,
-          imageConfirmed: ns.imageConfirmed,
-          dataSource: ns.dataSource,
-          lastSynced: ns.lastSynced,
-          apiConsentGiven: ns.apiConsentGiven,
-          tiktokUserId: ns.tiktokUserId,
-          bioVerified: ns.verificationStatus === 'verified',
-          physicalShop: true
-        }));
-      });
+    try {
+      const [arcades, candidates, referencePrices, outreach, sellersDoc] = await Promise.all([
+        fetchJSON('data/arcades.json'),
+        fetchJSON('data/candidates.json'),
+        fetchJSON('data/reference-prices.json'),
+        fetchJSON('data/outreach.json'),
+        fetchJSON('data/sellers.json')
+      ]);
+      if (arcades) WPDATA.arcades = arcades;
+      if (candidates) WPDATA.candidates = candidates;
+      if (referencePrices) WPDATA.referencePrices = referencePrices;
+      if (outreach) WPDATA.outreach = outreach;
+      if (sellersDoc && Array.isArray(sellersDoc.sellers)) {
+        sellersDoc.sellers.forEach(ns => {
+          const id = ns.id;
+          if (!id) return;
+          const existing = WPDATA.sellers[id] || {};
+          WPDATA.sellers[id] = normalizeSeller(id, Object.assign({}, existing, {
+            name: ns.businessName || existing.name,
+            tiktokHandle: cleanHandle(ns.handle),
+            tiktokFollowers: ns.followerCount,
+            about: ns.bio,
+            phone: ns.phone || existing.phone,
+            whatsapp: ns.whatsapp || existing.whatsapp,
+            location: ns.location,
+            category: ns.category,
+            subCategory: ns.subCategory,
+            products: ns.products,
+            samplePrices: ns.samplePrices,
+            verificationStatus: ns.verificationStatus,
+            lastVerified: ns.lastVerified,
+            responseTime: ns.responseTime,
+            submittedBy: ns.submittedBy,
+            source: ns.source,
+            tags: ns.tags,
+            imageConfirmed: ns.imageConfirmed,
+            contactOptIn: ns.contactOptIn,
+            dataSource: ns.dataSource,
+            lastSynced: ns.lastSynced,
+            apiConsentGiven: ns.apiConsentGiven,
+            tiktokUserId: ns.tiktokUserId,
+            bioVerified: ns.verificationStatus === 'verified',
+            physicalShop: true
+          }));
+        });
+      }
+    } catch (e) {
+      console.warn('[WPDataLayer] loadExtras error — using embedded catalog', e);
     }
-    applyToWPDATA();
-    document.dispatchEvent(new CustomEvent('wikiprice:data-ready'));
+    try {
+      applyToWPDATA();
+    } catch (e2) {
+      console.warn('[WPDataLayer] applyToWPDATA error', e2);
+    }
+    try {
+      document.dispatchEvent(new CustomEvent('wikiprice:data-ready'));
+    } catch (e3) { /* ignore */ }
     return WPDATA;
   }
 
@@ -416,7 +427,9 @@ const WPDataLayer = (function () {
     }
   }
 
-  if (typeof WPDATA !== 'undefined') applyToWPDATA();
+  if (typeof WPDATA !== 'undefined') {
+    try { applyToWPDATA(); } catch (e) { console.warn('[WPDataLayer] initial apply failed', e); }
+  }
 
   return {
     SOURCES,

@@ -109,22 +109,33 @@
     WPUIEnhance.initAllSearchBars();
     WPUIEnhance.showSkeletons(document.getElementById('discovery-feed'), 2, 'feed');
     WPUIEnhance.showSkeletons(document.getElementById('recent-deals'), 4, 'card');
-    WPDataLayer.loadExtras().then(function () {
-      WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
-      WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'));
-      const pool = WPDataLayer.getSearchableDeals();
-      const recent = WikiPrice.sortDeals(pool.filter(d => d.verificationStatus === 'verified'), 'newest').slice(0, 8);
-      const recentEl = document.getElementById('recent-deals');
-      if (!recent.length) {
-        document.getElementById('recent-section-title').textContent = 'How WikiPrice Verifies Deals';
-        document.getElementById('recent-deals-wrap').innerHTML = WPUI.emptyVerifiedExplainer();
-        document.getElementById('recent-view-all').classList.add('hidden');
-        const vs = document.getElementById('verify-standalone');
-        if (vs) vs.classList.add('hidden');
-      } else {
-        recentEl.innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
+    function renderHomeFeeds() {
+      try {
+        WPUIEnhance.renderStatsGrid(document.getElementById('stats-grid'), WPDATA.stats);
+        WPUIEnhance.initDiscoveryFeed(document.getElementById('discovery-feed'));
+        const pool = WPDataLayer.getSearchableDeals();
+        const recent = WikiPrice.sortDeals(pool.filter(d => d.verificationStatus === 'verified'), 'newest').slice(0, 8);
+        const recentEl = document.getElementById('recent-deals');
+        if (!recent.length) {
+          document.getElementById('recent-section-title').textContent = 'How WikiPrice Verifies Deals';
+          document.getElementById('recent-deals-wrap').innerHTML = WPUI.emptyVerifiedExplainer();
+          document.getElementById('recent-view-all').classList.add('hidden');
+          const vs = document.getElementById('verify-standalone');
+          if (vs) vs.classList.add('hidden');
+        } else {
+          recentEl.innerHTML = recent.map(d => WPUI.dealCard(d)).join('');
+        }
+      } catch (err) {
+        console.warn('Home feed render error', err);
+        document.getElementById('discovery-feed').innerHTML = WPUI.emptyVerifiedExplainer();
       }
-    });
+    }
+    WPDataLayer.loadExtras().then(renderHomeFeeds).catch(function () { renderHomeFeeds(); });
+    // Safety: never leave skeletons forever
+    setTimeout(function () {
+      const feed = document.getElementById('discovery-feed');
+      if (feed && feed.querySelector('.skeleton-feed')) renderHomeFeeds();
+    }, 4000);
     WPGeo.mountBanner(document.getElementById('geo-banner-home'));
 
     document.getElementById('hero-section').style.backgroundImage = 'url(' + WPIMAGES.hero + ')';
